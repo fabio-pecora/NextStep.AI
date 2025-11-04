@@ -43,7 +43,12 @@
 <body>
 <div class="container">
     <h1>AI Interview Coach</h1>
-
+        <nav>
+            <a href="{{ url_for('index') }}">Practice Question</a>
+            <a href="{{ url_for('jobs') }}">Job Library</a>
+            <a href="{{ url_for('custom_prep') }}">Custom AI Prep</a>
+        </nav>
+        <hr>
     {% if question %}
         <h2>Question</h2>
         <p id="question-text">{{ question.question }}</p>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NextStep.AI - Job Questions</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1, h2 { margin-bottom: 0.5rem; }
+        .question-block { margin-bottom: 1.5rem; }
+        .tags { font-size: 0.85rem; color: #777; }
+        nav a { margin-right: 1rem; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <nav>
+        <a href="{{ url_for('index') }}">Practice Question</a>
+        <a href="{{ url_for('jobs') }}">Job Library</a>
+        <a href="{{ url_for('custom_prep') }}">Custom AI Prep</a>
+    </nav>
+
+    {% if job %}
+        <h1>{{ job.title }}</h1>
+        {% if questions %}
+            <p>These questions are curated for this position. Use them to practice on your own or plug them into the main coach.</p>
+            {% for q in questions %}
+                <div class="question-block">
+                    <h3>{{ loop.index }}. {{ q.question }}</h3>
+                    {% if q.ideal_answer %}
+                        <p><strong>Guidance:</strong> {{ q.ideal_answer }}</p>
+                    {% endif %}
+                    {% if q.tags %}
+                        <p class="tags">Tags: {{ ", ".join(q.tags) }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No specific questions added yet for this role. You can add them in <code>data/job_questions.json</code>.</p>
+        {% endif %}
+    {% else %}
+        <h1>Job not found</h1>
+    {% endif %}
+</div>
+</body>
+</html>

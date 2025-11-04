@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NextStep.AI - Job Library</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; }
+        .container { max-width: 900px; margin: 0 auto; }
+        ul { list-style: none; padding: 0; }
+        li { margin-bottom: 0.4rem; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .tag { font-size: 0.85rem; color: #777; }
+        nav a { margin-right: 1rem; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Job Library</h1>
+    <nav>
+        <a href="{{ url_for('index') }}">Practice Question</a>
+        <a href="{{ url_for('custom_prep') }}">Custom AI Prep</a>
+    </nav>
+
+    <p>Select a job title to see curated questions for that position. You can add and edit these questions in <code>data/job_questions.json</code>.</p>
+
+    {% if jobs %}
+        <ul>
+            {% for job in jobs %}
+                <li>
+                    <a href="{{ url_for('job_detail', job_id=job.id) }}">
+                        {{ job.title }}
+                    </a>
+                    {% if job.category %}
+                        <span class="tag">({{ job.category }})</span>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No jobs defined yet. Add entries to data/jobs.json.</p>
+    {% endif %}
+</div>
+</body>
+</html>

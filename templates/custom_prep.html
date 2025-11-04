@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NextStep.AI - Custom AI Prep</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        textarea { width: 100%; min-height: 120px; padding: 0.5rem; }
+        input[type="text"] { width: 100%; padding: 0.4rem; }
+        button { padding: 0.5rem 1.2rem; margin-top: 0.5rem; font-size: 1rem; }
+        section { margin-top: 1.5rem; }
+        ul { margin-top: 0.3rem; }
+        nav a { margin-right: 1rem; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <nav>
+        <a href="{{ url_for('index') }}">Practice Question</a>
+        <a href="{{ url_for('jobs') }}">Job Library</a>
+        <a href="{{ url_for('custom_prep') }}">Custom AI Prep</a>
+    </nav>
+
+    <h1>Custom AI Interview Prep</h1>
+    <p>Tell NextStep.AI about your upcoming interview and we will generate a tailored preparation report.</p>
+
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+        <label for="job_title"><strong>Job position you are interviewing for (required)</strong></label><br>
+        <input type="text" id="job_title" name="job_title" placeholder="Example: Software Engineer Intern" required><br><br>
+
+        <label for="company_name"><strong>Company name (optional)</strong></label><br>
+        <input type="text" id="company_name" name="company_name" placeholder="Example: Google, Amazon"><br><br>
+
+        <label for="job_description"><strong>Job description (optional)</strong></label><br>
+        <textarea id="job_description" name="job_description" placeholder="Paste the job description here if you have it."></textarea><br><br>
+
+        <label for="resume"><strong>Your resume or key experience (optional)</strong></label><br>
+        <textarea id="resume" name="resume" placeholder="Paste your resume text or summarize your background."></textarea><br><br>
+
+        <button type="submit">Generate Prep Report</button>
+    </form>
+
+    {% if report %}
+        <section>
+            <h2>Preparation report for {{ report.job_title }}{% if report.company_name %} at {{ report.company_name }}{% endif %}</h2>
+
+            {% if report.company_summary %}
+                <section>
+                    <h3>Company summary</h3>
+                    <p>{{ report.company_summary }}</p>
+                </section>
+            {% endif %}
+
+            <section>
+                <h3>Role focused questions</h3>
+                {% if report.role_questions %}
+                    <ol>
+                        {% for q in report.role_questions %}
+                            <li>
+                                <p><strong>{{ q.question }}</strong></p>
+                                {% if q.guidance %}
+                                    <p>{{ q.guidance }}</p>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ol>
+                {% else %}
+                    <p>No role questions generated.</p>
+                {% endif %}
+            </section>
+
+            {% if report.role_tips %}
+                <section>
+                    <h3>General interview tips for this role</h3>
+                    <ul>
+                        {% for tip in report.role_tips %}
+                            <li>{{ tip }}</li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            {% endif %}
+
+            {% if report.company_questions %}
+                <section>
+                    <h3>Company specific questions</h3>
+                    <ol>
+                        {% for q in report.company_questions %}
+                            <li>
+                                <p><strong>{{ q.question }}</strong></p>
+                                {% if q.guidance %}
+                                    <p>{{ q.guidance }}</p>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ol>
+                </section>
+            {% endif %}
+
+            {% if report.how_to_impress %}
+                <section>
+                    <h3>How to impress them</h3>
+                    <ul>
+                        {% for item in report.how_to_impress %}
+                            <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            {% endif %}
+
+            {% if report.talking_points %}
+                <section>
+                    <h3>Talking points to sound well prepared</h3>
+                    <ul>
+                        {% for item in report.talking_points %}
+                            <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            {% endif %}
+
+            {% if report.next_steps %}
+                <section>
+                    <h3>Next steps to prepare</h3>
+                    <ul>
+                        {% for step in report.next_steps %}
+                            <li>{{ step }}</li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            {% endif %}
+        </section>
+    {% endif %}
+</div>
+</body>
+</html>
