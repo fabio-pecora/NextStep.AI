@@ -2,87 +2,131 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NextStep.AI - Practice Interview</title>
+    <title>NextStep.AI - Interview prep with AI</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}">
-    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
-<body>
-<div class="app-shell">
-    <header>
-        <div class="brand">NextStep.<span>AI</span></div>
+<body class="home-body">
+<div class="app-shell home-shell">
+    <header class="home-header">
+        <a href="{{ url_for('index') }}" class="brand home-brand">
+            NextStep.<span>AI</span>
+        </a>
         <nav>
-            <a href="{{ url_for('index') }}" class="active">Practice</a>
+            <a href="{{ url_for('index') }}" class="active">Home</a>
             <a href="{{ url_for('jobs') }}">Job library</a>
             <a href="{{ url_for('custom_prep') }}">Custom AI prep</a>
         </nav>
     </header>
 
-    {% if question %}
-        <main class="practice-layout">
-            <!-- Left: text answer -->
-            <section class="card">
-                <h1>Practice interview</h1>
-                <p class="subtitle">
-                    Answer the question below by text or voice. NextStep.AI will evaluate relevance and confidence.
+    <main class="home-main">
+        <!-- HERO -->
+        <section class="home-hero">
+            <div class="hero-text">
+                <p class="hero-tag">Interview prep, one good answer at a time.</p>
+                <h1>Practice the right things. Get closer to your dream job.</h1>
+                <p class="hero-subtitle">
+                    NextStep.AI helps you train on real behavioral questions, get honest feedback,
+                    and prepare deeply for the companies and roles you care about.
                 </p>
+                <div class="hero-actions">
+                    <a href="#daily-question" class="btn btn-primary">Answer today’s question</a>
+                    <a href="{{ url_for('custom_prep') }}" class="btn btn-outline">Get a tailored report</a>
+                </div>
+            </div>
+            <div class="hero-side">
+                <div class="hero-card">
+                    <p class="hero-card-label">Today’s behavioral question</p>
+                    {% if question %}
+                        <p class="hero-card-text">{{ question.question }}</p>
+                    {% else %}
+                        <p class="hero-card-text">
+                            Your daily question will appear here at midnight.
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
 
-                <div style="margin-top: 1rem;">
-                    <div class="question-header">
-                        <p class="question-text">Question</p>
-                        <button type="button"
-                                id="change-question-btn"
-                                class="btn btn-outline">
-                            Change question
+        <!-- OUR MISSION -->
+        <section class="home-section">
+            <h2>Our mission</h2>
+            <p>
+                We want you to get your dream job. Good interviews are not about memorizing scripts –
+                they are about practicing the right stories and going deeper on the moments that show
+                how you think, learn, and work with others.
+            </p>
+            <p>
+                NextStep.AI takes care of the structure: we choose what to practice, highlight what stands
+                out, and point to what needs work. Your part is simple – show up, answer honestly, and learn.
+            </p>
+        </section>
+
+        <!-- WHAT WE OFFER -->
+        <section class="home-section">
+            <h2>What we offer</h2>
+            <div class="home-grid">
+                <div class="home-tile">
+                    <h3>Super tailored reports for real interviews</h3>
+                    <p>
+                        When you get an interview with a specific company, share the job description.
+                        We build a focused prep plan with targeted questions, key themes to review, and
+                        talking points tuned to that position and team.
+                    </p>
+                </div>
+                <div class="home-tile">
+                    <h3>Deep analysis of your answers</h3>
+                    <p>
+                        Our model reads your answers, finds what you did well and what you missed, and
+                        turns that into clear strengths and improvement suggestions. No fluff – specific,
+                        practical feedback you can use on your next attempt.
+                    </p>
+                </div>
+                <div class="home-tile">
+                    <h3>Practice even before you have an interview</h3>
+                    <p>
+                        If you don’t have an interview yet, this is the best time to start. We have many
+                        behavioral questions that work for almost any role, so you can build your stories
+                        and feel ready when the opportunity appears.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUESTION OF THE DAY -->
+        <section class="home-section" id="daily-question">
+            <div class="daily-header">
+                <h2>Question of the day</h2>
+                <p class="subtitle">
+                    Answer now and come back by 8 pm. A standout answer will be selected and shared so
+                    everyone can learn from it.
+                </p>
+            </div>
+
+            {% if question %}
+                <div class="daily-question-block">
+                    <p class="question-label">Today’s question</p>
+                    <p class="daily-question-text">{{ question.question }}</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('answer') }}" class="daily-answer-form">
+                    <input type="hidden" name="question_id" value="{{ question.id }}">
+                    <label for="answer"><strong>Your answer</strong></label>
+                    <textarea id="answer" name="answer" class="practice-textarea"
+                              placeholder="Use the STAR method: Situation, Task, Action, Result. Focus on one clear story."></textarea>
+                    <p class="hint-text">
+                        You’ll receive AI feedback on this answer. Later today, you can return to see the selected answer of the day.
+                    </p>
+                    <div class="btn-row">
+                        <button type="submit" class="btn btn-primary">
+                            Submit today’s answer
                         </button>
                     </div>
-                    <p id="question-text">{{ question.question }}</p>
-                </div>
-
-                <form id="text-form" method="POST" action="{{ url_for('answer') }}" style="margin-top: 1rem;">
-                    <input type="hidden" name="question_id" value="{{ question.id }}">
-                    <label for="answer"><strong>Your answer (text)</strong></label>
-                    <textarea id="answer" name="answer" class="practice-textarea"
-                              placeholder="Type your answer here..."></textarea>
-                    <div class="btn-row">
-                        <button type="submit" class="btn btn-primary">Submit text answer</button>
-                    </div>
                 </form>
-            </section>
-
-            <!-- Right: voice answer -->
-            <section class="card">
-                <h2 style="margin-top:0;">Answer by voice</h2>
-                <p class="subtitle">
-                    Record your answer, then NextStep.AI will transcribe and evaluate it.
-                </p>
-
-                <!-- This will be updated by JS when we change the question -->
-                <input type="hidden" id="question-id" value="{{ question.id }}">
-
-                <div class="btn-row" style="margin-top:1rem;">
-                    <button id="start-recording" class="btn btn-outline">Start recording</button>
-                    <button id="stop-recording" class="btn btn-primary" disabled>Stop and send</button>
-                </div>
-                <div id="audio-status" class="audio-status"></div>
-
-                <div id="feedback" class="feedback-card">
-                    <h3>Voice feedback</h3>
-                    <div class="transcript">
-                        <strong>Transcript:</strong>
-                        <span id="transcript"></span>
-                    </div>
-                    <div class="scores">
-                        <div>Relevance: <span id="rel-score" class="score-pill"></span></div>
-                        <div>Confidence: <span id="conf-score" class="score-pill"></span></div>
-                        <div>Final: <span id="final-score" class="score-pill"></span></div>
-                    </div>
-                    <p id="feedback-text" style="margin-top:0.8rem;"></p>
-                </div>
-            </section>
-        </main>
-    {% else %}
-        <p>No questions found. Please add questions to data/practice_questions.json.</p>
-    {% endif %}
+            {% else %}
+                <p>No question is set for today yet. Check back soon.</p>
+            {% endif %}
+        </section>
+    </main>
 </div>
 </body>
 </html>
