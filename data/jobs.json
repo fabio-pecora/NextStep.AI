@@ -1,0 +1,17 @@
+[
+  { "id": 1, "title": "Software Engineer", "category": "Technology" },
+  { "id": 2, "title": "Data Scientist", "category": "Technology" },
+  { "id": 3, "title": "Product Manager", "category": "Product" },
+  { "id": 4, "title": "UX Designer", "category": "Design" },
+  { "id": 5, "title": "DevOps Engineer", "category": "Technology" },
+  { "id": 6, "title": "Backend Engineer", "category": "Technology" },
+  { "id": 7, "title": "Frontend Engineer", "category": "Technology" },
+  { "id": 8, "title": "Machine Learning Engineer", "category": "Technology" },
+  { "id": 9, "title": "Business Analyst", "category": "Business" },
+  { "id": 10, "title": "Financial Analyst", "category": "Finance" },
+  { "id": 11, "title": "Marketing Manager", "category": "Marketing" },
+  { "id": 12, "title": "Sales Representative", "category": "Sales" },
+  { "id": 13, "title": "Customer Success Manager", "category": "Customer" },
+  { "id": 14, "title": "HR Generalist", "category": "Human Resources" },
+  { "id": 15, "title": "Project Manager", "category": "Operations" }
+]

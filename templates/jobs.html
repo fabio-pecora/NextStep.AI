@@ -2,44 +2,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NextStep.AI - Job Library</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 2rem; }
-        .container { max-width: 900px; margin: 0 auto; }
-        ul { list-style: none; padding: 0; }
-        li { margin-bottom: 0.4rem; }
-        a { color: #007bff; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        .tag { font-size: 0.85rem; color: #777; }
-        nav a { margin-right: 1rem; }
-    </style>
+    <title>NextStep.AI - Job library</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}">
 </head>
 <body>
-<div class="container">
-    <h1>Job Library</h1>
-    <nav>
-        <a href="{{ url_for('index') }}">Practice Question</a>
-        <a href="{{ url_for('custom_prep') }}">Custom AI Prep</a>
-    </nav>
+<div class="app-shell job-shell">
+    <header>
+        <div class="brand">NextStep.<span>AI</span></div>
+        <nav>
+            <a href="{{ url_for('index') }}">Practice</a>
+            <a href="{{ url_for('jobs') }}" class="active">Job library</a>
+            <a href="{{ url_for('custom_prep') }}">Custom AI prep</a>
+        </nav>
+    </header>
 
-    <p>Select a job title to see curated questions for that position. You can add and edit these questions in <code>data/job_questions.json</code>.</p>
+    <section class="card">
+        <h1>Job library</h1>
+        <p class="subtitle">
+            Browse curated question sets for different roles.  
+            You can expand or edit them in <code>data/job_questions.json</code>.
+        </p>
 
-    {% if jobs %}
-        <ul>
-            {% for job in jobs %}
-                <li>
-                    <a href="{{ url_for('job_detail', job_id=job.id) }}">
-                        {{ job.title }}
-                    </a>
-                    {% if job.category %}
-                        <span class="tag">({{ job.category }})</span>
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No jobs defined yet. Add entries to data/jobs.json.</p>
-    {% endif %}
+        {% if jobs %}
+            <div class="job-grid">
+                {% for job in jobs %}
+                    <div class="job-card">
+                        <a href="{{ url_for('job_detail', job_id=job.id) }}">
+                            <div class="job-card-title">{{ job.title }}</div>
+                            {% if job.category %}
+                                <div class="job-card-category">{{ job.category }}</div>
+                            {% endif %}
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No jobs defined yet. Add entries to <code>data/jobs.json</code>.</p>
+        {% endif %}
+    </section>
 </div>
 </body>
 </html>

@@ -1,0 +1,27 @@
+{
+  "1": {
+    "job_title": "Software Engineer",
+    "questions": [
+      {
+        "question": "Tell me about a challenging bug you fixed in a production system.",
+        "ideal_answer": "Use the STAR structure. Describe the system, the impact of the bug, how you investigated it, tools you used, how you fixed it, and what you learned.",
+        "tags": ["behavioral", "problem solving"]
+      },
+      {
+        "question": "How do you approach designing a new feature end to end?",
+        "ideal_answer": "Talk through requirements clarification, writing design docs, breaking work into tasks, choosing data structures and APIs, testing strategy, and monitoring in production.",
+        "tags": ["system design", "process"]
+      }
+    ]
+  },
+  "2": {
+    "job_title": "Data Scientist",
+    "questions": [
+      {
+        "question": "Walk me through a machine learning project you led.",
+        "ideal_answer": "Explain business problem, data collection and cleaning, feature engineering, model selection, evaluation metrics, deployment, and impact on the business.",
+        "tags": ["behavioral", "machine learning"]
+      }
+    ]
+  }
+}

@@ -2,50 +2,91 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AI Interview Coach - Result</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 2rem;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .scores span {
-            display: inline-block;
-            margin-right: 1rem;
-        }
-        a {
-            color: #007bff;
-        }
-    </style>
+    <title>NextStep.AI - Feedback</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}">
 </head>
 <body>
-<div class="container">
-    <h1>Interview Feedback</h1>
+<div class="app-shell result-shell">
+    <header>
+        <div class="brand">NextStep.<span>AI</span></div>
+        <nav>
+            <a href="{{ url_for('index') }}">Practice</a>
+            <a href="{{ url_for('jobs') }}">Job library</a>
+            <a href="{{ url_for('custom_prep') }}">Custom AI prep</a>
+        </nav>
+    </header>
 
-    {% if result.error %}
-        <p style="color:red;">{{ result.error }}</p>
-    {% else %}
-        <h2>Question</h2>
-        <p>{{ result.question }}</p>
+    <section class="card">
+        {% if result.error %}
+            <h1>Feedback</h1>
+            <p class="error">{{ result.error }}</p>
+        {% else %}
+            <h1>Interview feedback</h1>
+            <p class="subtitle">Automatic evaluation from NextStep.AI.</p>
 
-        <h2>Your Answer</h2>
-        <p>{{ result.user_answer }}</p>
+            <h2 class="section-title">Question</h2>
+            <p>{{ result.question }}</p>
 
-        <h2>Scores</h2>
-        <div class="scores">
-            <span><strong>Relevance:</strong> {{ result.relevance_score }}</span>
-            <span><strong>Confidence:</strong> {{ result.confidence_score }}</span>
-            <span><strong>Final:</strong> {{ result.final_score }}</span>
-        </div>
+            <h2 class="section-title">Your answer</h2>
+            <p>{{ result.user_answer }}</p>
 
-        <h2>Feedback</h2>
-        <p>{{ result.feedback_text }}</p>
-    {% endif %}
+            <h2 class="section-title">Scores</h2>
+            <div class="scores">
+                <div>Relevance: <span class="score-pill">{{ result.relevance_score }}</span></div>
+                <div>Confidence: <span class="score-pill">{{ result.confidence_score }}</span></div>
+                <div>Final: <span class="score-pill">{{ result.final_score }}</span></div>
+            </div>
 
-    <p><a href="{{ url_for('index') }}">Back to question</a></p>
+            <h2 class="section-title">Feedback</h2>
+
+            {# Parse strengths and improvements from the feedback_text string #}
+            {% set raw = result.feedback_text or "" %}
+            {% set parts = raw.split("Improvements:") %}
+            {% set strengths_part = parts[0] %}
+            {% set improvements_part = parts[1] if parts|length > 1 else "" %}
+
+            {% set strengths_clean = strengths_part.replace("Strengths:", "").strip() %}
+            {% set improvements_clean = improvements_part.strip() %}
+
+            {% set strengths_items = strengths_clean.split(";") if strengths_clean else [] %}
+            {% set improvements_items = improvements_clean.split(";") if improvements_clean else [] %}
+
+            <div class="feedback-grid">
+                {% if strengths_items %}
+                    <div class="feedback-section feedback-strengths">
+                        <h3>Strengths</h3>
+                        <ul>
+                            {% for item in strengths_items %}
+                                {% if item.strip() %}
+                                    <li>{{ item.strip() }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                {% if improvements_items %}
+                    <div class="feedback-section feedback-improvements">
+                        <h3>Improvements</h3>
+                        <ul>
+                            {% for item in improvements_items %}
+                                {% if item.strip() %}
+                                    <li>{{ item.strip() }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+
+            {# Fallback: if parsing failed and everything was empty, show the raw text #}
+            {% if not strengths_items and not improvements_items and result.feedback_text %}
+                <p>{{ result.feedback_text }}</p>
+            {% endif %}
+        {% endif %}
+
+        <a href="{{ url_for('index') }}" class="back-link">Back to question</a>
+    </section>
 </div>
 </body>
 </html>

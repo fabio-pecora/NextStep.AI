@@ -2,13 +2,58 @@ import math
 from typing import Dict
 
 import numpy as np
-
 from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 
 # Global singletons for models so they load only once
 _sentence_model = None
 _sentiment_pipeline = None
+
+# System prompt for GPT based evaluation
+SYSTEM_PROMPT = """
+You are a very strict interview coach.
+Your job is to evaluate a candidate's answer to a behavioral interview question.
+
+You MUST:
+- Use the STAR framework as the gold standard (Situation, Task, Action, Result).
+- Be conservative with scores. A typical decent answer should be in the 55–70 range.
+- Only give scores above 80 for truly excellent answers that are structured, concise,
+  specific, and clearly demonstrate impact.
+
+Scoring rules (0–100):
+
+Relevance:
+- 90–100: Directly answers the question, stays tightly on topic, clear STAR structure. Only give a gradae here when the answer seems perfect to you, make it so difficult to get these grades.
+- 75–89: Mostly on topic but missing some elements or mild wandering.
+- 50–74: Partially answers, missing important parts of the question or STAR.
+- 0–49: Largely off topic or fails to answer.
+
+Confidence (communication & delivery quality):
+- 90–100: Very clear, confident, structured, minimal filler, strong ownership. Only give a gradae here when the answer seems perfect to you, make it so difficult to get these grades.
+- 75–89: Clear overall but something is missing, maybe there are filler, hesitations, or weak structure.
+- 50–74: Understandable but rambling, vague, or weak structure.
+- 0–49: Very unclear, disorganized, or very low ownership.
+
+Final score:
+- Roughly an average of relevance and confidence, but penalize heavily if:
+  - There is no clear Result.
+  - There are no specific actions or impact.
+  - The answer is very generic.
+
+Be especially tough on:
+- Missing STAR elements (no Result, no Actions, no context).
+- Very generic phrasing with no concrete details.
+- Casual or unprofessional language in a professional context.
+
+Return a JSON object with exactly these fields:
+{
+  "relevance_score": <number 0-100>,
+  "confidence_score": <number 0-100>,
+  "final_score": <number 0-100>,
+  "strengths": [ "<short bullet>", ... ],
+  "improvements": [ "<short bullet>", ... ]
+}
+"""
 
 
 def get_sentence_model():
@@ -127,16 +172,22 @@ def build_feedback_text(
     if relevance_score > 80:
         parts.append("Your answer is highly relevant to the question.")
     elif relevance_score > 60:
-        parts.append("Your answer is mostly relevant, but you could align it more closely with what the question is asking.")
+        parts.append(
+            "Your answer is mostly relevant, but you could align it more closely with what the question is asking."
+        )
     else:
-        parts.append("Your answer only partially addresses the question. Try to focus more on what is being asked.")
+        parts.append(
+            "Your answer only partially addresses the question. Try to focus more on what is being asked."
+        )
 
     if confidence_score > 80:
         parts.append("You sound confident and clear in your explanation.")
     elif confidence_score > 60:
         parts.append("Your communication is okay, but you could be more structured and assertive.")
     else:
-        parts.append("Your answer comes across as hesitant or incomplete. Try speaking more clearly and giving concrete examples.")
+        parts.append(
+            "Your answer comes across as hesitant or incomplete. Try speaking more clearly and giving concrete examples."
+        )
 
     if len(user_answer.split()) < 30:
         parts.append("Consider expanding your answer with more detail or examples.")
@@ -146,7 +197,7 @@ def build_feedback_text(
 
 def evaluate_answer(question: str, ideal_answer: str, user_answer: str) -> Dict:
     """
-    Main evaluation function used by both text and audio flows.
+    Classical local evaluation function (no GPT).
     Returns a dict with the fields:
         question
         user_answer
@@ -187,7 +238,7 @@ def transcribe_audio_whisper(audio_path: str) -> str:
 
     Make sure you have installed:
         pip install openai-whisper
-        and that ffmpeg is installed on your system.
+    and that ffmpeg is installed on your system.
     """
     import whisper  # imported here so that text-only runs do not require it
 
@@ -210,38 +261,28 @@ def gpt_evaluate_answer(
     It returns a dict with the same fields as evaluate_answer, plus
     strengths and improvements from the model.
 
-    This uses a small model (gpt-4.1-mini) and truncates long texts
-    to keep token usage and cost low.
+    The GPT model is instructed to be strict, so typical decent answers
+    should fall around 55–70 rather than getting very high scores easily.
     """
     from openai import OpenAI
     import json
 
     client = OpenAI()
 
-    system_prompt = (
-        "You are an interview coach. "
-        "Given an interview question, a short description of an ideal answer, "
-        "and a candidate's answer, you must carefully judge:\n"
-        "- relevance_score: how well the answer addresses the question (0 to 100)\n"
-        "- confidence_score: how confident, clear, and structured the answer sounds (0 to 100)\n"
-        "Then provide short bullet style strengths and improvements. Please act like a friend, be friendly and make the uder feel confortable with you, and willing to stay in the app to become a master of interviews"
+    user_prompt = (
+        "Analyze the following interview answer and return a JSON object with fields: "
+        "relevance_score (0-100), confidence_score (0-100), final_score (0-100), "
+        "strengths (list of strings), improvements (list of strings).\n\n"
+        f"Question: {question}\n\n"
+        f"Ideal answer description: {ideal_answer[:800]}\n\n"
+        f"Candidate answer: {user_answer[:800]}"
     )
 
     response = client.chat.completions.create(
         model=model,
         messages=[
-            {"role": "system", "content": system_prompt},
-            {
-                "role": "user",
-                "content": (
-                    "Analyze the following interview answer and return a JSON object with fields: "
-                    "relevance_score (0-100), confidence_score (0-100), strengths (list of strings), "
-                    "improvements (list of strings).\n\n"
-                    f"Question: {question}\n\n"
-                    f"Ideal answer description: {ideal_answer[:800]}\n\n"
-                    f"Candidate answer: {user_answer[:800]}"
-                ),
-            },
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": user_prompt},
         ],
         # Ask the API to respond with valid JSON
         response_format={"type": "json_object"},
@@ -253,10 +294,16 @@ def gpt_evaluate_answer(
     # Extract scores with safe defaults
     rel = float(data.get("relevance_score", 0.0))
     conf = float(data.get("confidence_score", 0.0))
+
+    # If GPT provided a final_score, use it; otherwise compute from rel/conf
+    gpt_final = data.get("final_score")
+    if gpt_final is not None:
+        final_score = float(gpt_final)
+    else:
+        final_score = 0.7 * rel + 0.3 * conf
+
     strengths = data.get("strengths", [])
     improvements = data.get("improvements", [])
-
-    final_score = 0.7 * rel + 0.3 * conf
 
     strengths_text = ""
     if strengths:

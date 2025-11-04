@@ -1,0 +1,123 @@
+[
+    {
+        "id": 1,
+        "question": "Tell me about a time you had to learn something quickly for a project."
+    },
+    {
+        "id": 2,
+        "question": "Describe a situation where you had to work with a difficult teammate."
+    },
+    {
+        "id": 3,
+        "question": "Tell me about a time you went above and beyond what was expected of you."
+    },
+    {
+        "id": 4,
+        "question": "Describe a time you received critical feedback and how you responded."
+    },
+    {
+        "id": 5,
+        "question": "Tell me about a time you had to manage multiple priorities at once."
+    },
+    {
+        "id": 6,
+        "question": "Describe a situation where you had to solve a problem with limited information."
+    },
+    {
+        "id": 7,
+        "question": "Tell me about a time you made a mistake at work or school and how you handled it."
+    },
+    {
+        "id": 8,
+        "question": "Describe a time you disagreed with a decision and what you did about it."
+    },
+    {
+        "id": 9,
+        "question": "Tell me about a time you had to explain a complex idea to someone."
+    },
+    {
+        "id": 10,
+        "question": "Describe a situation where you had to adapt to a big change."
+    },
+    {
+        "id": 11,
+        "question": "Tell me about a time you had to meet a tight deadline."
+    },
+    {
+        "id": 12,
+        "question": "Describe a time you had to persuade someone to see things your way."
+    },
+    {
+        "id": 13,
+        "question": "Tell me about a time you led a project or initiative."
+    },
+    {
+        "id": 14,
+        "question": "Describe a situation where you supported a teammate who was struggling."
+    },
+    {
+        "id": 15,
+        "question": "Tell me about a time you had to deal with an unhappy customer or stakeholder."
+    },
+    {
+        "id": 16,
+        "question": "Describe a time you identified a problem before anyone else noticed it."
+    },
+    {
+        "id": 17,
+        "question": "Tell me about a time you improved a process or way of working."
+    },
+    {
+        "id": 18,
+        "question": "Describe a situation where you took ownership of a task from start to finish."
+    },
+    {
+        "id": 19,
+        "question": "Tell me about a time you had to work with someone very different from you."
+    },
+    {
+        "id": 20,
+        "question": "Describe a time you had to balance quality with speed."
+    },
+    {
+        "id": 21,
+        "question": "Tell me about a time you had to prioritize your tasks under pressure."
+    },
+    {
+        "id": 22,
+        "question": "Describe a situation where you had to handle confidential or sensitive information."
+    },
+    {
+        "id": 23,
+        "question": "Tell me about a time you showed leadership without having a formal title."
+    },
+    {
+        "id": 24,
+        "question": "Describe a time you had to motivate yourself when you did not feel like working."
+    },
+    {
+        "id": 25,
+        "question": "Tell me about a time you had to give feedback to someone else."
+    },
+    {
+        "id": 26,
+        "question": "Describe a situation where you had to quickly build trust with someone."
+    },
+    {
+        "id": 27,
+        "question": "Tell me about a time you had to say no to someone."
+    },
+    {
+        "id": 28,
+        "question": "Describe a time when you had to handle an unexpected challenge."
+    },
+    {
+        "id": 29,
+        "question": "Tell me about a time you changed your approach after realizing your first plan was not working."
+    },
+    {
+        "id": 30,
+        "question": "Describe a situation where you took initiative without being asked."
+    }
+
+]
