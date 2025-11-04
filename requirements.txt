@@ -1,0 +1,9 @@
+flask
+torch
+torchvision
+torchaudio
+sentence-transformers
+transformers
+accelerate
+openai-whisper
+openai

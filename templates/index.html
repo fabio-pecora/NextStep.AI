@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Interview Coach</title>
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 0.5rem;
+            font-size: 1rem;
+        }
+        button {
+            margin-right: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+        #feedback {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border: 1px solid #ccc;
+        }
+        #audio-status {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        .scores span {
+            display: inline-block;
+            margin-right: 1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>AI Interview Coach</h1>
+
+    {% if question %}
+        <h2>Question</h2>
+        <p id="question-text">{{ question.question }}</p>
+
+        <form id="text-form" method="POST" action="{{ url_for('answer') }}">
+            <input type="hidden" name="question_id" value="{{ question.id }}">
+            <label for="answer">Your answer (text):</label><br>
+            <textarea id="answer" name="answer" placeholder="Type your answer here..."></textarea><br><br>
+            <button type="submit">Submit Text Answer</button>
+        </form>
+
+        <h3>Or answer by voice</h3>
+        <p>Click "Start Recording", speak your answer, then click "Stop and Send".</p>
+        <input type="hidden" id="question-id" value="{{ question.id }}">
+        <button id="start-recording">Start Recording</button>
+        <button id="stop-recording" disabled>Stop and Send</button>
+        <div id="audio-status"></div>
+
+        <div id="feedback" style="display:none;">
+            <h3>Feedback</h3>
+            <p><strong>Transcript:</strong> <span id="transcript"></span></p>
+            <div class="scores">
+                <span><strong>Relevance:</strong> <span id="rel-score"></span></span>
+                <span><strong>Confidence:</strong> <span id="conf-score"></span></span>
+                <span><strong>Final:</strong> <span id="final-score"></span></span>
+            </div>
+            <p id="feedback-text"></p>
+        </div>
+    {% else %}
+        <p>No questions found. Please add questions to data/questions.json.</p>
+    {% endif %}
+</div>
+</body>
+</html>

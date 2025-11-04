@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "question": "Tell me about yourself.",
+    "ideal_answer": "A concise professional summary that connects past experience, current skills, and future goals to the role. Should mention relevant projects or accomplishments.",
+    "skills": [
+      "communication",
+      "self-presentation",
+      "relevance"
+    ]
+  },
+  {
+    "id": 2,
+    "question": "Why do you want to work at our company?",
+    "ideal_answer": "Shows knowledge of the company, aligns personal values with the company mission, and connects role responsibilities to candidate's skills.",
+    "skills": [
+      "company research",
+      "motivation",
+      "alignment"
+    ]
+  },
+  {
+    "id": 3,
+    "question": "Describe a challenging problem you solved.",
+    "ideal_answer": "Explains the situation, the challenge, the actions taken, and the measurable result. Should highlight problem solving and ownership.",
+    "skills": [
+      "problem solving",
+      "STAR method",
+      "impact"
+    ]
+  },
+  {
+    "id": 4,
+    "question": "Tell me about a time you worked in a team.",
+    "ideal_answer": "Describes collaboration, communication, conflict resolution or coordination, and the outcome for the project.",
+    "skills": [
+      "teamwork",
+      "communication",
+      "collaboration"
+    ]
+  },
+  {
+    "id": 5,
+    "question": "What are your strengths and weaknesses?",
+    "ideal_answer": "Mentions 1 to 3 strengths relevant to the job with examples. Mentions 1 realistic weakness and a concrete plan to improve.",
+    "skills": [
+      "self-awareness",
+      "honesty",
+      "growth mindset"
+    ]
+  }
+]
