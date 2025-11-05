@@ -8,7 +8,7 @@
 </head>
 <body class="landing-body">
   <!-- Shared landing header -->
-  <header class="landing-header">
+  <header class="landing-header no-print">
     <div class="logo">
       <a href="{{ url_for('index') }}" class="brand">NextStep.<span>AI</span></a>
     </div>
@@ -23,40 +23,41 @@
     <section class="custom-page-section">
       <div class="app-shell custom-shell">
         <!-- Top banner -->
-        <div class="card custom-banner">
+        <div class="card custom-banner no-print">
           <div class="custom-banner-main">
             <h1>Custom AI prep report</h1>
             <p class="subtitle">
-              Paste your role, company, and description. NextStep.AI turns it into a focused interview plan with questions, tips, and talking points.
+              Paste your role, company, and description. NextStep.AI turns it into a focused interview guide with questions, tips, and clear next steps.
             </p>
           </div>
           <div class="custom-banner-steps">
             <div class="custom-step">
-                <div class="step-circle">1</div>
-                    <div class="step-info">
-                        <h4>Describe the role</h4>
-                        <p>Job title and company</p>
-                    </div>
-                </div>
-            <div class="custom-step">
-                <div class="step-circle">2</div>
-                    <div class="step-info">
-                        <h4>Add context</h4>
-                        <p>Job description and resume</p>
-                    </div>
-                </div>
-            <div class="custom-step">
-                <div class="step-circle">3</div>
-                    <div class="step-info">
-                        <h4>Review the plan</h4>
-                        <p>Questions, tips, next steps</p>
-                    </div>
-                </div>
+              <div class="step-circle">1</div>
+              <div class="step-info">
+                <h4>Describe the role</h4>
+                <p>Job title and company</p>
+              </div>
             </div>
+            <div class="custom-step">
+              <div class="step-circle">2</div>
+              <div class="step-info">
+                <h4>Add context</h4>
+                <p>Job description and resume</p>
+              </div>
+            </div>
+            <div class="custom-step">
+              <div class="step-circle">3</div>
+              <div class="step-info">
+                <h4>Review the plan</h4>
+                <p>Questions, tips, next steps</p>
+              </div>
+            </div>
+          </div>
         </div>
+
         <div class="custom-layout">
           <!-- Left: form -->
-          <section class="card custom-form-card">
+          <section class="card custom-form-card no-print">
             <h2 class="section-title">Tell us about the interview</h2>
             <p class="subtitle">
               Only the job position is required. Everything else helps the AI personalize your prep.
@@ -125,162 +126,255 @@
           <!-- Right: report -->
           <section class="card custom-report-card">
             {% if report %}
-              <div class="report-header">
-                <div>
-                  <h2>
-                    Prep report for {{ report.job_title }}
-                    {% if report.company_name %} at {{ report.company_name }}{% endif %}
-                  </h2>
-                  <div class="report-tags">
+              <!-- Report header (looks like a document cover) -->
+              <header class="report-header">
+                <div class="report-logo-mark">
+                  <div class="report-logo-text">NextStep.<span>AI</span></div>
+                  <div class="report-logo-tagline">Interview Preparation Guide</div>
+                </div>
+
+                <div class="report-meta">
+                  <p class="report-job">
+                    {{ report.job_title }}
+                    {% if report.company_name %} · {{ report.company_name }}{% endif %}
+                  </p>
+                  {% if report.candidate_name %}
+                    <p class="report-candidate">Prepared for {{ report.candidate_name }}</p>
+                  {% endif %}
+                  <div class="report-tags no-print">
                     <span class="report-tag">AI generated</span>
                     {% if report.company_name %}
                       <span class="report-tag">Company specific</span>
                     {% endif %}
-                    <span class="report-tag">Behavioral focus</span>
-                  </div>
-                </div>
-              </div>
-
-              {% if report.company_summary %}
-                <div class="section-card">
-                  <h3 class="section-title">Company snapshot</h3>
-                  <p>{{ report.company_summary }}</p>
-                </div>
-              {% endif %}
-
-              <div class="section-card question-list">
-                <div class="question-header">
-                  <div>
-                    <h3 class="section-title">Role focused questions</h3>
-                    <p class="question-guidance">
-                      Use these to practice your main behavioral stories for this position.
-                    </p>
-                  </div>
-                  {% if report.role_questions %}
-                    <span class="question-count-pill">
-                      {{ report.role_questions|length }} questions
+                    <span class="report-tag">
+                      {% if report.mode == "role_and_company" %}
+                        Role & company insights
+                      {% else %}
+                        Role-focused prep
+                      {% endif %}
                     </span>
+                    {% if report.debug_note %}
+                      <span class="report-tag report-tag-warning">Fallback mode</span>
+                    {% endif %}
+                  </div>
+                  <button type="button" class="btn btn-outline report-download-btn no-print" onclick="downloadReportPDF()">
+                    Download as PDF
+                  </button>
+                </div>
+              </header>
+
+              {% if report.debug_note %}
+                <p class="report-debug-note no-print">{{ report.debug_note }}</p>
+              {% endif %}
+
+              <!-- SECTION 1 -->
+              {% set know = report.know_all_about_them or {} %}
+              {% if know.mission_values or know.culture_snapshot or know.recent_projects_news or know.competitors_industry_trends %}
+                <section class="report-section">
+                  <h3 class="report-heading">1. Know Their World</h3>
+
+                  {% if know.mission_values %}
+                    <h4 class="report-subheading">Mission & values</h4>
+                    {% for item in know.mission_values %}
+                      <p class="report-paragraph">• {{ item }}</p>
+                    {% endfor %}
                   {% endif %}
-                </div>
 
-                {% if report.role_questions %}
-                  <ol>
-                    {% for q in report.role_questions %}
-                      <li>
-                        <strong>{{ q.question }}</strong>
-                        {% if q.guidance %}
-                          <div class="question-guidance">{{ q.guidance }}</div>
-                        {% endif %}
-                      </li>
+                  {% if know.culture_snapshot %}
+                    <h4 class="report-subheading">Culture snapshot</h4>
+                    {% for item in know.culture_snapshot %}
+                      <p class="report-paragraph">• {{ item }}</p>
                     {% endfor %}
-                  </ol>
-                {% else %}
-                  <p>No role questions generated.</p>
-                {% endif %}
-              </div>
+                  {% endif %}
 
-              {% if report.role_tips %}
-                <div class="section-card">
-                  <h3 class="section-title">How to approach this role</h3>
-                  <ul>
-                    {% for tip in report.role_tips %}
-                      <li>{{ tip }}</li>
+                  {% if know.recent_projects_news %}
+                    <h4 class="report-subheading">Recent projects & news</h4>
+                    {% for item in know.recent_projects_news %}
+                      <p class="report-paragraph">• {{ item }}</p>
                     {% endfor %}
-                  </ul>
-                </div>
+                  {% endif %}
+
+                  {% if know.competitors_industry_trends %}
+                    <h4 class="report-subheading">Competitors & industry trends</h4>
+                    {% for item in know.competitors_industry_trends %}
+                      <p class="report-paragraph">• {{ item }}</p>
+                    {% endfor %}
+                  {% endif %}
+                </section>
               {% endif %}
 
-              {% if report.company_behavioral_questions %}
-                <div class="section-card question-list">
-                  <h3 class="section-title">
-                    Behavioral questions for {{ report.company_name }}
-                  </h3>
-                  <ol>
-                    {% for q in report.company_behavioral_questions %}
-                      <li>
-                        <strong>{{ q.question }}</strong>
-                        {% if q.guidance %}
-                          <div class="question-guidance">{{ q.guidance }}</div>
-                        {% endif %}
-                      </li>
+              <!-- SECTION 2 -->
+              {% set fit = report.perfect_fit_map or {} %}
+              {% if fit.top_strengths or fit.best_projects %}
+                <section class="report-section">
+                  <h3 class="report-heading">2. Your Perfect Fit Map</h3>
+
+                  {% if fit.top_strengths %}
+                    <h4 class="report-subheading">Strengths to lean into</h4>
+                    {% for s in fit.top_strengths %}
+                      <p class="report-paragraph">• {{ s }}</p>
                     {% endfor %}
-                  </ol>
-                </div>
+                  {% endif %}
+
+                  {% if fit.best_projects %}
+                    <h4 class="report-subheading">Projects to spotlight</h4>
+                    {% for proj in fit.best_projects %}
+                      <p class="report-paragraph">
+                        <strong>{{ proj.title }}</strong>{% if proj.summary %} — {{ proj.summary }}{% endif %}
+                      </p>
+                    {% endfor %}
+                  {% endif %}
+                </section>
               {% endif %}
 
-              {% if report.company_values_questions %}
-                <div class="section-card question-list">
-                  <h3 class="section-title">Values and culture questions</h3>
-                  <ol>
-                    {% for q in report.company_values_questions %}
-                      <li>
-                        <strong>{{ q.question }}</strong>
-                        {% if q.guidance %}
-                          <div class="question-guidance">{{ q.guidance }}</div>
-                        {% endif %}
-                      </li>
+              <!-- SECTION 3 -->
+              {% set beh = report.behavioral_practice or {} %}
+              {% if beh.questions or beh.example_answers %}
+                <section class="report-section">
+                  <h3 class="report-heading">3. Behavioral Interview Practice</h3>
+
+                  {% if beh.questions %}
+                    <h4 class="report-subheading">Questions to prepare for</h4>
+                    {% for q in beh.questions %}
+                      <p class="report-paragraph">• {{ q }}</p>
                     {% endfor %}
-                  </ol>
-                </div>
+                  {% endif %}
+
+                  {% if beh.example_answers %}
+                    <h4 class="report-subheading">Sample STAR answers</h4>
+                    {% for ex in beh.example_answers %}
+                      <div class="report-example-block">
+                        <p class="report-example-question">{{ ex.question }}</p>
+                        <p class="report-example-answer">{{ ex.answer }}</p>
+                        {% if ex.legend %}
+                          <p class="report-legend">
+                            Legend:
+                            {% for key, val in ex.legend.items() %}
+                              <span>{{ key }} {{ val }}</span>
+                            {% endfor %}
+                          </p>
+                        {% endif %}
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                </section>
               {% endif %}
 
-              {% if report.company_role_questions %}
-                <div class="section-card question-list">
-                  <h3 class="section-title">
-                    Role specific questions{% if report.company_name %} at {{ report.company_name }}{% endif %}
-                  </h3>
-                  <ol>
-                    {% for q in report.company_role_questions %}
-                      <li>
-                        <strong>{{ q.question }}</strong>
-                        {% if q.guidance %}
-                          <div class="question-guidance">{{ q.guidance }}</div>
-                        {% endif %}
-                      </li>
+              <!-- SECTION 4 -->
+              {% set tech = report.technical_prep or {} %}
+              {% if tech.questions or tech.example_answers or tech.key_concepts or tech.red_flags %}
+                <section class="report-section">
+                  <h3 class="report-heading">4. Technical / Role-Specific Preparation</h3>
+
+                  {% if tech.questions %}
+                    <h4 class="report-subheading">Questions they may ask you</h4>
+                    {% for q in tech.questions %}
+                      <p class="report-paragraph">• {{ q }}</p>
                     {% endfor %}
-                  </ol>
-                </div>
+                  {% endif %}
+
+                  {% if tech.example_answers %}
+                    <h4 class="report-subheading">Example responses</h4>
+                    {% for ex in tech.example_answers %}
+                      <div class="report-example-block">
+                        <p class="report-example-question">{{ ex.question }}</p>
+                        <p class="report-example-answer">{{ ex.answer }}</p>
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+
+                  {% if tech.key_concepts %}
+                    <h4 class="report-subheading">Key concepts to review</h4>
+                    {% for item in tech.key_concepts %}
+                      <p class="report-paragraph">• {{ item }}</p>
+                    {% endfor %}
+                  {% endif %}
+
+                  {% if tech.red_flags %}
+                    <h4 class="report-subheading">Common red flags to avoid</h4>
+                    {% for item in tech.red_flags %}
+                      <p class="report-paragraph">• {{ item }}</p>
+                    {% endfor %}
+                  {% endif %}
+                </section>
               {% endif %}
 
-              <div class="feedback-grid">
-                {% if report.how_to_impress %}
-                  <div class="feedback-section feedback-strengths">
-                    <h3>How to impress them</h3>
-                    <ul>
-                      {% for item in report.how_to_impress %}
-                        <li>{{ item }}</li>
-                      {% endfor %}
-                    </ul>
-                  </div>
-                {% endif %}
+              <!-- SECTION 5 -->
+              {% set imp = report.improvement_zone or {} %}
+              {% if imp.skill_gaps or imp.soft_skills or imp.learning_focus %}
+                <section class="report-section">
+                  <h3 class="report-heading">5. Upgrade Yourself Before the Interview</h3>
 
-                {% if report.talking_points %}
-                  <div class="feedback-section">
-                    <h3>Talking points to sound prepared</h3>
-                    <ul>
-                      {% for item in report.talking_points %}
-                        <li>{{ item }}</li>
-                      {% endfor %}
-                    </ul>
-                  </div>
-                {% endif %}
-              </div>
-
-              {% if report.next_steps %}
-                <div class="section-card">
-                  <h3 class="section-title">Next steps before the interview</h3>
-                  <ul>
-                    {% for step in report.next_steps %}
-                      <li>{{ step }}</li>
+                  {% if imp.skill_gaps %}
+                    <h4 class="report-subheading">Skill gaps to work on</h4>
+                    {% for item in imp.skill_gaps %}
+                      <p class="report-paragraph">• {{ item }}</p>
                     {% endfor %}
-                  </ul>
-                </div>
+                  {% endif %}
+
+                  {% if imp.soft_skills %}
+                    <h4 class="report-subheading">Soft skills to sharpen</h4>
+                    {% for item in imp.soft_skills %}
+                      <p class="report-paragraph">• {{ item }}</p>
+                    {% endfor %}
+                  {% endif %}
+
+                  {% if imp.learning_focus %}
+                    <h4 class="report-subheading">Focus for this week</h4>
+                    {% for item in imp.learning_focus %}
+                      <p class="report-paragraph">• {{ item }}</p>
+                    {% endfor %}
+                  {% endif %}
+                </section>
+              {% endif %}
+
+              <!-- SECTION 6 -->
+              {% set itm = report.impress_them_back or {} %}
+              {% if itm.team_culture or itm.impact_growth or itm.technical_depth or itm.company_direction or itm.next_steps %}
+                <section class="report-section">
+                  <h3 class="report-heading">6. Smart Questions to Ask Them</h3>
+
+                  {% if itm.team_culture %}
+                    <h4 class="report-subheading">Team & culture</h4>
+                    {% for q in itm.team_culture %}
+                      <p class="report-paragraph">• {{ q }}</p>
+                    {% endfor %}
+                  {% endif %}
+
+                  {% if itm.impact_growth %}
+                    <h4 class="report-subheading">Impact & growth</h4>
+                    {% for q in itm.impact_growth %}
+                      <p class="report-paragraph">• {{ q }}</p>
+                    {% endfor %}
+                  {% endif %}
+
+                  {% if itm.technical_depth %}
+                    <h4 class="report-subheading">Technical depth</h4>
+                    {% for q in itm.technical_depth %}
+                      <p class="report-paragraph">• {{ q }}</p>
+                    {% endfor %}
+                  {% endif %}
+
+                  {% if itm.company_direction %}
+                    <h4 class="report-subheading">Company direction</h4>
+                    {% for q in itm.company_direction %}
+                      <p class="report-paragraph">• {{ q }}</p>
+                    {% endfor %}
+                  {% endif %}
+
+                  {% if itm.next_steps %}
+                    <h4 class="report-subheading">Next steps</h4>
+                    {% for q in itm.next_steps %}
+                      <p class="report-paragraph">• {{ q }}</p>
+                    {% endfor %}
+                  {% endif %}
+                </section>
               {% endif %}
             {% else %}
               <div class="custom-empty-report">
                 <h2>Your prep report will appear here</h2>
                 <p class="subtitle">
-                  Fill the form on the left and NextStep.AI will build a tailored prep plan. You will see questions, tips, and clear next actions in this panel.
+                  Fill the form on the left and NextStep.AI will build a tailored prep guide. You will see questions, tips, and clear next actions in this panel.
                 </p>
               </div>
             {% endif %}
@@ -290,8 +384,14 @@
     </section>
   </main>
 
-  <footer class="landing-footer">
+  <footer class="landing-footer no-print">
     <p>© {{ current_year or "2025" }} NextStep.AI. All rights reserved.</p>
   </footer>
+
+  <script>
+    function downloadReportPDF() {
+      window.print();
+    }
+  </script>
 </body>
 </html>

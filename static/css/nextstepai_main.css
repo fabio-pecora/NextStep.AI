@@ -656,8 +656,6 @@ ul li {
   }
 }
 
-
-
 .how-it-works {
   padding: 2.5rem 6% 3rem;
   background: #ffffff;
@@ -1121,50 +1119,171 @@ ul li {
   overflow: hidden;
 }
 
-/* subtle glowing border accent around the report */
-.custom-report-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 1rem;
-  background: linear-gradient(130deg, #2563eb, #22c55e, #a855f7);
-  opacity: 0.18;
-  pointer-events: none;
-}
-
-.custom-report-card > * {
-  position: relative;
-  z-index: 1;
-}
-
 .report-header {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 0.7rem;
+  margin-bottom: 0.8rem;
+}
+
+.report-logo-mark {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.report-logo-text {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.report-logo-text span {
+  color: var(--primary);
+}
+
+.report-logo-tagline {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.report-meta {
+  text-align: right;
+}
+
+.report-job {
+  margin: 0;
+  font-weight: 600;
+}
+
+.report-candidate {
+  margin: 0.1rem 0 0.3rem;
+  font-size: 0.86rem;
+  color: var(--text-muted);
 }
 
 .report-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-top: 0.4rem;
+  justify-content: flex-end;
+  gap: 0.35rem;
 }
 
 .report-tag {
   font-size: 0.78rem;
-  padding: 0.2rem 0.55rem;
+  padding: 0.15rem 0.6rem;
   border-radius: 999px;
+  border: 1px solid #bfdbfe;
   background: #eff6ff;
   color: #1d4ed8;
-  border: 1px solid #bfdbfe;
 }
 
-/* Override background so the border glow feels subtle */
-.custom-report-card {
-  background: radial-gradient(circle at top right, #f9fbff 0, #ffffff 55%);
+.report-tag-warning {
+  border-color: #fed7aa;
+  background: #fff7ed;
+  color: #c05621;
 }
+
+.report-debug-note {
+  margin: 0 0 0.6rem;
+  font-size: 0.82rem;
+  color: #b45309;
+}
+
+.report-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.25fr);
+  gap: 1rem;
+  margin-top: 0.6rem;
+}
+
+.report-layout-full {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.report-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.report-section {
+  margin-top: 0.2rem;
+}
+
+.report-two-col,
+.report-three-col,
+.report-question-grid {
+  display: grid;
+  gap: 0.6rem 1rem;
+}
+
+.report-two-col {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.report-three-col {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.report-question-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.report-subtitle {
+  margin: 0 0 0.2rem;
+  font-size: 0.9rem;
+}
+
+.report-subsection {
+  margin-top: 0.4rem;
+}
+
+.report-question-list {
+  margin: 0.35rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.report-examples {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.report-example-block {
+  padding: 0.6rem 0.7rem;
+  border-radius: 0.75rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+.report-example-question {
+  margin: 0 0 0.25rem;
+  font-weight: 600;
+}
+
+.report-example-answer {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.report-legend {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.report-legend span + span {
+  margin-left: 0.4rem;
+}
+
+@media (max-width: 980px) {
+  .report-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .report-meta {
+    text-align: left;
+  }
+}
+
 
 /* Question count pill already used on other page */
 
