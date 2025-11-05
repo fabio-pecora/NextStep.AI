@@ -90,15 +90,41 @@
       </div>
     </section>
 
-    <!-- MISSION -->
-    <section class="mission">
-      <div class="section-content">
-        <h2>Our mission</h2>
-        <p>
-          We want you to get your dream job. Great interviews are not about luck —
-          they are about practice, reflection, and focus. NextStep.AI helps you
-          practice smarter with structured guidance and actionable feedback.
-        </p>
+    <!-- MISSION (updated) -->
+    <section class="mission mission-highlight">
+      <div class="mission-inner">
+        <div class="mission-copy">
+          <h2>Our mission</h2>
+          <p>
+            We want you to get your dream job. Great interviews are not about luck —
+            they are about practice, reflection, and focus. NextStep.AI helps you
+            practice smarter with structured guidance and actionable feedback.
+          </p>
+        </div>
+
+        <div class="mission-pill-row">
+          <div class="mission-pill">
+            <span class="mission-pill-dot"></span>
+            <div>
+              <h3>Built for real candidates</h3>
+              <p>Students, career switchers, and experienced pros all get tailored guidance.</p>
+            </div>
+          </div>
+          <div class="mission-pill">
+            <span class="mission-pill-dot"></span>
+            <div>
+              <h3>Practice over guesswork</h3>
+              <p>Turn vague “prep” into concrete reps with clear questions and examples.</p>
+            </div>
+          </div>
+          <div class="mission-pill">
+            <span class="mission-pill-dot"></span>
+            <div>
+              <h3>Confidence you can feel</h3>
+              <p>Walk into every interview knowing what you’ll say and why it matters.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -134,42 +160,54 @@
     </section>
 
     <!-- DAILY QUESTION -->
-    <section class="daily" id="daily-question">
-      <div class="daily-header">
-        <h2>Question of the day</h2>
-        <p>
-          Answer today’s behavioral question and come back at 8 PM to see the best
-          answers selected by our AI reviewers.
-        </p>
-      </div>
-
-      {% if question %}
-        <div class="daily-question-card">
-          <p class="question-label">Today’s question</p>
-          <p class="daily-question-text">{{ question.question }}</p>
+         <!-- DAILY QUESTION -->
+    <section class="daily daily-hero" id="daily-question">
+      <div class="daily-hero-inner">
+        <div class="daily-header-row">
+          <div class="daily-header-copy">
+            <h2>Question of the day</h2>
+            <p>
+              Answer today’s behavioral question and come back at 8 PM to see the best
+              answers selected by our AI reviewers. Keep showing up to build your streak.
+            </p>
+          </div>
+          <div class="daily-streak-card">
+            <span class="daily-streak-label">Daily streak</span>
+            <span class="daily-streak-value">Come back every day to keep it alive.</span>
+          </div>
         </div>
 
-        <form method="POST" action="{{ url_for('answer') }}" class="daily-form">
-          <input type="hidden" name="question_id" value="{{ question.id }}">
-          <textarea name="answer" class="daily-textarea"
-            placeholder="Type your answer here using the STAR method..."></textarea>
-          <p class="daily-hint">
-            Tip: outline Situation, Task, Action, and Result before you write the full answer.
-          </p>
-          <div class="btn-row">
-            <button type="submit" class="btn btn-primary">Submit answer</button>
+        {% if question %}
+          <div class="daily-card-stack">
+            <div class="daily-question-card daily-question-glow">
+              <p class="question-label">Today’s question</p>
+              <p class="daily-question-text">{{ question.question }}</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('answer') }}" class="daily-form">
+              <input type="hidden" name="question_id" value="{{ question.id }}">
+              <textarea name="answer" class="daily-textarea"
+                placeholder="Type your answer here using the STAR method..."></textarea>
+              <p class="daily-hint">
+                Tip: outline Situation, Task, Action, and Result before you write the full answer.
+              </p>
+              <div class="btn-row">
+                <button type="submit" class="btn btn-primary">Submit answer</button>
+              </div>
+            </form>
           </div>
-        </form>
-      {% else %}
-        <p class="no-question">
-          The next daily question will appear at midnight.
-          In the meantime, explore the
-          <a href="{{ url_for('jobs') }}">job library</a>
-          or request a
-          <a href="{{ url_for('custom_prep') }}">custom prep report</a>.
-        </p>
-      {% endif %}
+        {% else %}
+          <p class="no-question">
+            The next daily question will appear at midnight.
+            In the meantime, explore the
+            <a href="{{ url_for('jobs') }}">job library</a>
+            or request a
+            <a href="{{ url_for('custom_prep') }}">custom prep report</a>.
+          </p>
+        {% endif %}
+      </div>
     </section>
+
   </main>
 
   <footer class="landing-footer">

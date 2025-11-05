@@ -71,7 +71,7 @@
               <p class="error">{{ report.error }}</p>
             {% endif %}
 
-            <form method="POST" class="custom-form">
+            <form method="POST" class="custom-form" id="custom-prep-form">
               <div class="field">
                 <label for="job_title">Job position <span class="required-dot">*</span></label><br>
                 <input
@@ -124,7 +124,7 @@
           </section>
 
           <!-- Right: report -->
-          <section class="card custom-report-card">
+          <section class="card custom-report-card {% if report %}report-ready{% endif %}">
             {% if report %}
               <!-- Report header (looks like a document cover) -->
               <header class="report-header">
@@ -388,10 +388,30 @@
     <p>© {{ current_year or "2025" }} NextStep.AI. All rights reserved.</p>
   </footer>
 
+  <!-- Loading overlay for the “magic” generation -->
+  <div id="report-loading" class="report-loading-overlay no-print">
+    <div class="report-loading-inner">
+      <div class="report-spinner"></div>
+      <p>NextStep.AI is crafting your prep guide…</p>
+    </div>
+  </div>
+
   <script>
     function downloadReportPDF() {
       window.print();
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const form = document.getElementById('custom-prep-form');
+      const overlay = document.getElementById('report-loading');
+
+      if (form && overlay) {
+        form.addEventListener('submit', function () {
+          document.body.classList.add('is-generating-report');
+          overlay.style.display = 'flex';
+        });
+      }
+    });
   </script>
 </body>
 </html>
