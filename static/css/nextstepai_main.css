@@ -659,62 +659,6 @@ ul li {
   }
 }
 
-.how-it-works {
-  padding: 2.5rem 6% 3rem;
-  background: #ffffff;
-  border-top: 1px solid #e2e8f0;
-  text-align: left;
-}
-
-.how-it-works h2 {
-  font-size: 1.4rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-.how-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 1.2rem;
-}
-
-.how-step {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.8rem;
-  padding: 0.9rem 1rem;
-  border-radius: 1rem;
-  background: #f9fbff;
-  border: 1px solid #e2e8f0;
-}
-
-.how-icon {
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  font-weight: 700;
-  background: #2563eb;
-  color: #ffffff;
-  box-shadow: 0 0 0 3px #dbeafe;
-}
-
-.how-step h3 {
-  margin: 0 0 0.2rem;
-  font-size: 0.98rem;
-  color: #0f172a;
-}
-
-.how-step p {
-  margin: 0;
-  font-size: 0.88rem;
-  color: #475569;
-}
-
 .daily-hint {
   margin: 0.4rem 0 0.4rem;
   font-size: 0.82rem;
