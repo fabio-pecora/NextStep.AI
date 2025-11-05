@@ -652,3 +652,158 @@ ul li {
     margin: 0 auto;
   }
 }
+
+
+
+/* jobs page */ 
+
+/* Job library landing section */
+
+/* Job library - layout and search */
+
+.job-library-section {
+  padding: 3rem 6% 3.5rem;
+}
+
+.job-shell-landing {
+  padding: 0;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.job-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.job-header-row h1 {
+  margin-bottom: 0.35rem;
+}
+
+.job-search-row {
+  margin-bottom: 1.3rem;
+}
+
+.job-search-field input {
+  width: 100%;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-soft);
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: #f8fafc;
+}
+
+.job-search-field input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary-soft);
+  background: #ffffff;
+}
+
+/* Enhanced job cards with icons and border accent */
+
+.job-card {
+  position: relative;
+  border-radius: 0.9rem;
+  border: 1px solid var(--border-soft);
+  padding: 0.85rem 1rem 0.95rem;
+  background: #ffffff;
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    border-color 0.12s ease,
+    background 0.12s ease;
+  overflow: hidden;
+}
+
+/* Gradient accent strip */
+.job-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid transparent;
+  background: linear-gradient(120deg, #2563eb, #22c55e, #a855f7);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.job-card > a {
+  position: relative;
+  z-index: 1;
+}
+
+.job-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+  border-color: #bfdbfe;
+  background: #f9fbff;
+}
+
+.job-card:hover::before {
+  opacity: 0.35;
+}
+
+/* Focus state for accessibility */
+.job-card:focus-within {
+  outline: none;
+  box-shadow: 0 0 0 2px #bfdbfe;
+}
+
+/* Header inside card */
+
+.job-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.job-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  background: var(--primary-soft);
+}
+
+/* Soft category based accents */
+
+.job-icon-tech {
+  background: #dbeafe;
+}
+
+.job-icon-product {
+  background: #fee2e2;
+}
+
+.job-icon-design {
+  background: #fef9c3;
+}
+
+.job-icon-data {
+  background: #dcfce7;
+}
+
+.job-icon-business {
+  background: #f5d0fe;
+}
+
+.job-icon-generic {
+  background: #e5e7eb;
+}
+
+.job-card-hint {
+  margin-top: 0.45rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}

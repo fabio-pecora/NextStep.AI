@@ -1,45 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>NextStep.AI - Job library</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}">
+  <meta charset="UTF-8">
+  <title>NextStep.AI - Job library</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-<div class="app-shell job-shell">
-    <header>
-        <div class="brand">NextStep.<span>AI</span></div>
-        <nav>
-            <a href="{{ url_for('index') }}">Practice</a>
-            <a href="{{ url_for('jobs') }}" class="active">Job library</a>
-            <a href="{{ url_for('custom_prep') }}">Custom AI prep</a>
-        </nav>
-    </header>
+<body class="landing-body">
+  <!-- Shared landing header -->
+  <header class="landing-header">
+    <div class="logo">
+      <a href="{{ url_for('index') }}" class="brand">NextStep.<span>AI</span></a>
+    </div>
+    <nav>
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('jobs') }}" class="active">Job Library</a>
+      <a href="{{ url_for('custom_prep') }}">Custom AI Prep</a>
+    </nav>
+  </header>
 
-    <section class="card">
-        <h1>Job library</h1>
-        <p class="subtitle">
-            Browse curated question sets for different roles.  
-            You can expand or edit them in <code>data/job_questions.json</code>.
-        </p>
-
-        {% if jobs %}
-            <div class="job-grid">
-                {% for job in jobs %}
-                    <div class="job-card">
-                        <a href="{{ url_for('job_detail', job_id=job.id) }}">
-                            <div class="job-card-title">{{ job.title }}</div>
-                            {% if job.category %}
-                                <div class="job-card-category">{{ job.category }}</div>
-                            {% endif %}
-                        </a>
-                    </div>
-                {% endfor %}
+  <main>
+    <!-- Job library section -->
+    <section class="job-library-section">
+      <div class="app-shell job-shell job-shell-landing">
+        <div class="card">
+          <div class="job-header-row">
+            <div>
+              <h1>Job library</h1>
+              <p class="subtitle">
+                Practice behavioral questions tailored to real roles.  
+                Click a job to see all prompts for that position.
+              </p>
             </div>
-        {% else %}
-            <p>No jobs defined yet. Add entries to <code>data/jobs.json</code>.</p>
-        {% endif %}
+          </div>
+
+          <!-- Search bar -->
+          <div class="job-search-row">
+            <div class="job-search-field">
+              <input
+                type="text"
+                id="job-search-input"
+                placeholder="Search by job title or category..."
+                aria-label="Search jobs"
+              >
+            </div>
+          </div>
+
+          {% if jobs %}
+            <div class="job-grid" id="job-grid">
+              {% for job in jobs %}
+                <div class="job-card">
+                  <a href="{{ url_for('job_detail', job_id=job.id) }}">
+                    <div class="job-card-header">
+                      {# Simple icon system based on category/title #}
+                      {% if job.category and 'design' in job.category|lower %}
+                        <div class="job-icon job-icon-design">🎨</div>
+                      {% elif job.category and 'product' in job.category|lower %}
+                        <div class="job-icon job-icon-product">📦</div>
+                      {% elif job.category and ('business' in job.category|lower or 'finance' in job.category|lower) %}
+                        <div class="job-icon job-icon-business">📈</div>
+                      {% elif job.category and 'technology' in job.category|lower %}
+                        <div class="job-icon job-icon-tech">💻</div>
+                      {% elif 'data' in job.title|lower %}
+                        <div class="job-icon job-icon-data">📊</div>
+                      {% else %}
+                        <div class="job-icon job-icon-generic">💼</div>
+                      {% endif %}
+
+                      <div>
+                        <div class="job-card-title">{{ job.title }}</div>
+                        {% if job.category %}
+                          <div class="job-card-category">{{ job.category }}</div>
+                        {% endif %}
+                      </div>
+                    </div>
+
+                    <div class="job-card-hint">
+                      View behavioral questions for this role
+                    </div>
+                  </a>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="subtitle" style="margin-top: 1rem;">
+              No jobs defined yet. Add entries to <code>data/jobs.json</code>.
+            </p>
+          {% endif %}
+        </div>
+      </div>
     </section>
-</div>
+  </main>
+
+  <footer class="landing-footer">
+    <p>© {{ current_year or "2025" }} NextStep.AI. All rights reserved.</p>
+  </footer>
+
+  <!-- Tiny search script - client side filter -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const searchInput = document.getElementById('job-search-input');
+      if (!searchInput) return;
+
+      const cards = Array.from(document.querySelectorAll('.job-card'));
+
+      searchInput.addEventListener('input', function () {
+        const query = this.value.trim().toLowerCase();
+
+        cards.forEach(card => {
+          const text = card.innerText.toLowerCase();
+          const match = text.includes(query);
+          card.style.display = match ? '' : 'none';
+        });
+      });
+    });
+  </script>
 </body>
 </html>
