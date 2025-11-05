@@ -516,14 +516,223 @@ ul li {
 .hero-buttons .btn-outline:hover {
   background: #eff6ff;
 }
-.hero-illustration {
-  flex: 1;
-}
 .hero-illustration img {
   width: 100%;
   max-width: 450px;
   display: block;
 }
+
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  background: #e0edff;
+  color: #1d4ed8;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 0.7rem;
+}
+
+.hero-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.hero-bullets li {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.3rem;
+}
+
+.hero-bullets li::before {
+  content: "✔";
+  font-size: 0.8rem;
+  color: #16a34a;
+}
+
+.hero-illustration {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* big, glowing gallery */
+.hero-gallery {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  min-height: 280px;
+  overflow: hidden;
+  border-radius: 1.9rem;
+  padding: 1.2rem;
+  background: radial-gradient(circle at top left, #1d4ed8 0, #020617 45%);
+  box-shadow: 0 26px 60px rgba(15, 23, 42, 0.28);
+}
+
+/* subtle glow blobs behind */
+.hero-gallery::before,
+.hero-gallery::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(32px);
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-gallery::before {
+  width: 180px;
+  height: 180px;
+  top: -40px;
+  right: -30px;
+  background: rgba(56, 189, 248, 0.7); /* cyan */
+}
+
+.hero-gallery::after {
+  width: 160px;
+  height: 160px;
+  bottom: -40px;
+  left: -20px;
+  background: rgba(129, 140, 248, 0.7); /* indigo */
+}
+
+/* moving strip */
+.hero-gallery-track {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 0;                     /* no gap here, to keep loop seamless */
+  animation: heroGalleryScroll 26s linear infinite;
+}
+
+/* each card */
+.hero-gallery-item {
+  flex: 0 0 260px;            /* card width */
+  margin-right: 1rem;         /* space between cards */
+  border-radius: 1.5rem;
+  overflow: hidden;
+  background: #020617;
+}
+
+.hero-gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* seamless infinite scroll:
+   we duplicated the 5 images in HTML, so half the track
+   is the first set, the second half is the same set again.
+*/
+@keyframes heroGalleryScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* responsive tweak */
+@media (max-width: 900px) {
+  .hero-gallery {
+    max-width: 430px;
+    min-height: 230px;
+  }
+
+  .hero-gallery-item {
+    flex: 0 0 210px;
+    margin-right: 0.75rem;
+  }
+}
+
+
+
+.how-it-works {
+  padding: 2.5rem 6% 3rem;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+.how-it-works h2 {
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.how-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.2rem;
+}
+
+.how-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  padding: 0.9rem 1rem;
+  border-radius: 1rem;
+  background: #f9fbff;
+  border: 1px solid #e2e8f0;
+}
+
+.how-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 0 0 3px #dbeafe;
+}
+
+.how-step h3 {
+  margin: 0 0 0.2rem;
+  font-size: 0.98rem;
+  color: #0f172a;
+}
+
+.how-step p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #475569;
+}
+
+.daily-hint {
+  margin: 0.4rem 0 0.4rem;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+.no-question a {
+  color: #2563eb;
+  text-decoration: none;
+}
+.no-question a:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 1100px) {
+  .hero-text h1 {
+    font-size: 2.7rem;
+  }
+}
+
 
 /* MISSION */
 .mission {

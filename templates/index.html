@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>NextStep.AI — Practice smarter. Get your dream job.</title>
+  <title>NextStep.AI - Practice smarter. Get your dream job.</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -11,7 +11,7 @@
     <div class="logo">
       <a href="{{ url_for('index') }}" class="brand">NextStep.<span>AI</span></a>
     </div>
-    <nav>
+    <nav aria-label="Main navigation">
       <a href="{{ url_for('index') }}" class="active">Home</a>
       <a href="{{ url_for('jobs') }}">Job Library</a>
       <a href="{{ url_for('custom_prep') }}">Custom AI Prep</a>
@@ -22,18 +22,71 @@
     <!-- HERO -->
     <section class="hero">
       <div class="hero-text">
+        <div class="hero-pill">AI powered interview coach</div>
         <h1>Everything you need to <br> ace your next interview.</h1>
         <p>
           Practice real behavioral questions, get AI feedback, and build tailored prep plans
           for the roles and companies you care about.
         </p>
+
+        <ul class="hero-bullets">
+          <li>Daily behavioral questions picked by AI</li>
+          <li>Company specific prep reports for any job</li>
+          <li>Structured feedback using the STAR method</li>
+        </ul>
+
         <div class="hero-buttons">
           <a href="#daily-question" class="btn btn-primary">Start practicing</a>
           <a href="{{ url_for('custom_prep') }}" class="btn btn-outline">Tailored report</a>
         </div>
       </div>
+
+      <!-- HERO GALLERY -->
       <div class="hero-illustration">
-        <img src="{{ url_for('static', filename='img/hero-illustration.svg') }}" alt="Interview preparation illustration">
+        <div class="hero-gallery">
+          <div class="hero-gallery-track">
+            <div class="hero-gallery-item"><img src="{{ url_for('static', filename='img/gallery-1.png') }}" alt="Candidate practicing interview with AI"></div>
+            <div class="hero-gallery-item"><img src="{{ url_for('static', filename='img/gallery-2.png') }}" alt="AI assistant giving feedback"></div>
+            <div class="hero-gallery-item"><img src="{{ url_for('static', filename='img/gallery-3.png') }}" alt="Person reviewing notes"></div>
+            <div class="hero-gallery-item"><img src="{{ url_for('static', filename='img/gallery-4.png') }}" alt="Candidate in online interview"></div>
+            <div class="hero-gallery-item"><img src="{{ url_for('static', filename='img/gallery-5.png') }}" alt="Job offer celebration"></div>
+
+            <!-- duplicate set for seamless looping -->
+            <div class="hero-gallery-item"><img src="{{ url_for('static', filename='img/gallery-1.png') }}" alt=""></div>
+            <div class="hero-gallery-item"><img src="{{ url_for('static', filename='img/gallery-2.png') }}" alt=""></div>
+            <div class="hero-gallery-item"><img src="{{ url_for('static', filename='img/gallery-3.png') }}" alt=""></div>
+            <div class="hero-gallery-item"><img src="{{ url_for('static', filename='img/gallery-4.png') }}" alt=""></div>
+            <div class="hero-gallery-item"><img src="{{ url_for('static', filename='img/gallery-5.png') }}" alt=""></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-it-works">
+      <h2>How NextStep.AI helps you practice</h2>
+      <div class="how-grid">
+        <div class="how-step">
+          <div class="how-icon">1</div>
+          <div>
+            <h3>Pick what you want to practice</h3>
+            <p>Use the daily question or explore curated sets in the job library.</p>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-icon">2</div>
+          <div>
+            <h3>Answer using your own stories</h3>
+            <p>Record or paste answers and structure them with the STAR method.</p>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-icon">3</div>
+          <div>
+            <h3>Get feedback and a prep plan</h3>
+            <p>See what to improve and generate tailored prep reports for your target roles.</p>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -42,8 +95,8 @@
       <div class="section-content">
         <h2>Our mission</h2>
         <p>
-          We want you to get your dream job. Great interviews aren’t about luck —
-          they’re about practice, reflection, and focus. NextStep.AI helps you
+          We want you to get your dream job. Great interviews are not about luck —
+          they are about practice, reflection, and focus. NextStep.AI helps you
           practice smarter with structured guidance and actionable feedback.
         </p>
       </div>
@@ -57,7 +110,7 @@
           <img src="{{ url_for('static', filename='img/icon-report.svg') }}" alt="">
           <h3>Tailored company reports</h3>
           <p>
-            Share a job description and get a full prep plan: company-focused
+            Share a job description and get a full prep plan: company focused
             questions, key themes, and talking points.
           </p>
         </div>
@@ -73,8 +126,8 @@
           <img src="{{ url_for('static', filename='img/icon-practice.svg') }}" alt="">
           <h3>Practice every day</h3>
           <p>
-            If you don’t have an interview yet, build your skills through our daily
-            behavioral questions and guided self-review.
+            If you do not have an interview yet, build your skills through our daily
+            behavioral questions and guided self review.
           </p>
         </div>
       </div>
@@ -91,21 +144,30 @@
       </div>
 
       {% if question %}
-      <div class="daily-question-card">
-        <p class="question-label">Today’s question</p>
-        <p class="daily-question-text">{{ question.question }}</p>
-      </div>
-
-      <form method="POST" action="{{ url_for('answer') }}" class="daily-form">
-        <input type="hidden" name="question_id" value="{{ question.id }}">
-        <textarea name="answer" class="daily-textarea"
-          placeholder="Type your answer here using the STAR method..."></textarea>
-        <div class="btn-row">
-          <button type="submit" class="btn btn-primary">Submit answer</button>
+        <div class="daily-question-card">
+          <p class="question-label">Today’s question</p>
+          <p class="daily-question-text">{{ question.question }}</p>
         </div>
-      </form>
+
+        <form method="POST" action="{{ url_for('answer') }}" class="daily-form">
+          <input type="hidden" name="question_id" value="{{ question.id }}">
+          <textarea name="answer" class="daily-textarea"
+            placeholder="Type your answer here using the STAR method..."></textarea>
+          <p class="daily-hint">
+            Tip: outline Situation, Task, Action, and Result before you write the full answer.
+          </p>
+          <div class="btn-row">
+            <button type="submit" class="btn btn-primary">Submit answer</button>
+          </div>
+        </form>
       {% else %}
-        <p class="no-question">The next daily question will appear at midnight.</p>
+        <p class="no-question">
+          The next daily question will appear at midnight.
+          In the meantime, explore the
+          <a href="{{ url_for('jobs') }}">job library</a>
+          or request a
+          <a href="{{ url_for('custom_prep') }}">custom prep report</a>.
+        </p>
       {% endif %}
     </section>
   </main>
