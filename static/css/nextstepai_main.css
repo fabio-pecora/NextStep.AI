@@ -505,14 +505,17 @@ ul li {
 .hero-buttons .btn-primary:hover {
   background: #1e40af;
 }
+
 .hero-buttons .btn-outline {
   background: transparent;
   border: 1px solid #2563eb;
   color: #2563eb;
-  padding: 0.75rem 1.3rem;
-  border-radius: 8px;
+  padding: 0.9rem 2rem;      /* match the height/feel of the others */
+  border-radius: 50px;       /* pill shape like the other buttons */
   font-weight: 600;
 }
+
+
 .hero-buttons .btn-outline:hover {
   background: #eff6ff;
 }
@@ -816,19 +819,29 @@ ul li {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1.5rem;
 }
-.feature-card {
-  background: #ffffff;
-  border-radius: 1rem;
-  border: 1px solid #e2e8f0;
-  padding: 1.5rem;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
-  text-align: left;
-}
+/* === FEATURE SECTION ICON STYLE === */
 .feature-card img {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 1rem;
+  display: block;
+  margin: 0 auto 1rem auto;  /* centers the image */
+  width: 220px;               /* makes icons larger */
+  height: 220px;
+  object-fit: contain;
+  transition: transform 0.3s ease, filter 0.3s ease;
 }
+
+/* cool hover effect */
+.feature-card:hover img {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.4));
+}
+
+/* center all text inside each feature card */
+.feature-card {
+  text-align: center;
+  padding: 2rem 1.2rem;
+}
+
+
 .feature-card h3 {
   font-size: 1.1rem;
   margin-bottom: 0.4rem;
@@ -1073,6 +1086,130 @@ ul li {
     margin: 0 auto;
   }
 }
+
+/* MULTICOLOR NEON DAILY QUESTION BUTTON */
+.btn-glow {
+  position: relative;
+  background: linear-gradient(90deg,
+    #ff00cc,
+    #3333ff,
+    #00ffff,
+    #00ff88,
+    #ffcc00,
+    #ff0066,
+    #ff00cc);
+  background-size: 600% 600%;
+  color: #fff !important;
+  font-weight: 700;
+  border: none;
+  border-radius: 50px;
+  padding: 0.9rem 2.2rem;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.25),
+              0 0 35px rgba(255, 255, 255, 0.15);
+  animation: btnRainbowFlow 8s linear infinite, btnGlowPulse 3s ease-in-out infinite;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* glowing aura around it */
+.btn-glow::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  background: conic-gradient(
+    from 0deg,
+    #ff00cc,
+    #3333ff,
+    #00ffff,
+    #00ff88,
+    #ffcc00,
+    #ff0066,
+    #ff00cc
+  );
+  border-radius: 999px;
+  filter: blur(20px);
+  opacity: 0.5;
+  animation: btnGlowRotate 5s linear infinite;
+  z-index: -1;
+}
+
+/* glowing particle orbit */
+.btn-glow::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -40%;
+  width: 40%;
+  height: 250%;
+  background: linear-gradient(90deg, rgba(255,255,255,0.2), transparent);
+  transform: rotate(25deg);
+  animation: btnLightSweep 3s ease-in-out infinite;
+  z-index: 0;
+}
+
+/* hover effects */
+.btn-glow:hover {
+  transform: scale(1.07);
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.6),
+              0 0 80px rgba(0, 255, 255, 0.4);
+}
+
+/* glowing pulse */
+@keyframes btnGlowPulse {
+  0%, 100% { box-shadow: 0 0 30px rgba(255, 255, 255, 0.25); }
+  50% { box-shadow: 0 0 60px rgba(255, 255, 255, 0.5); }
+}
+
+/* color flow animation */
+@keyframes btnRainbowFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* rotation for the halo */
+@keyframes btnGlowRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* moving light streak */
+@keyframes btnLightSweep {
+  0% { left: -40%; opacity: 0.2; }
+  50% { left: 110%; opacity: 0.8; }
+  100% { left: 120%; opacity: 0; }
+}
+
+/* BLUE “Start Practicing” button */
+.btn-blue {
+  background: #2563eb;
+  color: #fff !important;
+  font-weight: 600;
+  border: none;
+  padding: 0.9rem 2rem;
+  border-radius: 50px;
+  box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+  transition: all 0.25s ease;
+}
+
+.btn-blue:hover {
+  background: #1d4ed8;
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.6);
+}
+
+/* Smooth scroll + daily section focus animation */
+html {
+  scroll-behavior: smooth;
+}
+#daily-question:target .daily-question-card {
+  animation: dailyFocus 0.8s ease-out;
+}
+@keyframes dailyFocus {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 rgba(59,130,246,0); }
+  50% { transform: scale(1.03); box-shadow: 0 0 25px rgba(59,130,246,0.4); }
+  100% { transform: scale(1); box-shadow: 0 0 0 rgba(59,130,246,0); }
+}
+
 
 
 

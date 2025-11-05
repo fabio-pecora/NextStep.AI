@@ -34,11 +34,14 @@
           <li>Company specific prep reports for any job</li>
           <li>Structured feedback using the STAR method</li>
         </ul>
-
         <div class="hero-buttons">
-          <a href="#daily-question" class="btn btn-primary">Start practicing</a>
+          <a href="#daily-question" class="btn btn-glow" id="btn-daily-question">
+            Daily question
+          </a>
+          <a href="{{ url_for('jobs') }}" class="btn btn-blue">Start practicing</a>
           <a href="{{ url_for('custom_prep') }}" class="btn btn-outline">Tailored report</a>
         </div>
+
       </div>
 
       <!-- HERO GALLERY -->
@@ -90,7 +93,7 @@
       </div>
     </section>
 
-    <!-- MISSION (updated) -->
+    <!-- MISSION (centered copy, highlighted) -->
     <section class="mission mission-highlight">
       <div class="mission-inner">
         <div class="mission-copy">
@@ -133,7 +136,7 @@
       <h2>What we offer</h2>
       <div class="feature-grid">
         <div class="feature-card">
-          <img src="{{ url_for('static', filename='img/icon-report.svg') }}" alt="">
+          <img src="{{ url_for('static', filename='img/report.png') }}" alt="">
           <h3>Tailored company reports</h3>
           <p>
             Share a job description and get a full prep plan: company focused
@@ -141,7 +144,7 @@
           </p>
         </div>
         <div class="feature-card">
-          <img src="{{ url_for('static', filename='img/icon-feedback.svg') }}" alt="">
+          <img src="{{ url_for('static', filename='img/report.png') }}" alt="">
           <h3>AI feedback that feels human</h3>
           <p>
             Our model evaluates your answers for clarity, confidence, and relevance —
@@ -149,7 +152,7 @@
           </p>
         </div>
         <div class="feature-card">
-          <img src="{{ url_for('static', filename='img/icon-practice.svg') }}" alt="">
+          <img src="{{ url_for('static', filename='img/report.png') }}" alt="">
           <h3>Practice every day</h3>
           <p>
             If you do not have an interview yet, build your skills through our daily
@@ -159,8 +162,7 @@
       </div>
     </section>
 
-    <!-- DAILY QUESTION -->
-         <!-- DAILY QUESTION -->
+    <!-- DAILY QUESTION (with glow / streak) -->
     <section class="daily daily-hero" id="daily-question">
       <div class="daily-hero-inner">
         <div class="daily-header-row">
@@ -207,7 +209,6 @@
         {% endif %}
       </div>
     </section>
-
   </main>
 
   <footer class="landing-footer">
