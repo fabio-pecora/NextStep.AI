@@ -5,3 +5,6 @@ run: python app.py
 https://platform.openai.com/api-keys
 
 check key: echo $env:OPENAI_API_KEY
+
+
+maybe something like "a new question everyday, and we will share the best answer fror us at night"

@@ -433,223 +433,222 @@ ul li {
 
 
 
-/* Home layout – minimal, light, modern */
+/* ===== Modern Landing Page Look ===== */
 
-.home-body {
-    background: #f4f5fb;
-    color: #111827;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+.landing-body {
+  margin: 0;
+  background: #f9fbfd;
+  font-family: 'Inter', sans-serif;
+  color: #1e293b;
 }
 
-.home-shell {
-    max-width: 1120px;
-    margin: 0 auto;
-    padding: 0 1.5rem 2.5rem;
+/* HEADER */
+.landing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 6%;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
 
-.home-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.1rem 0 0.9rem;
-    background: transparent;
-    border-bottom: 1px solid #e5e7eb;
+.landing-header nav a {
+  margin-left: 1.4rem;
+  text-decoration: none;
+  color: #334155;
+  font-weight: 500;
 }
-
-.home-brand {
-    text-decoration: none;
-}
-
-.home-main {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    margin-top: 1.5rem;
+.landing-header nav a.active {
+  color: #2563eb;
 }
 
 /* HERO */
-
-.home-hero {
-    display: grid;
-    grid-template-columns: minmax(0, 1.8fr) minmax(0, 1.2fr);
-    gap: 2.2rem;
-    padding: 2.2rem 2.4rem;
-    border-radius: 1.4rem;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 22px 60px rgba(15, 23, 42, 0.07);
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4rem 6%;
+  gap: 2rem;
+  background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 80%);
 }
 
+.hero-text {
+  flex: 1.2;
+}
 .hero-text h1 {
-    margin-top: 0.4rem;
-    margin-bottom: 0.6rem;
-    font-size: 2.1rem;
-    line-height: 1.2;
+  font-size: 2.4rem;
+  line-height: 1.2;
+  color: #0f172a;
+  margin-bottom: 0.6rem;
+}
+.hero-text p {
+  color: #475569;
+  max-width: 34rem;
+  margin-bottom: 1.2rem;
+}
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+}
+.hero-buttons .btn-primary {
+  background: #2563eb;
+  color: white;
+  padding: 0.75rem 1.3rem;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  transition: background 0.2s ease;
+}
+.hero-buttons .btn-primary:hover {
+  background: #1e40af;
+}
+.hero-buttons .btn-outline {
+  background: transparent;
+  border: 1px solid #2563eb;
+  color: #2563eb;
+  padding: 0.75rem 1.3rem;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.hero-buttons .btn-outline:hover {
+  background: #eff6ff;
+}
+.hero-illustration {
+  flex: 1;
+}
+.hero-illustration img {
+  width: 100%;
+  max-width: 450px;
+  display: block;
 }
 
-.hero-subtitle {
-    margin-top: 0;
-    margin-bottom: 1rem;
-    max-width: 34rem;
-    color: #4b5563;
+/* MISSION */
+.mission {
+  text-align: center;
+  padding: 4rem 6%;
+  background: #ffffff;
+}
+.mission h2 {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+}
+.mission p {
+  max-width: 640px;
+  margin: 0 auto;
+  color: #475569;
+  line-height: 1.6;
 }
 
-.hero-tag {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.2rem 0.7rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.09em;
-    background: #f3f4ff;
-    color: #4f46e5;
+/* FEATURES */
+.features {
+  padding: 4rem 6%;
+  background: #f9fbfd;
+  text-align: center;
+}
+.features h2 {
+  margin-bottom: 2rem;
+  font-size: 1.6rem;
+}
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+.feature-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+  text-align: left;
+}
+.feature-card img {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1rem;
+}
+.feature-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.4rem;
+  color: #0f172a;
+}
+.feature-card p {
+  font-size: 0.95rem;
+  color: #475569;
+  line-height: 1.5;
 }
 
-.hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.7rem;
-    margin-top: 0.6rem;
+/* DAILY QUESTION */
+.daily {
+  padding: 4rem 6%;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
 }
-
-.hero-side {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
+.daily-header h2 {
+  font-size: 1.6rem;
+  margin-bottom: 0.4rem;
 }
-
-.hero-card {
-    flex: 1;
-    border-radius: 1.1rem;
-    padding: 1.1rem 1.2rem;
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
+.daily-header p {
+  color: #475569;
+  margin-bottom: 1.2rem;
 }
-
-.hero-card-label {
-    margin: 0 0 0.35rem;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #6b7280;
+.daily-question-card {
+  background: #f1f5f9;
+  border-radius: 1rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 1rem;
 }
-
-.hero-card-text {
-    margin: 0;
-    font-size: 0.96rem;
-    line-height: 1.5;
-}
-
-/* Sections */
-
-.home-section {
-    padding: 1.7rem 2rem;
-    border-radius: 1.3rem;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.05);
-}
-
-.home-section h2 {
-    margin-top: 0;
-    margin-bottom: 0.5rem;
-    font-size: 1.4rem;
-}
-
-.home-section p {
-    margin-top: 0.3rem;
-    margin-bottom: 0.3rem;
-    line-height: 1.6;
-    color: #4b5563;
-}
-
-/* What we offer grid */
-
-.home-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.1rem;
-    margin-top: 0.9rem;
-}
-
-.home-tile {
-    padding: 0.95rem 1rem;
-    border-radius: 1rem;
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-}
-
-.home-tile h3 {
-    margin-top: 0;
-    margin-bottom: 0.4rem;
-    font-size: 1rem;
-}
-
-.home-tile p {
-    margin: 0;
-    font-size: 0.9rem;
-}
-
-/* Question of the day */
-
-.daily-header .subtitle {
-    margin-top: 0.2rem;
-    margin-bottom: 0.8rem;
-    color: #6b7280;
-}
-
-.daily-question-block {
-    margin-bottom: 0.9rem;
-    padding: 0.9rem 1rem;
-    border-radius: 1rem;
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-}
-
 .question-label {
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin: 0 0 0.2rem;
-    color: #6b7280;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #475569;
+  margin-bottom: 0.3rem;
 }
-
 .daily-question-text {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 500;
-    color: #111827;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #0f172a;
+}
+.daily-form textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  font-family: inherit;
+  font-size: 0.95rem;
+  margin-bottom: 0.8rem;
+}
+.btn-row {
+  display: flex;
+  justify-content: flex-start;
 }
 
-.daily-answer-form {
-    margin-top: 0.8rem;
+/* FOOTER */
+.landing-footer {
+  text-align: center;
+  padding: 2rem;
+  font-size: 0.9rem;
+  color: #64748b;
+  background: #f9fbfd;
+  border-top: 1px solid #e2e8f0;
 }
 
-.daily-answer-form .practice-textarea {
-    margin-top: 0.3rem;
-}
-
-.hint-text {
-    margin-top: 0.4rem;
-    margin-bottom: 0.7rem;
-    font-size: 0.85rem;
-    color: #6b7280;
-}
-
-/* Responsive */
-
-@media (max-width: 860px) {
-    .home-hero {
-        grid-template-columns: minmax(0, 1fr);
-        padding: 1.8rem 1.6rem;
-    }
-
-    .hero-side {
-        justify-content: flex-start;
-    }
-
-    .home-section {
-        padding: 1.5rem 1.6rem;
-    }
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+  }
+  .hero-buttons {
+    justify-content: center;
+  }
+  .hero-illustration img {
+    margin: 0 auto;
+  }
 }
