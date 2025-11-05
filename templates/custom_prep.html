@@ -1,202 +1,297 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>NextStep.AI - Custom AI prep</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}">
+  <meta charset="UTF-8">
+  <title>NextStep.AI - Custom AI prep</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-<div class="app-shell custom-shell">
-    <header>
-        <div class="brand">NextStep.<span>AI</span></div>
-        <nav>
-            <a href="{{ url_for('index') }}">Practice</a>
-            <a href="{{ url_for('jobs') }}">Job library</a>
-            <a href="{{ url_for('custom_prep') }}" class="active">Custom AI prep</a>
-        </nav>
-    </header>
+<body class="landing-body">
+  <!-- Shared landing header -->
+  <header class="landing-header">
+    <div class="logo">
+      <a href="{{ url_for('index') }}" class="brand">NextStep.<span>AI</span></a>
+    </div>
+    <nav>
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('jobs') }}">Job Library</a>
+      <a href="{{ url_for('custom_prep') }}" class="active">Custom AI Prep</a>
+    </nav>
+  </header>
 
-    <div class="custom-layout">
-        <!-- Left: form -->
-        <section class="card">
-            <h1>Custom AI prep</h1>
+  <main>
+    <section class="custom-page-section">
+      <div class="app-shell custom-shell">
+        <!-- Top banner -->
+        <div class="card custom-banner">
+          <div class="custom-banner-main">
+            <h1>Custom AI prep report</h1>
             <p class="subtitle">
-                Share the role and company you are targeting and NextStep.AI will generate a tailored interview prep report.
+              Paste your role, company, and description. NextStep.AI turns it into a focused interview plan with questions, tips, and talking points.
+            </p>
+          </div>
+          <div class="custom-banner-steps">
+            <div class="custom-step">
+                <div class="step-circle">1</div>
+                    <div class="step-info">
+                        <h4>Describe the role</h4>
+                        <p>Job title and company</p>
+                    </div>
+                </div>
+            <div class="custom-step">
+                <div class="step-circle">2</div>
+                    <div class="step-info">
+                        <h4>Add context</h4>
+                        <p>Job description and resume</p>
+                    </div>
+                </div>
+            <div class="custom-step">
+                <div class="step-circle">3</div>
+                    <div class="step-info">
+                        <h4>Review the plan</h4>
+                        <p>Questions, tips, next steps</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="custom-layout">
+          <!-- Left: form -->
+          <section class="card custom-form-card">
+            <h2 class="section-title">Tell us about the interview</h2>
+            <p class="subtitle">
+              Only the job position is required. Everything else helps the AI personalize your prep.
             </p>
 
             {% if error %}
-                <p class="error">{{ error }}</p>
+              <p class="error">{{ error }}</p>
             {% endif %}
 
             {% if report and report.error %}
-                <p class="error">{{ report.error }}</p>
+              <p class="error">{{ report.error }}</p>
             {% endif %}
 
-            <form method="POST" style="margin-top:1rem;">
-                <div class="field">
-                    <label for="job_title">Job position (required)</label><br>
-                    <input type="text" id="job_title" name="job_title"
-                           placeholder="Software Engineer Intern, Data Analyst..." required>
-                </div>
+            <form method="POST" class="custom-form">
+              <div class="field">
+                <label for="job_title">Job position <span class="required-dot">*</span></label><br>
+                <input
+                  type="text"
+                  id="job_title"
+                  name="job_title"
+                  placeholder="Software Engineer Intern, Data Analyst..."
+                  required
+                >
+              </div>
 
-                <div class="field">
-                    <label for="company_name">Company name (optional)</label><br>
-                    <input type="text" id="company_name" name="company_name"
-                           placeholder="Google, Amazon, Spotify...">
-                </div>
+              <div class="field">
+                <label for="company_name">Company name (optional)</label><br>
+                <input
+                  type="text"
+                  id="company_name"
+                  name="company_name"
+                  placeholder="Google, Amazon, Spotify..."
+                >
+              </div>
 
-                <div class="field">
-                    <label for="job_description">Job description (optional)</label><br>
-                    <textarea id="job_description" name="job_description"
-                              placeholder="Paste the job description here if you have it."></textarea>
-                </div>
+              <div class="field">
+                <label for="job_description">Job description (optional)</label><br>
+                <textarea
+                  id="job_description"
+                  name="job_description"
+                  placeholder="Paste the job description here. The AI will pick themes, responsibilities, and required skills."
+                ></textarea>
+              </div>
 
-                <div class="field">
-                    <label for="resume">Your resume or key experience (optional)</label><br>
-                    <textarea id="resume" name="resume"
-                              placeholder="Paste your resume text or summarize your background."></textarea>
-                </div>
+              <div class="field">
+                <label for="resume">Your resume or key experience (optional)</label><br>
+                <textarea
+                  id="resume"
+                  name="resume"
+                  placeholder="Paste your resume text or summarize your background so the plan reflects your experience."
+                ></textarea>
+              </div>
 
-                <button type="submit">Generate prep report</button>
+              <div class="btn-row">
+                <button type="submit" class="btn btn-primary">
+                  Generate prep report
+                </button>
+              </div>
+
+              <p class="custom-small-hint">
+                You can iterate on the report. Update details here and regenerate if something changes.
+              </p>
             </form>
-        </section>
+          </section>
 
-        <!-- Right: report -->
-        <section class="card">
+          <!-- Right: report -->
+          <section class="card custom-report-card">
             {% if report %}
-                <h2>
+              <div class="report-header">
+                <div>
+                  <h2>
                     Prep report for {{ report.job_title }}
                     {% if report.company_name %} at {{ report.company_name }}{% endif %}
-                </h2>
-
-                {% if report.company_summary %}
-                    <div class="section-card">
-                        <h3 class="section-title">Company summary</h3>
-                        <p>{{ report.company_summary }}</p>
-                    </div>
-                {% endif %}
-
-                <div class="section-card question-list">
-                    <h3 class="section-title">Role focused questions</h3>
-                    {% if report.role_questions %}
-                        <ol>
-                            {% for q in report.role_questions %}
-                                <li>
-                                    <strong>{{ q.question }}</strong>
-                                    {% if q.guidance %}
-                                        <div class="question-guidance">{{ q.guidance }}</div>
-                                    {% endif %}
-                                </li>
-                            {% endfor %}
-                        </ol>
-                    {% else %}
-                        <p>No role questions generated.</p>
+                  </h2>
+                  <div class="report-tags">
+                    <span class="report-tag">AI generated</span>
+                    {% if report.company_name %}
+                      <span class="report-tag">Company specific</span>
                     {% endif %}
+                    <span class="report-tag">Behavioral focus</span>
+                  </div>
+                </div>
+              </div>
+
+              {% if report.company_summary %}
+                <div class="section-card">
+                  <h3 class="section-title">Company snapshot</h3>
+                  <p>{{ report.company_summary }}</p>
+                </div>
+              {% endif %}
+
+              <div class="section-card question-list">
+                <div class="question-header">
+                  <div>
+                    <h3 class="section-title">Role focused questions</h3>
+                    <p class="question-guidance">
+                      Use these to practice your main behavioral stories for this position.
+                    </p>
+                  </div>
+                  {% if report.role_questions %}
+                    <span class="question-count-pill">
+                      {{ report.role_questions|length }} questions
+                    </span>
+                  {% endif %}
                 </div>
 
-                {% if report.role_tips %}
-                    <div class="section-card">
-                        <h3 class="section-title">General interview tips for this role</h3>
-                        <ul>
-                            {% for tip in report.role_tips %}
-                                <li>{{ tip }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+                {% if report.role_questions %}
+                  <ol>
+                    {% for q in report.role_questions %}
+                      <li>
+                        <strong>{{ q.question }}</strong>
+                        {% if q.guidance %}
+                          <div class="question-guidance">{{ q.guidance }}</div>
+                        {% endif %}
+                      </li>
+                    {% endfor %}
+                  </ol>
+                {% else %}
+                  <p>No role questions generated.</p>
                 {% endif %}
+              </div>
 
-                {% if report.company_behavioral_questions %}
-                    <div class="section-card question-list">
-                        <h3 class="section-title">
-                            Behavioral questions tailored to {{ report.company_name }}
-                        </h3>
-                        <ol>
-                            {% for q in report.company_behavioral_questions %}
-                                <li>
-                                    <strong>{{ q.question }}</strong>
-                                    {% if q.guidance %}
-                                        <div class="question-guidance">{{ q.guidance }}</div>
-                                    {% endif %}
-                                </li>
-                            {% endfor %}
-                        </ol>
-                    </div>
-                {% endif %}
+              {% if report.role_tips %}
+                <div class="section-card">
+                  <h3 class="section-title">How to approach this role</h3>
+                  <ul>
+                    {% for tip in report.role_tips %}
+                      <li>{{ tip }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% endif %}
 
-                {% if report.company_values_questions %}
-                    <div class="section-card question-list">
-                        <h3 class="section-title">Questions around company values and culture</h3>
-                        <ol>
-                            {% for q in report.company_values_questions %}
-                                <li>
-                                    <strong>{{ q.question }}</strong>
-                                    {% if q.guidance %}
-                                        <div class="question-guidance">{{ q.guidance }}</div>
-                                    {% endif %}
-                                </li>
-                            {% endfor %}
-                        </ol>
-                    </div>
-                {% endif %}
+              {% if report.company_behavioral_questions %}
+                <div class="section-card question-list">
+                  <h3 class="section-title">
+                    Behavioral questions for {{ report.company_name }}
+                  </h3>
+                  <ol>
+                    {% for q in report.company_behavioral_questions %}
+                      <li>
+                        <strong>{{ q.question }}</strong>
+                        {% if q.guidance %}
+                          <div class="question-guidance">{{ q.guidance }}</div>
+                        {% endif %}
+                      </li>
+                    {% endfor %}
+                  </ol>
+                </div>
+              {% endif %}
 
-                {% if report.company_role_questions %}
-                    <div class="section-card question-list">
-                        <h3 class="section-title">
-                            Questions specific to the job{% if report.company_name %} at {{ report.company_name }}{% endif %}
-                        </h3>
-                        <ol>
-                            {% for q in report.company_role_questions %}
-                                <li>
-                                    <strong>{{ q.question }}</strong>
-                                    {% if q.guidance %}
-                                        <div class="question-guidance">{{ q.guidance }}</div>
-                                    {% endif %}
-                                </li>
-                            {% endfor %}
-                        </ol>
-                    </div>
-                {% endif %}
+              {% if report.company_values_questions %}
+                <div class="section-card question-list">
+                  <h3 class="section-title">Values and culture questions</h3>
+                  <ol>
+                    {% for q in report.company_values_questions %}
+                      <li>
+                        <strong>{{ q.question }}</strong>
+                        {% if q.guidance %}
+                          <div class="question-guidance">{{ q.guidance }}</div>
+                        {% endif %}
+                      </li>
+                    {% endfor %}
+                  </ol>
+                </div>
+              {% endif %}
 
+              {% if report.company_role_questions %}
+                <div class="section-card question-list">
+                  <h3 class="section-title">
+                    Role specific questions{% if report.company_name %} at {{ report.company_name }}{% endif %}
+                  </h3>
+                  <ol>
+                    {% for q in report.company_role_questions %}
+                      <li>
+                        <strong>{{ q.question }}</strong>
+                        {% if q.guidance %}
+                          <div class="question-guidance">{{ q.guidance }}</div>
+                        {% endif %}
+                      </li>
+                    {% endfor %}
+                  </ol>
+                </div>
+              {% endif %}
+
+              <div class="feedback-grid">
                 {% if report.how_to_impress %}
-                    <div class="section-card">
-                        <h3 class="section-title">How to impress them</h3>
-                        <ul>
-                            {% for item in report.how_to_impress %}
-                                <li>{{ item }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+                  <div class="feedback-section feedback-strengths">
+                    <h3>How to impress them</h3>
+                    <ul>
+                      {% for item in report.how_to_impress %}
+                        <li>{{ item }}</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
                 {% endif %}
 
                 {% if report.talking_points %}
-                    <div class="section-card">
-                        <h3 class="section-title">Talking points to sound well prepared</h3>
-                        <ul>
-                            {% for item in report.talking_points %}
-                                <li>{{ item }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+                  <div class="feedback-section">
+                    <h3>Talking points to sound prepared</h3>
+                    <ul>
+                      {% for item in report.talking_points %}
+                        <li>{{ item }}</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
                 {% endif %}
+              </div>
 
-                {% if report.next_steps %}
-                    <div class="section-card">
-                        <h3 class="section-title">Next steps to prepare</h3>
-                        <ul>
-                            {% for step in report.next_steps %}
-                                <li>{{ step }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endif %}
+              {% if report.next_steps %}
+                <div class="section-card">
+                  <h3 class="section-title">Next steps before the interview</h3>
+                  <ul>
+                    {% for step in report.next_steps %}
+                      <li>{{ step }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% endif %}
             {% else %}
-                <h2>No report yet</h2>
+              <div class="custom-empty-report">
+                <h2>Your prep report will appear here</h2>
                 <p class="subtitle">
-                    Fill the form on the left and NextStep.AI will generate a custom prep plan.
+                  Fill the form on the left and NextStep.AI will build a tailored prep plan. You will see questions, tips, and clear next actions in this panel.
                 </p>
+              </div>
             {% endif %}
-        </section>
-    </div>
-</div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="landing-footer">
+    <p>© {{ current_year or "2025" }} NextStep.AI. All rights reserved.</p>
+  </footer>
 </body>
 </html>
