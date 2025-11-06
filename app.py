@@ -20,6 +20,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "change-this-in-production")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 QUESTIONS_PATH = os.path.join(BASE_DIR, "data", "questions.json")
 JOBS_PATH = os.path.join(BASE_DIR, "data", "jobs.json")
 JOB_QUESTIONS_PATH = os.path.join(BASE_DIR, "data", "job_questions.json")
@@ -44,6 +45,7 @@ def load_job_questions():
     with open(JOB_QUESTIONS_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
 
+
 def load_winners():
     if not os.path.exists(WINNERS_PATH):
         return []
@@ -60,7 +62,7 @@ def get_next_question():
     if not questions:
         return None
 
-    # Track which ids we already used in this session
+    # Track which IDs we already used in this session
     used_ids = session.get("used_question_ids", [])
 
     # Compare as strings because question ids may be int or str in JSON
@@ -82,7 +84,7 @@ def get_next_question():
 def index():
     """
     Main practice page: generic interview question with text and voice answer.
-    Now uses a random question instead of always the first one.
+    Uses a random question instead of always the first one.
     """
     current_question = get_next_question()
     return render_template("index.html", question=current_question)
@@ -98,10 +100,12 @@ def next_question():
     if question is None:
         return jsonify({"error": "No questions available."}), 400
 
-    return jsonify({
-        "id": question["id"],
-        "question": question["question"],
-    })
+    return jsonify(
+        {
+            "id": question["id"],
+            "question": question["question"],
+        }
+    )
 
 
 @app.route("/answer", methods=["POST"])
@@ -160,7 +164,9 @@ def audio():
     temp_path = None
 
     try:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(filename)[1]) as tmp:
+        with tempfile.NamedTemporaryFile(
+            delete=False, suffix=os.path.splitext(filename)[1]
+        ) as tmp:
             temp_path = tmp.name
             audio_file.save(temp_path)
 
@@ -195,7 +201,6 @@ def audio():
                 pass
 
 
-# NEW: text answers for job questions
 @app.route("/job_answer", methods=["POST"])
 def job_answer():
     """
@@ -247,7 +252,6 @@ def job_answer():
     return render_template("result.html", result=eval_result)
 
 
-# NEW: voice answers for job questions
 @app.route("/job_audio", methods=["POST"])
 def job_audio():
     """
@@ -274,7 +278,9 @@ def job_audio():
     temp_path = None
 
     try:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(filename)[1]) as tmp:
+        with tempfile.NamedTemporaryFile(
+            delete=False, suffix=os.path.splitext(filename)[1]
+        ) as tmp:
             temp_path = tmp.name
             audio_file.save(temp_path)
 
@@ -379,6 +385,7 @@ def custom_prep():
         error=error,
     )
 
+
 @app.route("/winners", methods=["GET"])
 def winners():
     """
@@ -387,8 +394,7 @@ def winners():
     """
     winners_data = load_winners()
 
-    # Sort by date descending if date is present, otherwise keep order
-    # This assumes date is a string like "2025-11-06"
+    # Optional: sort by date descending (assuming YYYY-MM-DD or similar)
     try:
         winners_data = sorted(
             winners_data,
@@ -396,20 +402,21 @@ def winners():
             reverse=True,
         )
     except Exception:
-        # If sorting fails for any reason, just keep original order
+        # If sorting fails, keep original order
         pass
 
-@app.route("/courses", methods=["GET"])
-def courses():
-    # For now, just render the static template
-    return render_template("courses.html")
-
-
-    # Take only the latest 20
+    # Only keep the latest 20
     winners_data = winners_data[:20]
 
     return render_template("winners.html", winners=winners_data)
 
+
+@app.route("/courses", methods=["GET"])
+def courses():
+    """
+    Display the Courses page (static for now).
+    """
+    return render_template("courses.html")
 
 
 if __name__ == "__main__":
