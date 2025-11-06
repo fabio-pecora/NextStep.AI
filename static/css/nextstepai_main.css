@@ -986,73 +986,147 @@ ul li {
   }
 }
 
+/* ===========================
+   MISSION SECTION
+   =========================== */
 
-/* MISSION */
 .mission {
   text-align: center;
-  padding: 4rem 6%;
+  padding: 5rem 6%;
   background: #ffffff;
-}
-.mission h2 {
-  font-size: 1.6rem;
-  margin-bottom: 1rem;
-}
-.mission p {
-  max-width: 640px;
-  margin: 0 auto;
-  color: #475569;
-  line-height: 1.6;
+  position: relative;
+  overflow: hidden;
 }
 
-.mission-highlight {
-  background: radial-gradient(circle at top left, #dbeafe 0, #eff6ff 40%, #f9fbff 100%);
-  padding: 3.5rem 6%;
+.mission::before {
+  content: "";
+  position: absolute;
+  top: -150px;
+  left: -150px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle at center, rgba(59,130,246,0.15), transparent 70%);
+  z-index: 0;
+  filter: blur(60px);
+}
+
+.mission::after {
+  content: "";
+  position: absolute;
+  bottom: -200px;
+  right: -150px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle at center, rgba(37,99,235,0.12), transparent 70%);
+  z-index: 0;
+  filter: blur(70px);
 }
 
 .mission-inner {
+  position: relative;
+  z-index: 2;
   max-width: 960px;
   margin: 0 auto;
 }
 
-.mission-copy {
-  text-align: center;
-  max-width: 620px;
-  margin: 0 auto 1.8rem;  /* center the block itself */
+/* Main title */
+.mission-title {
+  font-size: 2.3rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #000000, #3c4146);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1.2rem;
+  text-shadow: 0 0 24px rgba(58, 160, 11, 0.35);
+  animation: glowPulse 4s ease-in-out infinite;
 }
 
+@keyframes glowPulse {
+  0%, 100% {
+    text-shadow: 0 0 24px rgba(59,130,246,0.25);
+  }
+  50% {
+    text-shadow: 0 0 40px rgba(59,130,246,0.45);
+  }
+}
+
+/* Subtitle text */
+.mission-subtext {
+  max-width: 640px;
+  margin: 0 auto 2.5rem;
+  color: #334155;
+  line-height: 1.7;
+  font-size: 1.05rem;
+}
+
+/* Pill grid */
 .mission-pill-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  justify-content: center;
 }
 
+/* Individual pill */
 .mission-pill {
+  position: relative;
   background: #ffffff;
-  border-radius: 1rem;
-  padding: 1rem 1.1rem;
+  border-radius: 1.2rem;
+  padding: 1.3rem 1.4rem;
   display: flex;
-  gap: 0.7rem;
+  align-items: flex-start;
+  gap: 0.9rem;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+  transition: all 0.3s ease;
 }
 
-.mission-pill-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  margin-top: 0.32rem;
-  background: #2563eb;
+.mission-pill:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(59,130,246,0.18);
 }
 
+/* Glowing accent edge */
+.mission-pill-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 1.2rem;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(59,130,246,0.35), rgba(147,197,253,0.15));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Icon inside pill */
+.mission-pill-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  color: #2563eb;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+/* Pill text */
 .mission-pill h3 {
-  margin: 0 0 0.25rem;
-  font-size: 0.98rem;
+  margin: 0 0 0.3rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
 }
 
 .mission-pill p {
   margin: 0;
   font-size: 0.9rem;
   color: #475569;
+}
+
+/* Gradient background for highlight version */
+.mission-highlight {
+  background: linear-gradient(135deg, #eff6ff 0%, #f9fbff 100%);
 }
 
 
@@ -1166,7 +1240,6 @@ ul li {
   background: conic-gradient(
     from 180deg,
     #38bdf8,
-    #6366f1,
     #a855f7,
     #22c55e,
     #eab308,
