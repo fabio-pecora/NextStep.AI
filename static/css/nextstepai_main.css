@@ -1417,11 +1417,11 @@ ul li {
   position: relative;
   background: linear-gradient(90deg,
     #ff00cc,
-    #00ffff,
-    #00ff88,
     #ffcc00,
     #ff0066,
-    #ff00cc);
+    #ff00cc,
+    #00ff88,
+    #00ffff);
   background-size: 600% 600%;
   color: #fff !important;
   font-weight: 700;
@@ -1443,11 +1443,11 @@ ul li {
   background: conic-gradient(
     from 0deg,
     #ff00cc,
-    #00ffff,
-    #00ff88,
     #ffcc00,
     #ff0066,
-    #ff00cc
+    #ff00cc,
+    #00ff88,
+    #00ffff
   );
   border-radius: 999px;
   filter: blur(20px);
