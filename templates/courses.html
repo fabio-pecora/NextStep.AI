@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NextStep.AI - Courses</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="landing-body">
+  <header class="landing-header">
+    <div class="logo">
+      <a href="{{ url_for('index') }}" class="brand">NextStep.<span>AI</span></a>
+    </div>
+    <nav aria-label="Main navigation">
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('jobs') }}">Job Library</a>
+      <a href="{{ url_for('custom_prep') }}">Custom AI Prep</a>
+      <a href="{{ url_for('winners') }}">Winners</a>
+      <a href="{{ url_for('courses') }}" class="active">Courses</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO / INTRO SECTION -->
+    <section class="courses-hero">
+      <div class="app-shell courses-hero-shell">
+        <div class="courses-hero-content card">
+          <div class="courses-hero-text">
+            <div class="hero-pill courses-pill">Guided interview prep · Coming soon</div>
+            <h1>Don’t wait for your opportunity.<br>Prepare before it arrives.</h1>
+            <p>
+              Build your skills with structured, instructor-led courses that match how you
+              practice on NextStep.AI. Learn frameworks, apply them to real questions, and
+              walk into interviews already warmed up.
+            </p>
+
+            <ul class="courses-hero-list">
+              <li>Interview prep tracks by role and seniority</li>
+              <li>Foundations: storytelling, mindset, and confidence</li>
+              <li>Deep dives into product, engineering, and management interviews</li>
+            </ul>
+
+            <div class="courses-hero-cta">
+              <button type="button" class="btn btn-primary btn-pill">
+                Get notified when courses launch
+              </button>
+              <span class="courses-hero-note">
+                Explore sample courses below.
+              </span>
+            </div>
+          </div>
+
+          <div class="courses-hero-highlight">
+            <div class="courses-metric-card">
+              <div class="courses-metric-label">Practice + Courses</div>
+              <p class="courses-metric-text">
+                Use courses to learn the frameworks, and the NextStep.AI practice area to
+                drill real questions every day.
+              </p>
+              <ul class="courses-metric-pill-row">
+                <li>Structured lessons</li>
+                <li>Hands-on prompts</li>
+                <li>AI powered feedback</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COURSE GRID SECTION -->
+    <section class="courses-section">
+      <div class="app-shell courses-shell">
+        <div class="courses-header-row">
+          <div>
+            <h2 class="courses-title">Explore upcoming course tracks</h2>
+            <p class="courses-subtitle">
+              These are example courses to show how your learning hub will look.
+              Replace them with real offerings when you’re ready.
+            </p>
+          </div>
+          <div class="courses-filter-row">
+            <span class="courses-filter-label">Browse by focus</span>
+            <div class="courses-filter-chips">
+              <button type="button" class="chip chip-filter chip-filter-active">All</button>
+              <button type="button" class="chip chip-filter">Interview prep</button>
+              <button type="button" class="chip chip-filter">Foundations</button>
+              <button type="button" class="chip chip-filter">Role specific</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="course-grid">
+          <!-- Course 1 -->
+          <article class="course-card">
+            <div class="course-image-wrap">
+              <img src="{{ url_for('static', filename='img/course-interview-basics.jpg') }}"
+                   alt="Interview fundamentals course"
+                   class="course-image">
+              <span class="course-tag course-tag-primary">Interview prep</span>
+            </div>
+            <div class="course-body">
+              <h3 class="course-name">Interview Fundamentals: From Nervous to Ready</h3>
+              <p class="course-description">
+                A structured, beginner-friendly course that teaches you how interviews work,
+                what hiring managers look for, and how to avoid the most common mistakes.
+              </p>
+
+              <div class="course-meta-row">
+                <span class="course-meta-pill">Level: Beginner</span>
+                <span class="course-meta-pill">Duration: 3 weeks</span>
+                <span class="course-meta-pill">Format: Video + practice</span>
+              </div>
+
+              <div class="course-footer">
+                <button type="button" class="btn btn-outline btn-pill course-cta">
+                  View course details
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Course 2 -->
+          <article class="course-card">
+            <div class="course-image-wrap">
+              <img src="{{ url_for('static', filename='img/course-star-method.jpg') }}"
+                   alt="STAR method storytelling course"
+                   class="course-image">
+              <span class="course-tag course-tag-soft">Foundations</span>
+            </div>
+            <div class="course-body">
+              <h3 class="course-name">Mastering the STAR Method</h3>
+              <p class="course-description">
+                Learn how to turn your experiences into concise, compelling stories using
+                the Situation-Task-Action-Result framework, then apply it directly in
+                NextStep.AI practice questions.
+              </p>
+
+              <div class="course-meta-row">
+                <span class="course-meta-pill">Level: All levels</span>
+                <span class="course-meta-pill">Duration: 6 hours</span>
+                <span class="course-meta-pill">Includes: Templates & worksheets</span>
+              </div>
+
+              <div class="course-footer">
+                <button type="button" class="btn btn-outline btn-pill course-cta">
+                  View course details
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Course 3 -->
+          <article class="course-card">
+            <div class="course-image-wrap">
+              <img src="{{ url_for('static', filename='img/course-product-manager.jpg') }}"
+                   alt="Product manager interview course"
+                   class="course-image">
+              <span class="course-tag course-tag-primary">Role specific</span>
+            </div>
+            <div class="course-body">
+              <h3 class="course-name">Cracking Product Manager Interviews</h3>
+              <p class="course-description">
+                A deep dive into PM interviews: product sense, execution, strategy,
+                and behavioral. Each module pairs with targeted questions in the Job Library.
+              </p>
+
+              <div class="course-meta-row">
+                <span class="course-meta-pill">Level: Mid–Senior</span>
+                <span class="course-meta-pill">Duration: 4 weeks</span>
+                <span class="course-meta-pill">Format: Cohort-based</span>
+              </div>
+
+              <div class="course-footer">
+                <button type="button" class="btn btn-outline btn-pill course-cta">
+                  View course details
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Course 4 -->
+          <article class="course-card">
+            <div class="course-image-wrap">
+              <img src="{{ url_for('static', filename='img/course-engineering-systemdesign.jpg') }}"
+                   alt="System design interview course"
+                   class="course-image">
+              <span class="course-tag course-tag-primary">Interview prep</span>
+            </div>
+            <div class="course-body">
+              <h3 class="course-name">System Design for Software Engineers</h3>
+              <p class="course-description">
+                Learn how to structure system design answers, communicate trade-offs, and
+                avoid rambling. Includes frameworks, diagrams, and practice prompts.
+              </p>
+
+              <div class="course-meta-row">
+                <span class="course-meta-pill">Level: Intermediate</span>
+                <span class="course-meta-pill">Duration: 8 hours</span>
+                <span class="course-meta-pill">Includes: Mock interview bank</span>
+              </div>
+
+              <div class="course-footer">
+                <button type="button" class="btn btn-outline btn-pill course-cta">
+                  View course details
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Course 5 -->
+          <article class="course-card">
+            <div class="course-image-wrap">
+              <img src="{{ url_for('static', filename='img/course-executive-presence.jpg') }}"
+                   alt="Executive presence and communication course"
+                   class="course-image">
+              <span class="course-tag course-tag-soft">Foundations</span>
+            </div>
+            <div class="course-body">
+              <h3 class="course-name">Confidence & Executive Presence in Interviews</h3>
+              <p class="course-description">
+                Work on the “how” of your answers: tone, pacing, body language, and
+                confidence under pressure. Built for ambitious candidates at any level.
+              </p>
+
+              <div class="course-meta-row">
+                <span class="course-meta-pill">Level: All levels</span>
+                <span class="course-meta-pill">Duration: 2 weeks</span>
+                <span class="course-meta-pill">Format: Video + exercises</span>
+              </div>
+
+              <div class="course-footer">
+                <button type="button" class="btn btn-outline btn-pill course-cta">
+                  View course details
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Course 6 -->
+          <article class="course-card">
+            <div class="course-image-wrap">
+              <img src="{{ url_for('static', filename='img/course-career-reset.jpg') }}"
+                   alt="Career switcher interview course"
+                   class="course-image">
+              <span class="course-tag course-tag-soft">Career track</span>
+            </div>
+            <div class="course-body">
+              <h3 class="course-name">Career Switch: Tell Your Story with Clarity</h3>
+              <p class="course-description">
+                Designed for people changing industries or roles. Learn how to reframe
+                your past experience so it makes sense for where you want to go next.
+              </p>
+
+              <div class="course-meta-row">
+                <span class="course-meta-pill">Level: All levels</span>
+                <span class="course-meta-pill">Duration: 3 weeks</span>
+                <span class="course-meta-pill">Includes: Storybuilding toolkit</span>
+              </div>
+
+              <div class="course-footer">
+                <button type="button" class="btn btn-outline btn-pill course-cta">
+                  View course details
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="landing-footer">
+    <p>© {{ current_year or "2025" }} NextStep.AI. All rights reserved.</p>
+  </footer>
+</body>
+</html>

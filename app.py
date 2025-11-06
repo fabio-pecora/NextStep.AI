@@ -399,6 +399,12 @@ def winners():
         # If sorting fails for any reason, just keep original order
         pass
 
+@app.route("/courses", methods=["GET"])
+def courses():
+    # For now, just render the static template
+    return render_template("courses.html")
+
+
     # Take only the latest 20
     winners_data = winners_data[:20]
 
