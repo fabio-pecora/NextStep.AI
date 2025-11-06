@@ -23,6 +23,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 QUESTIONS_PATH = os.path.join(BASE_DIR, "data", "questions.json")
 JOBS_PATH = os.path.join(BASE_DIR, "data", "jobs.json")
 JOB_QUESTIONS_PATH = os.path.join(BASE_DIR, "data", "job_questions.json")
+WINNERS_PATH = os.path.join(BASE_DIR, "data", "winners.json")
 
 
 def load_questions():
@@ -41,6 +42,12 @@ def load_job_questions():
     if not os.path.exists(JOB_QUESTIONS_PATH):
         return {}
     with open(JOB_QUESTIONS_PATH, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def load_winners():
+    if not os.path.exists(WINNERS_PATH):
+        return []
+    with open(WINNERS_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -371,6 +378,32 @@ def custom_prep():
         report=report,
         error=error,
     )
+
+@app.route("/winners", methods=["GET"])
+def winners():
+    """
+    Show the last 20 winning answers for the daily question.
+    Most recent first.
+    """
+    winners_data = load_winners()
+
+    # Sort by date descending if date is present, otherwise keep order
+    # This assumes date is a string like "2025-11-06"
+    try:
+        winners_data = sorted(
+            winners_data,
+            key=lambda w: w.get("date", ""),
+            reverse=True,
+        )
+    except Exception:
+        # If sorting fails for any reason, just keep original order
+        pass
+
+    # Take only the latest 20
+    winners_data = winners_data[:20]
+
+    return render_template("winners.html", winners=winners_data)
+
 
 
 if __name__ == "__main__":

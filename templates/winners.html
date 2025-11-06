@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NextStep.AI - Winning answers</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="landing-body">
+  <header class="landing-header">
+    <div class="logo">
+      <a href="{{ url_for('index') }}" class="brand">NextStep.<span>AI</span></a>
+    </div>
+    <nav aria-label="Main navigation">
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('jobs') }}">Job Library</a>
+      <a href="{{ url_for('custom_prep') }}">Custom AI Prep</a>
+      <a href="{{ url_for('winners') }}" class="active">Winners</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="winners-section">
+      <div class="app-shell winners-shell">
+        <div class="card winners-card">
+          <header class="winners-header">
+            <h1 class="winners-title">Winning answers</h1>
+            <p class="winners-subtitle">
+              The latest daily question winners. Most recent first, up to the last 20.
+            </p>
+          </header>
+
+          {% if winners and winners|length > 0 %}
+            <ol class="winner-list">
+              {% for w in winners %}
+                <li class="winner-item">
+                  <article class="winner-card">
+                    <!-- Top row: avatar, username, date, rank -->
+                    <div class="winner-top-row">
+                      <div class="winner-avatar-wrap">
+                        {% if w.avatar_url %}
+                          <img
+                            src="{{ w.avatar_url }}"
+                            alt="User avatar"
+                            class="winner-avatar"
+                          >
+                        {% else %}
+                          <div class="winner-avatar-fallback">
+                            {% if w.username %}
+                              {{ w.username[0]|upper }}
+                            {% else %}
+                              ?
+                            {% endif %}
+                          </div>
+                        {% endif %}
+                      </div>
+
+                      <div class="winner-user-meta">
+                        <div class="winner-username">
+                          {% if w.username %}
+                            @{{ w.username }}
+                          {% else %}
+                            Anonymous
+                          {% endif %}
+                        </div>
+
+                        {% if w.date %}
+                          <div class="winner-date">
+                            {{ w.date }}
+                          </div>
+                        {% endif %}
+                      </div>
+
+                      <div class="winner-rank-pill">
+                        #{{ loop.index }}
+                      </div>
+                    </div>
+
+                    <!-- Body: question then answer -->
+                    <div class="winner-body winner-body-vertical">
+                      <div class="winner-block">
+                        <span class="winner-label">Question</span>
+                        <p class="winner-text">
+                          {{ w.question }}
+                        </p>
+                      </div>
+
+                      <div class="winner-block winner-block-answer">
+                        <span class="winner-label">Answer</span>
+
+                        <div class="answer-text-wrapper">
+                          <p class="winner-text winner-text-answer">
+                            {{ w.answer }}
+                          </p>
+                          <div class="answer-fade"></div>
+                        </div>
+
+                        <button type="button" class="answer-toggle">
+                          Read more
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                </li>
+              {% endfor %}
+            </ol>
+          {% else %}
+            <p class="winners-empty">
+              No winning answers yet. Once the first daily winners are selected,
+              you will see the latest 20 here.
+            </p>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="landing-footer">
+    <p>© {{ current_year or "2025" }} NextStep.AI. All rights reserved.</p>
+  </footer>
+
+  <!-- Read more / hide answer toggle -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const toggles = document.querySelectorAll(".answer-toggle");
+
+      toggles.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          const block = btn.closest(".winner-block-answer");
+          block.classList.toggle("expanded");
+
+          const isExpanded = block.classList.contains("expanded");
+          btn.textContent = isExpanded ? "Hide answer" : "Read more";
+        });
+      });
+    });
+  </script>
+</body>
+</html>
