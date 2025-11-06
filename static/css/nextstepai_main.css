@@ -303,32 +303,340 @@ textarea:focus {
     color: var(--text-muted);
 }
 
+
 /* ===========================
-   Job detail page (job_detail.html)
+   Job detail page
    =========================== */
 
-.job-detail-shell {
-    max-width: 1000px;
+.job-detail-section {
+  padding: 2.5rem 1rem 3rem;
 }
+
+.job-detail-shell {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.job-detail-card {
+  padding: 1.75rem 1.75rem 2rem;
+}
+
+.job-detail-header {
+  margin-bottom: 1.5rem;
+}
+
+.job-detail-breadcrumb {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0 0 0.3rem;
+}
+
+.job-detail-breadcrumb a {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.job-detail-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb-separator {
+  margin: 0 0.25rem;
+}
+
+.job-detail-title {
+  font-size: 1.4rem;
+  margin: 0 0 0.4rem;
+}
+
+.job-detail-meta {
+  margin-top: 0.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.meta-pill {
+  font-size: 0.78rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: var(--text-muted);
+}
+
+.meta-pill-soft {
+  background: transparent;
+  border: 1px solid var(--border-soft);
+}
+
+/* Questions list */
+
+.job-questions-list {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Question block */
 
 .question-block {
-    padding: 0.9rem 1rem;
-    border-radius: 0.85rem;
-    border: 1px solid var(--border-soft);
-    background: #ffffff;
-    margin-top: 0.7rem;
+  border-radius: 1rem;
+  border: 1px solid var(--border-soft);
+  background: #ffffff;
+  overflow: hidden;
 }
 
-.question-block h3 {
-    margin: 0 0 0.25rem;
-    font-size: 0.98rem;
+/* Top question strip */
+
+.question-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 0.9rem 1rem;
+  background: linear-gradient(135deg, #eff6ff, #eef2ff);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.02);
 }
 
-.tags {
-    font-size: 0.82rem;
-    color: var(--text-muted);
-    margin-top: 0.25rem;
+.question-top-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
 }
+
+.question-index-pill {
+  font-size: 0.78rem;
+  min-width: 2rem;
+  text-align: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1f2933;
+  font-weight: 600;
+}
+
+.question-text {
+  font-size: 0.98rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.question-top-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+}
+
+/* Tag pill */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.78rem;
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+}
+
+.chip-tag {
+  background: #e0f2fe;
+  color: #0f172a;
+}
+
+/* Guidance button and panel */
+
+/* Glowing "Guidance and tips" button */
+.guidance-btn {
+  font-size: 0.78rem;
+  border-radius: 999px;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  padding: 0.25rem 0.9rem;
+  background: linear-gradient(135deg, #ffffff, #f3f6ff);
+  color: #1e40af;
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.25),
+              inset 0 0 3px rgba(37, 99, 235, 0.12);
+  transition: all 0.25s ease;
+}
+
+/* Hover & open states */
+.guidance-btn:hover,
+.guidance-details[open] .guidance-btn {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.55),
+              0 0 20px rgba(37, 99, 235, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Change icon when opened */
+.guidance-btn::before {
+  content: "💡";
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.guidance-details[open] .guidance-btn::before {
+  content: "✦";
+}
+
+/* Panel styling remains soft */
+.guidance-panel {
+  background: #f9fafb;
+  border-radius: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+  margin-top: 0.6rem;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+}
+
+
+/* Answer area */
+
+.question-body {
+  padding: 0.9rem 1rem 1rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.qa-card {
+  border-radius: 0.85rem;
+  background: #f9fafb;
+  padding: 0.8rem 0.9rem 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.qa-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.4rem;
+}
+
+.qa-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.qa-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* Text area */
+
+.practice-textarea {
+  width: 100%;
+  min-height: 120px;
+  border-radius: 0.6rem;
+  border: 1px solid var(--border-soft);
+  padding: 0.65rem 0.7rem;
+  font-size: 0.9rem;
+  resize: vertical;
+}
+
+/* Buttons */
+
+.btn-pill {
+  border-radius: 999px;
+}
+
+.btn.btn-primary {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  border-color: transparent;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+}
+
+.btn.btn-primary:hover {
+  filter: brightness(1.05);
+}
+
+.btn.btn-outline {
+  border: 1px solid rgba(148, 163, 184, 0.9);
+  background: #ffffff;
+  color: #111827;
+}
+
+.btn.btn-outline:hover {
+  background: #f3f4f6;
+}
+
+/* Voice */
+
+.voice-btn-row {
+  margin-top: 0.2rem;
+}
+
+.job-audio-status {
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+}
+
+/* Feedback card */
+
+.feedback-card.job-feedback-card {
+  margin-top: 0.75rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.75rem;
+  border: 1px dashed var(--border-soft);
+  background: #f3f4ff;
+}
+
+.feedback-title {
+  font-size: 0.9rem;
+  margin: 0 0 0.4rem;
+}
+
+.transcript {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.scores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.4rem;
+}
+
+.score-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.9rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+}
+
+/* Responsive */
+
+@media (min-width: 800px) {
+  .job-detail-card {
+    padding: 2rem 2.1rem 2.3rem;
+  }
+
+  .question-body {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: 1.25rem;
+  }
+}
+
 
 /* ===========================
    Custom prep page (custom_prep.html)

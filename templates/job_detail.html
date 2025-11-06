@@ -1,108 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>NextStep.AI - Job questions</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}">
-    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+  <meta charset="UTF-8">
+  <title>NextStep.AI - Job questions</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
-<body>
-<div class="app-shell job-detail-shell">
-    <header>
-        <div class="brand">NextStep.<span>AI</span></div>
-        <nav>
-            <a href="{{ url_for('index') }}">Practice</a>
-            <a href="{{ url_for('jobs') }}" class="active">Job library</a>
-            <a href="{{ url_for('custom_prep') }}">Custom AI prep</a>
-        </nav>
-    </header>
+<body class="landing-body">
+  <!-- Same header as jobs.html for consistency -->
+  <header class="landing-header">
+    <div class="logo">
+      <a href="{{ url_for('index') }}" class="brand">NextStep.<span>AI</span></a>
+    </div>
+    <nav>
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('jobs') }}" class="active">Job library</a>
+      <a href="{{ url_for('custom_prep') }}">Custom AI prep</a>
+    </nav>
+  </header>
 
-    <section class="card">
-        {% if job %}
-            <h1>{{ job.title }}</h1>
-            <p class="subtitle">Expert-style questions curated for this role.</p>
+  <main>
+    <section class="job-detail-section">
+      <div class="app-shell job-detail-shell">
+        <div class="card job-detail-card">
+          {% if job %}
+            <div class="job-detail-header">
+              <p class="job-detail-breadcrumb">
+                <a href="{{ url_for('jobs') }}">Job library</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>{{ job.title }}</span>
+              </p>
+
+              <h1 class="job-detail-title">{{ job.title }}</h1>
+              <p class="subtitle">
+                Practice focused behavioral questions and track your progress.
+              </p>
+
+              {% if questions %}
+                <div class="job-detail-meta">
+                  <span class="meta-pill">
+                    {{ questions|length }} questions
+                  </span>
+                  <span class="meta-pill meta-pill-soft">
+                    Text and voice answers
+                  </span>
+                </div>
+              {% endif %}
+            </div>
 
             {% if questions %}
+              <div class="job-questions-list">
                 {% for q in questions %}
-                    <div class="question-block"
-                         data-job-id="{{ job.id }}"
-                         data-question-index="{{ loop.index0 }}">
-                        <h3>{{ loop.index }}. {{ q.question }}</h3>
+                  <article
+                    class="question-block"
+                    data-job-id="{{ job.id }}"
+                    data-question-index="{{ loop.index0 }}"
+                  >
+                    <!-- QUESTION AREA -->
+                    <div class="question-top">
+                      <div class="question-top-main">
+                        <span class="question-index-pill">Q{{ loop.index }}</span>
+                        <h2 class="question-text">
+                          {{ q.question }}
+                        </h2>
+                      </div>
 
-                        {% if q.ideal_answer %}
-                            <p><strong>Guidance:</strong> {{ q.ideal_answer }}</p>
-                        {% endif %}
+                      <div class="question-top-right">
                         {% if q.tags %}
-                            <p class="tags">Tags: {{ ", ".join(q.tags) }}</p>
+                          <span class="chip chip-tag">
+                            Tags: {{ ", ".join(q.tags) }}
+                          </span>
                         {% endif %}
 
-                        <!-- Text answer form -->
-                        <form class="job-text-form" method="POST" action="{{ url_for('job_answer') }}">
-                            <input type="hidden" name="job_id" value="{{ job.id }}">
-                            <input type="hidden" name="question_index" value="{{ loop.index0 }}">
-
-                            <label><strong>Your answer (text)</strong></label>
-                            <textarea name="answer" class="practice-textarea"
-                                      placeholder="Type your answer to this question..."></textarea>
-                            <div class="btn-row">
-                                <button type="submit" class="btn btn-primary">
-                                    Submit text answer
-                                </button>
+                        {% if q.ideal_answer or q.tags %}
+                          <details class="guidance-details">
+                            <summary class="guidance-btn">
+                              Guidance and tips
+                            </summary>
+                            <div class="guidance-panel">
+                              {% if q.ideal_answer %}
+                                <p class="guidance-text">
+                                  {{ q.ideal_answer }}
+                                </p>
+                              {% endif %}
+                              {% if q.tags %}
+                                <p class="guidance-tags">
+                                  Focus on: {{ ", ".join(q.tags) }}
+                                </p>
+                              {% endif %}
                             </div>
-                        </form>
-
-                        <!-- Voice answer controls -->
-                        <div class="job-voice-section">
-                            <h4>Answer by voice</h4>
-                            <p class="subtitle">
-                                Record your answer. NextStep.AI will transcribe and evaluate it.
-                            </p>
-
-                            <div class="btn-row" style="margin-top: 0.5rem;">
-                                <button type="button"
-                                        class="btn btn-outline job-start-recording">
-                                    Start recording
-                                </button>
-                                <button type="button"
-                                        class="btn btn-primary job-stop-recording"
-                                        disabled>
-                                    Stop and send
-                                </button>
-                            </div>
-
-                            <div class="audio-status job-audio-status"></div>
-
-                            <div class="feedback-card job-feedback-card">
-                                <h5>Voice feedback</h5>
-                                <div class="transcript">
-                                    <strong>Transcript:</strong>
-                                    <span class="job-transcript"></span>
-                                </div>
-                                <div class="scores">
-                                    <div>Relevance:
-                                        <span class="score-pill job-rel-score"></span>
-                                    </div>
-                                    <div>Confidence:
-                                        <span class="score-pill job-conf-score"></span>
-                                    </div>
-                                    <div>Final:
-                                        <span class="score-pill job-final-score"></span>
-                                    </div>
-                                </div>
-                                <p class="job-feedback-text" style="margin-top:0.8rem;"></p>
-                            </div>
-                        </div>
+                          </details>
+                        {% endif %}
+                      </div>
                     </div>
+
+                    <!-- ANSWER AREA -->
+                    <div class="question-body">
+                      <!-- Text answer card -->
+                      <div class="qa-card qa-card-text">
+                        <div class="qa-card-header">
+                          <span class="qa-title">Text answer</span>
+                          <span class="qa-hint">Use a clear STAR story</span>
+                        </div>
+
+                        <form class="job-text-form"
+                              method="POST"
+                              action="{{ url_for('job_answer') }}">
+                          <input type="hidden" name="job_id" value="{{ job.id }}">
+                          <input type="hidden" name="question_index" value="{{ loop.index0 }}">
+
+                          <textarea
+                            name="answer"
+                            class="practice-textarea"
+                            placeholder="Type your answer here..."
+                          ></textarea>
+
+                          <div class="btn-row">
+                            <button type="submit" class="btn btn-primary btn-pill">
+                              Submit text answer
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+
+                      <!-- Voice answer card -->
+                      <div class="qa-card qa-card-voice">
+                        <div class="qa-card-header">
+                          <span class="qa-title">Voice answer</span>
+                          <span class="qa-hint">Record and review</span>
+                        </div>
+
+                        <div class="job-voice-section">
+                          <div class="btn-row voice-btn-row">
+                            <button type="button"
+                                    class="btn btn-outline btn-pill job-start-recording">
+                              Start recording
+                            </button>
+                            <button type="button"
+                                    class="btn btn-primary btn-pill job-stop-recording"
+                                    disabled>
+                              Stop and send
+                            </button>
+                          </div>
+
+                          <div class="audio-status job-audio-status"></div>
+
+                          <div class="feedback-card job-feedback-card">
+                            <h3 class="feedback-title">Feedback</h3>
+
+                            <div class="transcript">
+                              <strong>Transcript:</strong>
+                              <span class="job-transcript"></span>
+                            </div>
+
+                            <div class="scores">
+                              <div>
+                                Relevance:
+                                <span class="score-pill job-rel-score"></span>
+                              </div>
+                              <div>
+                                Confidence:
+                                <span class="score-pill job-conf-score"></span>
+                              </div>
+                              <div>
+                                Final:
+                                <span class="score-pill job-final-score"></span>
+                              </div>
+                            </div>
+
+                            <p class="job-feedback-text"></p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
                 {% endfor %}
+              </div>
             {% else %}
-                <p>No specific questions added yet for this role. Add them in
-                    <code>data/job_questions.json</code>.
-                </p>
+              <p class="subtitle" style="margin-top: 1rem;">
+                No specific questions added yet for this role.
+                Add them in <code>data/job_questions.json</code>.
+              </p>
             {% endif %}
-        {% else %}
+          {% else %}
             <h1>Job not found</h1>
-        {% endif %}
+          {% endif %}
+        </div>
+      </div>
     </section>
-</div>
+  </main>
+
+  <footer class="landing-footer">
+    <p>© {{ current_year or "2025" }} NextStep.AI. All rights reserved.</p>
+  </footer>
 </body>
 </html>
