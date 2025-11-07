@@ -11,6 +11,96 @@
         "question": "How do you approach designing a new feature end to end?",
         "ideal_answer": "Talk through requirements clarification, writing design docs, breaking work into tasks, choosing data structures and APIs, testing strategy, and monitoring in production.",
         "tags": ["system design", "process"]
+      },
+      {
+        "question": "Describe a time when you had to learn a new technology quickly to complete a project.",
+        "ideal_answer": "Explain the context, what technology it was, how you researched or practiced it, how you integrated it into your work, and what results you achieved.",
+        "tags": ["learning agility", "initiative"]
+      },
+      {
+        "question": "Tell me about a time you disagreed with your manager or teammate on a technical decision.",
+        "ideal_answer": "Show professionalism: describe how you expressed your opinion respectfully, presented data, listened to others, and helped reach a well-reasoned consensus.",
+        "tags": ["communication", "teamwork", "conflict resolution"]
+      },
+      {
+        "question": "Explain a technical concept to a non-technical person.",
+        "ideal_answer": "Choose a topic you know well, simplify jargon, use analogies, and emphasize why it matters in business terms.",
+        "tags": ["communication", "technical clarity"]
+      },
+      {
+        "question": "Tell me about a time you improved the performance or scalability of a system.",
+        "ideal_answer": "Describe the initial bottleneck, tools or metrics you used to analyze it, the changes you made (e.g., caching, async processing), and the measurable improvement.",
+        "tags": ["performance optimization", "impact", "analytical thinking"]
+      },
+      {
+        "question": "What steps do you take to ensure the quality of your code?",
+        "ideal_answer": "Mention code reviews, testing (unit, integration), writing clean code, using linters/static analysis, and CI/CD pipelines.",
+        "tags": ["quality assurance", "best practices"]
+      },
+      {
+        "question": "Describe a time when you had to balance multiple priorities under tight deadlines.",
+        "ideal_answer": "Show how you prioritized tasks, communicated clearly with stakeholders, managed time, and still delivered quality results.",
+        "tags": ["time management", "communication", "resilience"]
+      },
+      {
+        "question": "Tell me about a project you are most proud of.",
+        "ideal_answer": "Highlight what made it meaningful (impact, complexity, innovation), your specific contributions, and lessons learned.",
+        "tags": ["behavioral", "ownership", "achievement"]
+      },
+      {
+        "question": "How do you handle situations where requirements are unclear or constantly changing?",
+        "ideal_answer": "Explain how you ask clarifying questions, document assumptions, iterate quickly, and communicate updates transparently.",
+        "tags": ["adaptability", "stakeholder management"]
+      },
+      {
+        "question": "Describe a time you mentored or helped a teammate improve their code or understanding.",
+        "ideal_answer": "Share how you guided them with empathy, explained concepts clearly, gave constructive feedback, and what the result was.",
+        "tags": ["mentorship", "leadership", "teamwork"]
+      },
+      {
+        "question": "What is your approach to debugging complex issues?",
+        "ideal_answer": "Outline a structured process: reproduce the issue, isolate components, use logging and breakpoints, test hypotheses, and confirm the fix.",
+        "tags": ["debugging", "problem solving", "technical process"]
+      },
+      {
+        "question": "Tell me about a mistake you made in your work and what you learned from it.",
+        "ideal_answer": "Be honest and show accountability. Describe what happened, how you fixed it, and the specific steps you took to prevent it from happening again.",
+        "tags": ["accountability", "growth mindset"]
+      },
+      {
+        "question": "How do you stay current with new programming trends and technologies?",
+        "ideal_answer": "Mention specific habits like reading engineering blogs, open source contributions, side projects, conferences, or mentorship.",
+        "tags": ["self development", "curiosity"]
+      },
+      {
+        "question": "Walk me through a time you optimized collaboration between engineering and another team (like design or product).",
+        "ideal_answer": "Show cross-functional skills: how you aligned priorities, improved communication, and delivered a smoother workflow or faster release.",
+        "tags": ["cross functional", "collaboration", "communication"]
+      },
+      {
+        "question": "Describe how you ensure security and privacy in your code.",
+        "ideal_answer": "Talk about secure coding practices, input validation, authentication/authorization principles, and awareness of data privacy laws.",
+        "tags": ["security", "software engineering", "responsibility"]
+      },
+      {
+        "question": "Tell me about a time you improved an existing process or automation in your team.",
+        "ideal_answer": "Focus on identifying inefficiencies, proposing solutions, implementing changes, and quantifying the impact (e.g., time saved).",
+        "tags": ["innovation", "automation", "process improvement"]
+      },
+      {
+        "question": "How do you approach giving and receiving code review feedback?",
+        "ideal_answer": "Highlight respect, clarity, and focus on learning. Mention how you support best practices and see reviews as collaboration, not criticism.",
+        "tags": ["teamwork", "communication", "professionalism"]
+      },
+      {
+        "question": "Describe a time when you had to deliver under incomplete information or high uncertainty.",
+        "ideal_answer": "Explain how you assessed risks, made assumptions explicit, validated them quickly, and adjusted based on feedback.",
+        "tags": ["decision making", "adaptability", "initiative"]
+      },
+      {
+        "question": "Where do you see your biggest growth area as a software engineer?",
+        "ideal_answer": "Show self-awareness and humility: identify a specific technical or soft skill you’re actively improving and what you’re doing about it.",
+        "tags": ["self awareness", "growth mindset"]
       }
     ]
   },
