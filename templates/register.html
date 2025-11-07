@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>NextStep.AI – Sign Up</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="auth-header">
+    <a href="{{ url_for('index') }}" class="brand">NextStep.<span>AI</span></a>
+  </header>
+
+  <main class="auth-container">
+    <div class="auth-card">
+      <h1>Create your account</h1>
+      <p class="subtitle">Practice smarter, track your streaks, and save your progress.</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul class="flash-list">
+            {% for category, message in messages %}
+              <li class="{{ 'flash-error' if category == 'error' else 'flash-success' }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" class="auth-form">
+        <label>Email</label>
+        <input type="email" name="email" required placeholder="you@example.com" />
+
+        <label>Username</label>
+        <input type="text" name="username" required placeholder="your_handle" />
+
+        <label>Password</label>
+        <input type="password" name="password" required placeholder="********" />
+
+        <label>Confirm Password</label>
+        <input type="password" name="confirm_password" required placeholder="********" />
+
+        <label>Profile image URL (optional)</label>
+        <input type="text" name="profile_image_url" placeholder="https://..." />
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="opt_out_emails" name="opt_out_emails" value="1" />
+          <label for="opt_out_emails">I prefer not to receive product emails.</label>
+        </div>
+
+        <button type="submit" class="btn-primary">Sign up</button>
+
+        <p class="switch-link">
+          Already have an account? <a href="{{ url_for('login') }}">Log in</a>
+        </p>
+      </form>
+    </div>
+  </main>
+
+  <footer class="auth-footer">
+    © {{ current_year or "2025" }} NextStep.AI
+  </footer>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>NextStep.AI – Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="auth-header">
+    <a href="{{ url_for('index') }}" class="brand">NextStep.<span>AI</span></a>
+  </header>
+
+  <main class="auth-container">
+    <div class="auth-card">
+      <h1>Welcome back</h1>
+      <p class="subtitle">Log in to continue your interview practice.</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul class="flash-list">
+            {% for category, message in messages %}
+              <li class="{{ 'flash-error' if category == 'error' else 'flash-success' }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" class="auth-form">
+        <label>Email or username</label>
+        <input type="text" name="identifier" required placeholder="you@example.com or your_handle" />
+
+        <label>Password</label>
+        <input type="password" name="password" required placeholder="********" />
+
+        <button type="submit" class="btn-primary">Log in</button>
+
+        <p class="switch-link">
+          New here? <a href="{{ url_for('register') }}">Create an account</a>
+        </p>
+      </form>
+    </div>
+  </main>
+
+  <footer class="auth-footer">
+    © {{ current_year or "2025" }} NextStep.AI
+  </footer>
+</body>
+</html>

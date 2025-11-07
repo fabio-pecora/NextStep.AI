@@ -3,8 +3,22 @@ import json
 import tempfile
 import random
 
-from flask import Flask, render_template, request, jsonify, session
+from flask import (
+    Flask,
+    render_template,
+    request,
+    jsonify,
+    session,
+    redirect,
+    url_for,
+    flash,
+)
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
+
+
+from flask_sqlalchemy import SQLAlchemy
 
 from utils.evaluation import (
     evaluate_answer,
@@ -13,11 +27,269 @@ from utils.evaluation import (
 )
 from utils.prep_generator import generate_prep_report
 
+# -----------------------------------------------------------------------------
+# Flask app + DB config
+# -----------------------------------------------------------------------------
+
 app = Flask(__name__)
 
 # Secret key for sessions (needed to track used questions)
 # For production, set FLASK_SECRET_KEY in your environment
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "change-this-in-production")
+
+# ---- Database connection (Postgres via SQLAlchemy) ----
+# Adjust these or, better, set them as environment variables.
+DB_USER = os.environ.get("DB_USER", "postgres")
+DB_PASSWORD = os.environ.get("DB_PASSWORD", "fabbofabbO1..")
+DB_HOST = os.environ.get("DB_HOST", "localhost")
+DB_PORT = os.environ.get("DB_PORT", "5433")  # DBeaver shows localhost:5433
+DB_NAME = os.environ.get("DB_NAME", "nextstepai_dev")
+
+app.config["SQLALCHEMY_DATABASE_URI"] = (
+    f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+)
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db = SQLAlchemy(app)
+
+# -----------------------------------------------------------------------------
+# SQLAlchemy models (matching the tables we created)
+# -----------------------------------------------------------------------------
+
+class User(db.Model):
+    __tablename__ = "users"
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    profile_image_url = db.Column(db.Text)
+    streak_count = db.Column(db.Integer, default=0)
+    longest_streak = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+
+
+class UserAuthProvider(db.Model):
+    __tablename__ = "user_auth_providers"
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    user_id = db.Column(
+        db.BigInteger, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    provider = db.Column(db.String(50), nullable=False)  # 'password', 'google', etc
+    provider_user_id = db.Column(db.String(255), nullable=False)  # e.g. Google sub
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+    __table_args__ = (
+        db.UniqueConstraint("provider", "provider_user_id", name="uq_provider_user"),
+    )
+
+
+class Badge(db.Model):
+    __tablename__ = "badges"
+
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(50), unique=True, nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+
+class UserBadge(db.Model):
+    __tablename__ = "user_badges"
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    user_id = db.Column(
+        db.BigInteger, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    badge_id = db.Column(
+        db.Integer, db.ForeignKey("badges.id", ondelete="CASCADE"), nullable=False
+    )
+    awarded_at = db.Column(db.DateTime, server_default=db.func.now())
+
+    __table_args__ = (
+        db.UniqueConstraint("user_id", "badge_id", name="uq_user_badge"),
+    )
+
+
+class Job(db.Model):
+    __tablename__ = "jobs"
+
+    id = db.Column(db.Integer, primary_key=True)
+    slug = db.Column(db.String(80), unique=True, nullable=False)
+    title = db.Column(db.String(120), nullable=False)
+    category = db.Column(db.String(80))
+    icon_emoji = db.Column(db.String(8))
+    is_active = db.Column(db.Boolean, nullable=False, server_default=db.text("TRUE"))
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+
+class JobSpecificQuestion(db.Model):
+    __tablename__ = "job_specific_questions"
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    job_id = db.Column(
+        db.Integer, db.ForeignKey("jobs.id", ondelete="CASCADE"), nullable=False
+    )
+    question_index = db.Column(db.Integer, nullable=False)
+    question = db.Column(db.Text, nullable=False)
+    ideal_answer = db.Column(db.Text)
+    # stored as text[] in Postgres; SQLAlchemy will treat as plain text here
+    tags = db.Column(db.ARRAY(db.Text), nullable=True)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+    __table_args__ = (
+        db.UniqueConstraint("job_id", "question_index", name="uq_job_question_idx"),
+    )
+
+
+class DailyQuestion(db.Model):
+    __tablename__ = "daily_questions"
+
+    id = db.Column(db.Integer, primary_key=True)
+    question_date = db.Column(db.Date, unique=True, nullable=False)
+    question = db.Column(db.Text, nullable=False)
+    ideal_answer = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+
+class Answer(db.Model):
+    __tablename__ = "answers"
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    user_id = db.Column(
+        db.BigInteger, db.ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    source = db.Column(db.String(30), nullable=False)  # 'practice', 'daily', 'job'
+    question_type = db.Column(db.String(30))  # e.g. 'generic', 'job'
+    job_id = db.Column(
+        db.Integer, db.ForeignKey("jobs.id", ondelete="SET NULL"), nullable=True
+    )
+    job_question_id = db.Column(
+        db.BigInteger,
+        db.ForeignKey("job_specific_questions.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    daily_question_id = db.Column(
+        db.Integer,
+        db.ForeignKey("daily_questions.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    question_text = db.Column(db.Text, nullable=False)
+    user_answer = db.Column(db.Text, nullable=False)
+    transcript = db.Column(db.Text)
+    score_structure = db.Column(db.Integer)
+    score_clarity = db.Column(db.Integer)
+    score_relevance = db.Column(db.Integer)
+    score_overall = db.Column(db.Integer)
+    feedback = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+
+class StreakHistory(db.Model):
+    __tablename__ = "streak_history"
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    user_id = db.Column(
+        db.BigInteger, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    streak_date = db.Column(db.Date, nullable=False)
+    did_answer = db.Column(db.Boolean, nullable=False, server_default=db.text("TRUE"))
+    is_daily_question = db.Column(
+        db.Boolean, nullable=False, server_default=db.text("TRUE")
+    )
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+    __table_args__ = (
+        db.UniqueConstraint("user_id", "streak_date", name="uq_user_streak_date"),
+    )
+
+
+class Winner(db.Model):
+    __tablename__ = "winners"
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    daily_question_id = db.Column(
+        db.Integer,
+        db.ForeignKey("daily_questions.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    user_id = db.Column(
+        db.BigInteger, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    winner_username = db.Column(db.String(80))
+    answer_id = db.Column(
+        db.BigInteger, db.ForeignKey("answers.id", ondelete="SET NULL"), nullable=True
+    )
+    ai_comment = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+
+class PrepReport(db.Model):
+    __tablename__ = "prep_reports"
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    user_id = db.Column(
+        db.BigInteger, db.ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    job_title = db.Column(db.String(200), nullable=False)
+    company_name = db.Column(db.String(200))
+    job_description = db.Column(db.Text)
+    resume = db.Column(db.Text)
+    report_json = db.Column(db.JSON, nullable=False)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+
+class Course(db.Model):
+    __tablename__ = "courses"
+
+    id = db.Column(db.Integer, primary_key=True)
+    slug = db.Column(db.String(80), unique=True, nullable=False)
+    title = db.Column(db.String(200), nullable=False)
+    short_description = db.Column(db.Text)
+    level = db.Column(db.String(50))
+    is_active = db.Column(db.Boolean, nullable=False, server_default=db.text("TRUE"))
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+
+class CourseLesson(db.Model):
+    __tablename__ = "course_lessons"
+
+    id = db.Column(db.Integer, primary_key=True)
+    course_id = db.Column(
+        db.Integer, db.ForeignKey("courses.id", ondelete="CASCADE"), nullable=False
+    )
+    lesson_index = db.Column(db.Integer, nullable=False)
+    title = db.Column(db.String(200), nullable=False)
+    content_md = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+    __table_args__ = (
+        db.UniqueConstraint("course_id", "lesson_index", name="uq_course_lesson_idx"),
+    )
+
+
+class CourseQuiz(db.Model):
+    __tablename__ = "course_quizzes"
+
+    id = db.Column(db.Integer, primary_key=True)
+    course_id = db.Column(
+        db.Integer, db.ForeignKey("courses.id", ondelete="CASCADE"), nullable=False
+    )
+    lesson_id = db.Column(
+        db.Integer, db.ForeignKey("course_lessons.id", ondelete="CASCADE"), nullable=True
+    )
+    question = db.Column(db.Text, nullable=False)
+    options = db.Column(db.ARRAY(db.Text))
+    correct_option_index = db.Column(db.Integer)
+    explanation = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+
+# -----------------------------------------------------------------------------
+# File paths for existing JSON-based data (still used)
+# -----------------------------------------------------------------------------
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -25,6 +297,39 @@ QUESTIONS_PATH = os.path.join(BASE_DIR, "data", "questions.json")
 JOBS_PATH = os.path.join(BASE_DIR, "data", "jobs.json")
 JOB_QUESTIONS_PATH = os.path.join(BASE_DIR, "data", "job_questions.json")
 WINNERS_PATH = os.path.join(BASE_DIR, "data", "winners.json")
+
+
+# -----------------------------------------------------------------------------
+# Helper functions
+# ----------------------------------------------------------------------------
+
+def get_current_user():
+    """Return the logged-in user object or None."""
+    user_id = session.get("user_id")
+    if not user_id:
+        return None
+    return User.query.get(user_id)
+
+
+def login_required(view_func):
+    """Decorator to protect routes that require authentication."""
+    @wraps(view_func)
+    def wrapped(*args, **kwargs):
+        if not session.get("user_id"):
+            # optional: remember where they were going
+            next_url = request.path
+            return redirect(url_for("login", next=next_url))
+        return view_func(*args, **kwargs)
+    return wrapped
+
+
+@app.context_processor
+def inject_current_user():
+    """
+    Make `current_user` available in all templates.
+    Usage in HTML:  {% if current_user %} ... {% endif %}
+    """
+    return {"current_user": get_current_user()}
 
 
 def load_questions():
@@ -78,6 +383,168 @@ def get_next_question():
     session["used_question_ids"] = used_ids
 
     return question
+
+
+def save_answer_to_db(
+    *,
+    source: str,
+    question_type: str,
+    question_text: str,
+    user_answer_text: str,
+    eval_result: dict,
+    transcript: str = None,
+    user_id: int = None,
+    job_id: int = None,
+    job_question_id: int = None,
+    daily_question_id: int = None,
+) -> None:
+    """
+    Best-effort helper: store an evaluated answer in the answers table.
+    If anything fails (DB connection, etc.), we swallow the exception so the
+    user still gets feedback.
+    """
+    try:
+        scores = eval_result.get("scores", {}) or {}
+        feedback = eval_result.get("feedback") or eval_result.get("feedback_text")
+
+        answer = Answer(
+            user_id=user_id,
+            source=source,
+            question_type=question_type,
+            job_id=job_id,
+            job_question_id=job_question_id,
+            daily_question_id=daily_question_id,
+            question_text=question_text,
+            user_answer=user_answer_text,
+            transcript=transcript,
+            score_structure=scores.get("structure"),
+            score_clarity=scores.get("clarity"),
+            score_relevance=scores.get("relevance"),
+            score_overall=scores.get("overall"),
+            feedback=feedback,
+        )
+        db.session.add(answer)
+        db.session.commit()
+    except Exception:
+        # In early development we don't want DB hiccups to crash the app.
+        db.session.rollback()
+
+
+# -----------------------------------------------------------------------------
+# Routes
+# -----------------------------------------------------------------------------
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    """
+    Simple registration with email, username, password, optional profile image,
+    and opt-out checkbox (stored only in DB, not yet in model).
+    """
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
+        confirm = request.form.get("confirm_password", "")
+        profile_image_url = request.form.get("profile_image_url", "").strip() or None
+        opt_out_emails = bool(request.form.get("opt_out_emails"))
+
+        error = None
+
+        if not email or not username or not password:
+            error = "Please fill in email, username, and password."
+        elif password != confirm:
+            error = "Passwords do not match."
+        else:
+            # Check uniqueness
+            existing_email = User.query.filter_by(email=email).first()
+            existing_username = User.query.filter_by(username=username).first()
+            if existing_email:
+                error = "That email is already registered."
+            elif existing_username:
+                error = "That username is already taken."
+
+        if error:
+            flash(error, "error")
+            return render_template("register.html")
+
+        # Create user
+        hashed = generate_password_hash(password)
+        user = User(
+            email=email,
+            username=username,
+            password_hash=hashed,
+            profile_image_url=profile_image_url,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        # Optional: store opt_out_emails directly via raw SQL if column exists
+        try:
+            if opt_out_emails:
+                db.session.execute(
+                    db.text(
+                        "UPDATE users SET opt_out_emails = :opt_out WHERE id = :uid"
+                    ),
+                    {"opt_out": True, "uid": user.id},
+                )
+                db.session.commit()
+        except Exception:
+            db.session.rollback()
+
+        # Log them in
+        session["user_id"] = user.id
+        flash("Welcome to NextStep.AI! Your account has been created.", "success")
+        return redirect(url_for("index"))
+
+    return render_template("register.html")
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    """
+    Login with email OR username + password.
+    """
+    if request.method == "POST":
+        identifier = request.form.get("identifier", "").strip().lower()
+        password = request.form.get("password", "")
+
+        # Try to match by email or username
+        user = (
+            User.query.filter(db.func.lower(User.email) == identifier).first()
+            or User.query.filter(db.func.lower(User.username) == identifier).first()
+        )
+
+        if not user or not check_password_hash(user.password_hash, password):
+            flash("Invalid credentials. Please try again.", "error")
+            return render_template("login.html")
+
+        # Success: store session
+        session["user_id"] = user.id
+
+        # Optional: update last_login_at if your table has it
+        try:
+            db.session.execute(
+                db.text("UPDATE users SET last_login_at = NOW() WHERE id = :uid"),
+                {"uid": user.id},
+            )
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+
+        next_url = request.args.get("next") or url_for("index")
+        return redirect(next_url)
+
+    return render_template("login.html")
+
+
+@app.route("/logout")
+def logout():
+    """Log the user out by clearing the session."""
+    session.pop("user_id", None)
+    flash("You have been logged out.", "success")
+    return redirect(url_for("index"))
+
 
 
 @app.route("/", methods=["GET"])
@@ -141,6 +608,15 @@ def answer():
         user_answer=user_answer,
     )
 
+    # Store in DB (source='practice', question_type='generic')
+    save_answer_to_db(
+        source="practice",
+        question_type="generic",
+        question_text=current_question["question"],
+        user_answer_text=user_answer,
+        eval_result=eval_result,
+    )
+
     return render_template("result.html", result=eval_result)
 
 
@@ -188,6 +664,17 @@ def audio():
         )
 
         eval_result["transcript"] = transcript_text
+
+        # Store in DB (audio path discarded; transcript saved)
+        save_answer_to_db(
+            source="practice",
+            question_type="generic",
+            question_text=current_question["question"],
+            user_answer_text=transcript_text,
+            eval_result=eval_result,
+            transcript=transcript_text,
+        )
+
         return jsonify(eval_result), 200
 
     except Exception as e:
@@ -249,6 +736,16 @@ def job_answer():
         user_answer=user_answer,
     )
 
+    # Store in DB (we keep job_id None for now to avoid FK issues
+    # until the jobs table is populated consistently)
+    save_answer_to_db(
+        source="job",
+        question_type="job_specific",
+        question_text=current_question["question"],
+        user_answer_text=user_answer,
+        eval_result=eval_result,
+    )
+
     return render_template("result.html", result=eval_result)
 
 
@@ -305,6 +802,16 @@ def job_audio():
         )
 
         eval_result["transcript"] = transcript_text
+
+        save_answer_to_db(
+            source="job",
+            question_type="job_specific",
+            question_text=current_question["question"],
+            user_answer_text=transcript_text,
+            eval_result=eval_result,
+            transcript=transcript_text,
+        )
+
         return jsonify(eval_result), 200
 
     except Exception as e:
@@ -322,6 +829,7 @@ def job_audio():
 def jobs():
     """
     Show a list of predefined jobs so the user can browse role specific questions.
+    For now this still uses jobs.json; later we can move to the jobs table.
     """
     jobs_list = load_jobs()
     return render_template("jobs.html", jobs=jobs_list)
@@ -378,6 +886,21 @@ def custom_prep():
 
             if report.get("error"):
                 error = report["error"]
+            else:
+                # Persist the report JSON in the DB (best-effort)
+                try:
+                    prep = PrepReport(
+                        user_id=None,  # no auth yet
+                        job_title=job_title,
+                        company_name=company_name,
+                        job_description=job_description,
+                        resume=resume,
+                        report_json=report,
+                    )
+                    db.session.add(prep)
+                    db.session.commit()
+                except Exception:
+                    db.session.rollback()
 
     return render_template(
         "custom_prep.html",
@@ -390,7 +913,10 @@ def custom_prep():
 def winners():
     """
     Show the last 20 winning answers for the daily question.
-    Most recent first.
+
+    NOTE: For now this still reads from winners.json so your existing
+    UI continues to work. Later we can switch this to query the
+    winners + daily_questions tables.
     """
     winners_data = load_winners()
 
@@ -419,5 +945,14 @@ def courses():
     return render_template("courses.html")
 
 
+# -----------------------------------------------------------------------------
+# Entrypoint
+# -----------------------------------------------------------------------------
+
 if __name__ == "__main__":
+    # Make sure tables exist (in dev you can uncomment the next 2 lines once;
+    # in production you'll handle migrations separately with Alembic, etc.)
+    # with app.app_context():
+    #     db.create_all()
+
     app.run(host="0.0.0.0", port=5000, debug=True)

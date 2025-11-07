@@ -2736,3 +2736,163 @@ html {
     align-items: flex-start;
   }
 }
+
+
+/* ========== Auth Pages (Login & Signup) ========== */
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header */
+.auth-header {
+  text-align: center;
+  padding: 2rem 0 1rem;
+}
+
+.auth-header .brand {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-decoration: none;
+}
+
+.auth-header .brand span {
+  color: #2563eb;
+}
+
+/* Main container */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  padding: 2rem;
+}
+
+/* Card */
+.auth-card {
+  background: #ffffff;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  width: 100%;
+  max-width: 420px;
+  text-align: left;
+}
+
+.auth-card h1 {
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  font-size: 1.6rem;
+}
+
+.auth-card .subtitle {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Flash messages */
+.flash-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+.flash-error {
+  color: #dc2626;
+}
+
+.flash-success {
+  color: #16a34a;
+}
+
+/* Form */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.auth-form label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.auth-form input[type="text"],
+.auth-form input[type="email"],
+.auth-form input[type="password"] {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-form input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  outline: none;
+}
+
+/* Checkbox */
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.checkbox-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+}
+
+/* Switch link (signup/login) */
+.switch-link {
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.switch-link a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.switch-link a:hover {
+  text-decoration: underline;
+}
+
+/* Footer */
+.auth-footer {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  padding: 1rem 0 2rem;
+}

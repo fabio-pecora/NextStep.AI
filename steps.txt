@@ -8,3 +8,5 @@ check key: echo $env:OPENAI_API_KEY
 
 
 maybe something like "a new question everyday, and we will share the best answer fror us at night"
+
+DB Connection url:    postgresql://postgres:YOUR_PASSWORD@localhost:5433/nextstepai_dev
