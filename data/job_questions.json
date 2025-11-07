@@ -104,14 +104,112 @@
       }
     ]
   },
+  
   "2": {
     "job_title": "Data Scientist",
     "questions": [
       {
-        "question": "Walk me through a machine learning project you led.",
-        "ideal_answer": "Explain business problem, data collection and cleaning, feature engineering, model selection, evaluation metrics, deployment, and impact on the business.",
-        "tags": ["behavioral", "machine learning"]
+        "question": "Tell me about a data project where you created significant business impact.",
+        "ideal_answer": "Describe the business problem, the data you used, methods applied (ML, stats, visualization), and measurable results such as cost savings or revenue improvement.",
+        "tags": ["impact", "business acumen", "communication"]
+      },
+      {
+        "question": "Explain a complex machine learning concept to a non-technical audience.",
+        "ideal_answer": "Pick a concrete concept like overfitting or regularization and use analogies and simple examples to show understanding and communication skills.",
+        "tags": ["communication", "technical clarity"]
+      },
+      {
+        "question": "Walk me through the lifecycle of a data science project you’ve worked on.",
+        "ideal_answer": "Explain how you defined the problem, collected and cleaned data, explored features, built and evaluated models, and communicated insights.",
+        "tags": ["end to end project", "process", "data pipeline"]
+      },
+      {
+        "question": "Tell me about a time you dealt with messy or incomplete data.",
+        "ideal_answer": "Describe how you identified missing or inconsistent values, the strategies used (imputation, exclusion, domain logic), and the effect on model performance.",
+        "tags": ["data cleaning", "problem solving"]
+      },
+      {
+        "question": "How do you choose which evaluation metrics to use for a model?",
+        "ideal_answer": "Explain how metrics depend on business goals and class distribution; mention precision, recall, F1, ROC-AUC, MAPE, etc., and trade-offs between them.",
+        "tags": ["model evaluation", "machine learning", "decision making"]
+      },
+      {
+        "question": "Describe a time when your model or analysis was wrong. What did you learn?",
+        "ideal_answer": "Share a real example, what assumptions failed, how you identified the issue, what corrective action you took, and how it improved future work.",
+        "tags": ["accountability", "learning mindset", "model validation"]
+      },
+      {
+        "question": "How do you handle highly imbalanced datasets?",
+        "ideal_answer": "Discuss resampling, weighted loss functions, anomaly detection, and how to align model evaluation with business priorities.",
+        "tags": ["machine learning", "data preprocessing", "problem solving"]
+      },
+      {
+        "question": "Tell me about a time you had to influence a business decision with data.",
+        "ideal_answer": "Describe how you framed the problem in business terms, used data to support your case, and persuaded stakeholders with clear communication.",
+        "tags": ["storytelling", "stakeholder influence", "business impact"]
+      },
+      {
+        "question": "How do you approach feature engineering for predictive models?",
+        "ideal_answer": "Mention domain understanding, encoding categorical variables, transformations, feature selection, and preventing data leakage.",
+        "tags": ["feature engineering", "machine learning", "modeling"]
+      },
+      {
+        "question": "Describe a situation where you had conflicting insights from data sources.",
+        "ideal_answer": "Explain how you validated data quality, compared methodologies, collaborated with stakeholders, and made transparent decisions.",
+        "tags": ["data integrity", "communication", "decision making"]
+      },
+      {
+        "question": "What’s your process for selecting the right model for a given problem?",
+        "ideal_answer": "Discuss understanding the objective, starting simple (baseline models), considering complexity vs interpretability, and iterating through experiments.",
+        "tags": ["model selection", "critical thinking", "ML process"]
+      },
+      {
+        "question": "Tell me about a time you collaborated with engineers or product managers on a data-driven feature.",
+        "ideal_answer": "Highlight teamwork, your role in model deployment or metric definition, and how collaboration improved delivery or impact.",
+        "tags": ["cross functional", "teamwork", "production ML"]
+      },
+      {
+        "question": "Explain a time when you had to communicate uncertainty or limitations of your model.",
+        "ideal_answer": "Show integrity: discuss confidence intervals, assumptions, and how you set realistic expectations with decision-makers.",
+        "tags": ["communication", "ethics", "model evaluation"]
+      },
+      {
+        "question": "How do you ensure the reproducibility of your analyses?",
+        "ideal_answer": "Talk about version control (Git), notebooks, environment tracking, data versioning, and documentation best practices.",
+        "tags": ["reproducibility", "process", "data science engineering"]
+      },
+      {
+        "question": "What is the most technically challenging model or algorithm you have implemented?",
+        "ideal_answer": "Pick one (e.g., XGBoost, neural network, Bayesian model), explain what made it complex, how you optimized or tuned it, and what results it achieved.",
+        "tags": ["machine learning", "technical depth", "optimization"]
+      },
+      {
+        "question": "Describe a time when your analysis changed the direction of a product or strategy.",
+        "ideal_answer": "Explain how insights led to a concrete change (feature prioritization, pricing strategy, marketing shift) and its measurable outcome.",
+        "tags": ["business impact", "insight", "storytelling"]
+      },
+      {
+        "question": "How do you approach A/B testing or experiment design?",
+        "ideal_answer": "Describe control vs treatment, randomization, sample size calculation, and how you interpret p-values and confidence intervals.",
+        "tags": ["experimentation", "statistics", "decision science"]
+      },
+      {
+        "question": "Tell me about a time you automated a repetitive analysis task.",
+        "ideal_answer": "Show initiative: explain what the task was, the tool or script you built (Python, Airflow, etc.), and how it saved time or reduced errors.",
+        "tags": ["automation", "engineering", "efficiency"]
+      },
+      {
+        "question": "How do you evaluate model fairness and avoid bias?",
+        "ideal_answer": "Mention collecting balanced data, using fairness metrics, monitoring bias drift, and maintaining transparency in model decisions.",
+        "tags": ["ethics", "fairness", "responsible AI"]
+      },
+      {
+        "question": "What data science area are you most interested in growing within the next year?",
+        "ideal_answer": "Be specific: mention something like causal inference, LLM applications, MLOps, or advanced NLP, and describe how you’re learning it.",
+        "tags": ["growth mindset", "learning", "curiosity"]
       }
     ]
   }
 }
+
+
