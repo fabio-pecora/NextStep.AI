@@ -17,7 +17,6 @@ from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
-
 from flask_sqlalchemy import SQLAlchemy
 
 from utils.evaluation import (
@@ -27,9 +26,9 @@ from utils.evaluation import (
 )
 from utils.prep_generator import generate_prep_report
 
-# -----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # Flask app + DB config
-# -----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 app = Flask(__name__)
 
@@ -38,11 +37,10 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "change-this-in-production")
 
 # ---- Database connection (Postgres via SQLAlchemy) ----
-# Adjust these or, better, set them as environment variables.
 DB_USER = os.environ.get("DB_USER", "postgres")
 DB_PASSWORD = os.environ.get("DB_PASSWORD", "fabbofabbO1..")
 DB_HOST = os.environ.get("DB_HOST", "localhost")
-DB_PORT = os.environ.get("DB_PORT", "5433")  # DBeaver shows localhost:5433
+DB_PORT = os.environ.get("DB_PORT", "5433")
 DB_NAME = os.environ.get("DB_NAME", "nextstepai_dev")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = (
@@ -52,9 +50,10 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-# -----------------------------------------------------------------------------
-# SQLAlchemy models (matching the tables we created)
-# -----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# SQLAlchemy models
+# ---------------------------------------------------------------------------
+
 
 class User(db.Model):
     __tablename__ = "users"
@@ -67,7 +66,6 @@ class User(db.Model):
     streak_count = db.Column(db.Integer, default=0)
     longest_streak = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
-
 
 
 class UserAuthProvider(db.Model):
@@ -135,7 +133,6 @@ class JobSpecificQuestion(db.Model):
     question_index = db.Column(db.Integer, nullable=False)
     question = db.Column(db.Text, nullable=False)
     ideal_answer = db.Column(db.Text)
-    # stored as text[] in Postgres; SQLAlchemy will treat as plain text here
     tags = db.Column(db.ARRAY(db.Text), nullable=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
@@ -153,37 +150,46 @@ class DailyQuestion(db.Model):
     ideal_answer = db.Column(db.Text)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
-
 class Answer(db.Model):
     __tablename__ = "answers"
 
     id = db.Column(db.BigInteger, primary_key=True)
+
+    # From your SQL script: NOT NULL and ON DELETE CASCADE
     user_id = db.Column(
-        db.BigInteger, db.ForeignKey("users.id", ondelete="SET NULL"), nullable=True
-    )
-    source = db.Column(db.String(30), nullable=False)  # 'practice', 'daily', 'job'
-    question_type = db.Column(db.String(30))  # e.g. 'generic', 'job'
-    job_id = db.Column(
-        db.Integer, db.ForeignKey("jobs.id", ondelete="SET NULL"), nullable=True
-    )
-    job_question_id = db.Column(
         db.BigInteger,
-        db.ForeignKey("job_specific_questions.id", ondelete="SET NULL"),
-        nullable=True,
+        db.ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
     )
-    daily_question_id = db.Column(
-        db.Integer,
-        db.ForeignKey("daily_questions.id", ondelete="SET NULL"),
-        nullable=True,
+
+    # 'daily', 'generic', 'job', etc.
+    question_source = db.Column(db.String(20), nullable=False)
+
+    # ID from daily_questions / jobs / job_specific_questions (optional)
+    question_id = db.Column(db.BigInteger)
+
+    # Actual question text used when the user answered
+    raw_question_text = db.Column(db.Text, nullable=False)
+
+    # User's answer text
+    answer_text = db.Column(db.Text, nullable=False)
+
+    # Whether this came from voice or not
+    is_voice = db.Column(
+        db.Boolean,
+        nullable=False,
+        server_default=db.text("FALSE"),
     )
-    question_text = db.Column(db.Text, nullable=False)
-    user_answer = db.Column(db.Text, nullable=False)
+
     transcript = db.Column(db.Text)
-    score_structure = db.Column(db.Integer)
-    score_clarity = db.Column(db.Integer)
-    score_relevance = db.Column(db.Integer)
-    score_overall = db.Column(db.Integer)
-    feedback = db.Column(db.Text)
+
+    # Scores (NUMERIC(5,2) in your SQL)
+    relevance_score = db.Column(db.Numeric(5, 2))
+    confidence_score = db.Column(db.Numeric(5, 2))
+    final_score = db.Column(db.Numeric(5, 2))
+
+    feedback_text = db.Column(db.Text)
+
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
 
@@ -231,13 +237,20 @@ class PrepReport(db.Model):
 
     id = db.Column(db.BigInteger, primary_key=True)
     user_id = db.Column(
-        db.BigInteger, db.ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+        db.BigInteger,
+        db.ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
     )
-    job_title = db.Column(db.String(200), nullable=False)
-    company_name = db.Column(db.String(200))
+    job_title = db.Column(db.String(255), nullable=False)
+    company_name = db.Column(db.String(255))
     job_description = db.Column(db.Text)
-    resume = db.Column(db.Text)
+
+    # 👇 match the actual DB column name: resume_text
+    resume_text = db.Column(db.Text)
+
+    # JSONB in Postgres; db.JSON is fine from SQLAlchemy’s side
     report_json = db.Column(db.JSON, nullable=False)
+
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
 
@@ -287,9 +300,9 @@ class CourseQuiz(db.Model):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
 
-# -----------------------------------------------------------------------------
-# File paths for existing JSON-based data (still used)
-# -----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# File paths for existing JSON-based data
+# ---------------------------------------------------------------------------
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -298,10 +311,10 @@ JOBS_PATH = os.path.join(BASE_DIR, "data", "jobs.json")
 JOB_QUESTIONS_PATH = os.path.join(BASE_DIR, "data", "job_questions.json")
 WINNERS_PATH = os.path.join(BASE_DIR, "data", "winners.json")
 
+# ---------------------------------------------------------------------------
+# Helper functions & auth utilities
+# ---------------------------------------------------------------------------
 
-# -----------------------------------------------------------------------------
-# Helper functions
-# ----------------------------------------------------------------------------
 
 def get_current_user():
     """Return the logged-in user object or None."""
@@ -313,22 +326,20 @@ def get_current_user():
 
 def login_required(view_func):
     """Decorator to protect routes that require authentication."""
+
     @wraps(view_func)
     def wrapped(*args, **kwargs):
         if not session.get("user_id"):
-            # optional: remember where they were going
             next_url = request.path
             return redirect(url_for("login", next=next_url))
         return view_func(*args, **kwargs)
+
     return wrapped
 
 
 @app.context_processor
 def inject_current_user():
-    """
-    Make `current_user` available in all templates.
-    Usage in HTML:  {% if current_user %} ... {% endif %}
-    """
+    """Make `current_user` available in all templates."""
     return {"current_user": get_current_user()}
 
 
@@ -367,13 +378,9 @@ def get_next_question():
     if not questions:
         return None
 
-    # Track which IDs we already used in this session
     used_ids = session.get("used_question_ids", [])
-
-    # Compare as strings because question ids may be int or str in JSON
     available = [q for q in questions if str(q["id"]) not in used_ids]
 
-    # If we used all questions, reset so it feels random again
     if not available:
         used_ids = []
         available = questions
@@ -384,55 +391,91 @@ def get_next_question():
 
     return question
 
-
 def save_answer_to_db(
     *,
     source: str,
-    question_type: str,
+    question_type: str,        # currently unused but kept for future if you want
     question_text: str,
     user_answer_text: str,
     eval_result: dict,
     transcript: str = None,
     user_id: int = None,
-    job_id: int = None,
+    job_id: int = None,        # optional, currently not used in this schema
     job_question_id: int = None,
     daily_question_id: int = None,
 ) -> None:
     """
     Best-effort helper: store an evaluated answer in the answers table.
-    If anything fails (DB connection, etc.), we swallow the exception so the
-    user still gets feedback.
+    Uses the *existing* answers schema from your SQL script:
+      - question_source
+      - question_id
+      - raw_question_text
+      - answer_text
+      - is_voice
+      - transcript
+      - relevance_score / confidence_score / final_score
+      - feedback_text
+    If anything fails (DB connection, etc.), it won't crash the request.
     """
     try:
-        scores = eval_result.get("scores", {}) or {}
-        feedback = eval_result.get("feedback") or eval_result.get("feedback_text")
+        # GPT-based evaluation returns top-level scores:
+        #   relevance_score, confidence_score, final_score, feedback_text
+        # Older / alternative evaluation might put them in eval_result["scores"]
+        scores = eval_result.get("scores") or {}
+
+        relevance = eval_result.get("relevance_score")
+        if relevance is None:
+            relevance = scores.get("relevance")
+
+        confidence = eval_result.get("confidence_score")
+        if confidence is None:
+            # some older logic used "clarity" for this
+            confidence = scores.get("confidence") or scores.get("clarity")
+
+        final = eval_result.get("final_score")
+        if final is None:
+            final = scores.get("overall")
+
+        feedback = (
+            eval_result.get("feedback")
+            or eval_result.get("feedback_text")
+            or None
+        )
+
+        # Decide which numeric question_id to store
+        # (you can extend this later if you want)
+        question_id = None
+        if job_question_id is not None:
+            question_id = job_question_id
+        elif daily_question_id is not None:
+            question_id = daily_question_id
 
         answer = Answer(
-            user_id=user_id,
-            source=source,
-            question_type=question_type,
-            job_id=job_id,
-            job_question_id=job_question_id,
-            daily_question_id=daily_question_id,
-            question_text=question_text,
-            user_answer=user_answer_text,
+            user_id=user_id if user_id is not None else (session.get("user_id") or None),
+            question_source=source,          # e.g. 'practice', 'job', 'daily'
+            question_id=question_id,
+            raw_question_text=question_text,
+            answer_text=user_answer_text,
+            is_voice=bool(transcript),
             transcript=transcript,
-            score_structure=scores.get("structure"),
-            score_clarity=scores.get("clarity"),
-            score_relevance=scores.get("relevance"),
-            score_overall=scores.get("overall"),
-            feedback=feedback,
+            relevance_score=relevance,
+            confidence_score=confidence,
+            final_score=final,
+            feedback_text=feedback,
         )
+
         db.session.add(answer)
         db.session.commit()
+
     except Exception:
-        # In early development we don't want DB hiccups to crash the app.
         db.session.rollback()
+        # swallow exceptions: we don't want DB issues to break the UX
 
 
-# -----------------------------------------------------------------------------
-# Routes
-# -----------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Auth routes (register / login / logout)
+# ---------------------------------------------------------------------------
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -456,7 +499,6 @@ def register():
         elif password != confirm:
             error = "Passwords do not match."
         else:
-            # Check uniqueness
             existing_email = User.query.filter_by(email=email).first()
             existing_username = User.query.filter_by(username=username).first()
             if existing_email:
@@ -468,7 +510,6 @@ def register():
             flash(error, "error")
             return render_template("register.html")
 
-        # Create user
         hashed = generate_password_hash(password)
         user = User(
             email=email,
@@ -479,7 +520,7 @@ def register():
         db.session.add(user)
         db.session.commit()
 
-        # Optional: store opt_out_emails directly via raw SQL if column exists
+        # Optional: store opt_out_emails directly via raw SQL
         try:
             if opt_out_emails:
                 db.session.execute(
@@ -492,7 +533,6 @@ def register():
         except Exception:
             db.session.rollback()
 
-        # Log them in
         session["user_id"] = user.id
         flash("Welcome to NextStep.AI! Your account has been created.", "success")
         return redirect(url_for("index"))
@@ -509,7 +549,6 @@ def login():
         identifier = request.form.get("identifier", "").strip().lower()
         password = request.form.get("password", "")
 
-        # Try to match by email or username
         user = (
             User.query.filter(db.func.lower(User.email) == identifier).first()
             or User.query.filter(db.func.lower(User.username) == identifier).first()
@@ -519,10 +558,8 @@ def login():
             flash("Invalid credentials. Please try again.", "error")
             return render_template("login.html")
 
-        # Success: store session
         session["user_id"] = user.id
 
-        # Optional: update last_login_at if your table has it
         try:
             db.session.execute(
                 db.text("UPDATE users SET last_login_at = NOW() WHERE id = :uid"),
@@ -545,6 +582,45 @@ def logout():
     flash("You have been logged out.", "success")
     return redirect(url_for("index"))
 
+
+# ---------------------------------------------------------------------------
+# Profile route
+# ---------------------------------------------------------------------------
+
+
+@app.route("/profile")
+@login_required
+def profile():
+    """
+    Show profile info + recent answers + recent prep reports.
+    """
+    user = get_current_user()
+
+    recent_answers = (
+        Answer.query.filter_by(user_id=user.id)
+        .order_by(Answer.created_at.desc())
+        .limit(20)
+        .all()
+    )
+
+    recent_reports = (
+        PrepReport.query.filter_by(user_id=user.id)
+        .order_by(PrepReport.created_at.desc())
+        .limit(10)
+        .all()
+    )
+
+    return render_template(
+        "profile.html",
+        user=user,
+        answers=recent_answers,
+        reports=recent_reports,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Main practice routes
+# ---------------------------------------------------------------------------
 
 
 @app.route("/", methods=["GET"])
@@ -601,20 +677,20 @@ def answer():
             result={"error": "Question not found."},
         )
 
-    # GPT based evaluation
     eval_result = gpt_evaluate_answer(
         question=current_question["question"],
         ideal_answer=current_question.get("ideal_answer", ""),
         user_answer=user_answer,
     )
 
-    # Store in DB (source='practice', question_type='generic')
+    current_user = get_current_user()
     save_answer_to_db(
         source="practice",
         question_type="generic",
         question_text=current_question["question"],
         user_answer_text=user_answer,
         eval_result=eval_result,
+        user_id=current_user.id if current_user else None,
     )
 
     return render_template("result.html", result=eval_result)
@@ -665,7 +741,7 @@ def audio():
 
         eval_result["transcript"] = transcript_text
 
-        # Store in DB (audio path discarded; transcript saved)
+        current_user = get_current_user()
         save_answer_to_db(
             source="practice",
             question_type="generic",
@@ -673,6 +749,7 @@ def audio():
             user_answer_text=transcript_text,
             eval_result=eval_result,
             transcript=transcript_text,
+            user_id=current_user.id if current_user else None,
         )
 
         return jsonify(eval_result), 200
@@ -686,6 +763,11 @@ def audio():
                 os.remove(temp_path)
             except Exception:
                 pass
+
+
+# ---------------------------------------------------------------------------
+# Job-specific practice
+# ---------------------------------------------------------------------------
 
 
 @app.route("/job_answer", methods=["POST"])
@@ -736,14 +818,16 @@ def job_answer():
         user_answer=user_answer,
     )
 
-    # Store in DB (we keep job_id None for now to avoid FK issues
-    # until the jobs table is populated consistently)
+    current_user = get_current_user()
     save_answer_to_db(
         source="job",
         question_type="job_specific",
         question_text=current_question["question"],
         user_answer_text=user_answer,
         eval_result=eval_result,
+        user_id=current_user.id if current_user else None,
+        job_id=int(job_id) if job_id else None,
+        # We’re not using real job_question_id from DB yet
     )
 
     return render_template("result.html", result=eval_result)
@@ -803,6 +887,7 @@ def job_audio():
 
         eval_result["transcript"] = transcript_text
 
+        current_user = get_current_user()
         save_answer_to_db(
             source="job",
             question_type="job_specific",
@@ -810,6 +895,8 @@ def job_audio():
             user_answer_text=transcript_text,
             eval_result=eval_result,
             transcript=transcript_text,
+            user_id=current_user.id if current_user else None,
+            job_id=int(job_id) if job_id else None,
         )
 
         return jsonify(eval_result), 200
@@ -823,6 +910,11 @@ def job_audio():
                 os.remove(temp_path)
             except Exception:
                 pass
+
+
+# ---------------------------------------------------------------------------
+# Jobs library (still using JSON for now)
+# ---------------------------------------------------------------------------
 
 
 @app.route("/jobs", methods=["GET"])
@@ -839,7 +931,6 @@ def jobs():
 def job_detail(job_id: int):
     """
     Show questions for a specific job from job_questions.json.
-    You will fill these questions manually over time.
     """
     jobs_list = load_jobs()
     job = next((j for j in jobs_list if j["id"] == job_id), None)
@@ -856,6 +947,11 @@ def job_detail(job_id: int):
         job=job,
         questions=questions,
     )
+
+
+# ---------------------------------------------------------------------------
+# Custom prep reports
+# ---------------------------------------------------------------------------
 
 
 @app.route("/custom_prep", methods=["GET", "POST"])
@@ -887,14 +983,14 @@ def custom_prep():
             if report.get("error"):
                 error = report["error"]
             else:
-                # Persist the report JSON in the DB (best-effort)
+                current_user = get_current_user()
                 try:
                     prep = PrepReport(
-                        user_id=None,  # no auth yet
+                        user_id=current_user.id if current_user else None,
                         job_title=job_title,
                         company_name=company_name,
                         job_description=job_description,
-                        resume=resume,
+                        resume_text=resume,
                         report_json=report,
                     )
                     db.session.add(prep)
@@ -909,18 +1005,19 @@ def custom_prep():
     )
 
 
+# ---------------------------------------------------------------------------
+# Winners & Courses
+# ---------------------------------------------------------------------------
+
+
 @app.route("/winners", methods=["GET"])
 def winners():
     """
     Show the last 20 winning answers for the daily question.
-
-    NOTE: For now this still reads from winners.json so your existing
-    UI continues to work. Later we can switch this to query the
-    winners + daily_questions tables.
+    Still using winners.json for now.
     """
     winners_data = load_winners()
 
-    # Optional: sort by date descending (assuming YYYY-MM-DD or similar)
     try:
         winners_data = sorted(
             winners_data,
@@ -928,10 +1025,8 @@ def winners():
             reverse=True,
         )
     except Exception:
-        # If sorting fails, keep original order
         pass
 
-    # Only keep the latest 20
     winners_data = winners_data[:20]
 
     return render_template("winners.html", winners=winners_data)
@@ -945,14 +1040,11 @@ def courses():
     return render_template("courses.html")
 
 
-# -----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # Entrypoint
-# -----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    # Make sure tables exist (in dev you can uncomment the next 2 lines once;
-    # in production you'll handle migrations separately with Alembic, etc.)
     # with app.app_context():
     #     db.create_all()
-
     app.run(host="0.0.0.0", port=5000, debug=True)

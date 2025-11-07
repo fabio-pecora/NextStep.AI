@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NextStep.AI - Your profile</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="landing-body">
+  <!-- Shared header -->
+  <header class="landing-header">
+    <div class="logo">
+      <a href="{{ url_for('index') }}" class="brand">NextStep.<span>AI</span></a>
+    </div>
+    <nav aria-label="Main navigation">
+      <a href="{{ url_for('index') }}"
+         class="{% if request.endpoint == 'index' %}active{% endif %}">
+        Home
+      </a>
+      <a href="{{ url_for('jobs') }}"
+         class="{% if request.endpoint == 'jobs' %}active{% endif %}">
+        Job Library
+      </a>
+      <a href="{{ url_for('custom_prep') }}"
+         class="{% if request.endpoint == 'custom_prep' %}active{% endif %}">
+        Custom AI Prep
+      </a>
+      <a href="{{ url_for('winners') }}"
+         class="{% if request.endpoint == 'winners' %}active{% endif %}">
+        Winners
+      </a>
+      <a href="{{ url_for('courses') }}"
+         class="{% if request.endpoint == 'courses' %}active{% endif %}">
+        Courses
+      </a>
+
+      {% if current_user %}
+        <a href="{{ url_for('profile') }}"
+           class="{% if request.endpoint == 'profile' %}active{% endif %}">
+          Profile
+        </a>
+        <span style="margin-left:0.75rem; font-size:0.9rem; color:#64748b;">
+          Hi, {{ current_user.username }}
+        </span>
+        <a href="{{ url_for('logout') }}" style="margin-left:0.75rem;">
+          Logout
+        </a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register') }}">Sign up</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main>
+    <section class="job-library-section">
+      <div class="app-shell">
+        <div class="card">
+          <!-- Top: profile info -->
+          <div class="job-header-row">
+            <div>
+              <h1>Your profile</h1>
+              <p class="subtitle">
+                Track your recent answers, AI feedback, and custom prep reports.
+              </p>
+            </div>
+          </div>
+
+          <!-- Basic profile info -->
+          <div class="section-card" style="margin-top:0;">
+            <div class="question-header">
+              <div>
+                <h2 style="margin:0 0 0.25rem;">Account</h2>
+                <p class="subtitle">
+                  Logged in as <strong>{{ current_user.username }}</strong>
+                  {% if current_user.email %} ({{ current_user.email }}){% endif %}
+                </p>
+              </div>
+              <div style="text-align:right; font-size:0.9rem;">
+                <div>
+                  Current streak:
+                  <strong>{{ current_user.streak_count or 0 }}</strong> days
+                </div>
+                <div>
+                  Longest streak:
+                  <strong>{{ current_user.longest_streak or 0 }}</strong> days
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent answers -->
+          <div class="section-card">
+            <div class="question-header">
+              <h2 style="margin:0;">Recent answers</h2>
+              <span class="question-count-pill">
+                Showing latest {{ recent_answers|length }} (max 20)
+              </span>
+            </div>
+
+            {% if recent_answers %}
+              <ul style="list-style:none; padding:0; margin:0.6rem 0 0;">
+                {% for ans in recent_answers %}
+                  <li style="margin-bottom:0.8rem; padding-bottom:0.8rem; border-bottom:1px solid #e5e7eb;">
+                    <div style="font-size:0.8rem; color:#6b7280; margin-bottom:0.25rem;">
+                      Source:
+                      <strong>{{ ans.question_source }}</strong>
+                      ·
+                      {{ ans.created_at.strftime("%Y-%m-%d %H:%M") if ans.created_at else "" }}
+                    </div>
+
+                    <div style="font-size:0.9rem; font-weight:600; margin-bottom:0.2rem;">
+                      Q: {{ ans.raw_question_text }}
+                    </div>
+
+                    <div style="font-size:0.9rem; color:#374151; margin-bottom:0.35rem;">
+                      A: {{ ans.answer_text }}
+                    </div>
+
+                    <div class="scores">
+                      {% if ans.relevance_score is not none %}
+                        <div>
+                          Relevance:
+                          <span class="score-pill">
+                            {{ ans.relevance_score }}
+                          </span>
+                        </div>
+                      {% endif %}
+                      {% if ans.confidence_score is not none %}
+                        <div>
+                          Confidence:
+                          <span class="score-pill">
+                            {{ ans.confidence_score }}
+                          </span>
+                        </div>
+                      {% endif %}
+                      {% if ans.final_score is not none %}
+                        <div>
+                          Final:
+                          <span class="score-pill">
+                            {{ ans.final_score }}
+                          </span>
+                        </div>
+                      {% endif %}
+                    </div>
+
+                    {% if ans.feedback_text %}
+                      <p style="font-size:0.85rem; color:#4b5563; margin-top:0.35rem;">
+                        {{ ans.feedback_text }}
+                      </p>
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p class="subtitle" style="margin-top:0.6rem;">
+                You don’t have any answers saved yet.
+                Go to the <a href="{{ url_for('index') }}">Home</a> page and practice a question!
+              </p>
+            {% endif %}
+          </div>
+
+          <!-- Prep reports -->
+          <div class="section-card">
+            <div class="question-header">
+              <h2 style="margin:0;">Custom prep reports</h2>
+            </div>
+
+            {% if prep_reports %}
+              <ul style="list-style:none; padding:0; margin:0.6rem 0 0;">
+                {% for r in prep_reports %}
+                  <li style="margin-bottom:0.8rem; padding-bottom:0.8rem; border-bottom:1px solid #e5e7eb;">
+                    <div style="font-size:0.9rem; font-weight:600;">
+                      {{ r.job_title }}
+                      {% if r.company_name %}
+                        · <span style="color:#4b5563;">{{ r.company_name }}</span>
+                      {% endif %}
+                    </div>
+                    <div style="font-size:0.8rem; color:#6b7280;">
+                      Generated:
+                      {{ r.created_at.strftime("%Y-%m-%d %H:%M") if r.created_at else "" }}
+                    </div>
+                    {% if r.report_json and r.report_json.get("behavioral_practice") %}
+                      <div style="font-size:0.85rem; color:#4b5563; margin-top:0.35rem;">
+                        Behavioral focus:
+                        {{ r.report_json["behavioral_practice"].get("title", "") }}
+                      </div>
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p class="subtitle" style="margin-top:0.6rem;">
+                You haven’t generated any custom prep reports yet.
+                Try the <a href="{{ url_for('custom_prep') }}">Custom AI Prep</a> page before your next interview.
+              </p>
+            {% endif %}
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="landing-footer">
+    <p>© {{ current_year or "2025" }} NextStep.AI. All rights reserved.</p>
+  </footer>
+</body>
+</html>

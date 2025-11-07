@@ -2896,3 +2896,279 @@ body {
   color: #94a3b8;
   padding: 1rem 0 2rem;
 }
+
+
+/* ===========================
+   PROFILE PAGE
+   =========================== */
+
+.profile-section {
+  padding: 3.5rem 6% 4rem;
+  background: radial-gradient(circle at top left, #e0f2fe 0, #f9fbff 50%, #ffffff 100%);
+}
+
+.profile-shell {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.profile-card {
+  padding: 1.9rem 1.9rem 2.2rem;
+}
+
+/* Header */
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.4rem;
+  margin-bottom: 1.4rem;
+}
+
+.profile-main-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* avatar */
+
+.profile-avatar-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profile-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.profile-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #2563eb, #60a5fa);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-text-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.profile-name {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.profile-email {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.profile-joined {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #9ca3af;
+}
+
+/* stats */
+
+.profile-stats {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.profile-stat-block {
+  min-width: 120px;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.8rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.profile-stat-label {
+  font-size: 0.78rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.2rem;
+}
+
+.profile-stat-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1d4ed8;
+}
+
+/* Body grid */
+
+.profile-body-grid {
+  margin-top: 0.8rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 1.4rem;
+}
+
+.profile-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-section-title {
+  margin: 0 0 0.2rem;
+  font-size: 1.05rem;
+}
+
+.profile-section-subtitle {
+  margin: 0 0 0.8rem;
+  font-size: 0.88rem;
+  color: #64748b;
+}
+
+/* Answers list */
+
+.profile-answer-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.profile-answer-item {
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.8rem;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.profile-answer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.2rem;
+}
+
+.profile-answer-source {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1d4ed8;
+}
+
+.profile-answer-date {
+  font-size: 0.78rem;
+  color: #9ca3af;
+}
+
+.profile-answer-question {
+  margin: 0.1rem 0 0.2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.profile-answer-text {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #4b5563;
+}
+
+.profile-answer-scores {
+  margin-top: 0.4rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.profile-answer-feedback {
+  margin: 0.4rem 0 0;
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+/* Reports */
+
+.profile-report-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.profile-report-item {
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.8rem;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+
+.profile-report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-bottom: 0.2rem;
+}
+
+.profile-report-title {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.profile-report-company {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-left: 0.25rem;
+}
+
+.profile-report-date {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.profile-report-snippet {
+  margin: 0.2rem 0 0;
+  font-size: 0.88rem;
+  color: #4b5563;
+}
+
+.profile-empty {
+  margin: 0.4rem 0 0;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+/* Responsive */
+
+@media (max-width: 900px) {
+  .profile-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .profile-body-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

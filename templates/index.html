@@ -17,7 +17,8 @@
       <a href="{{ url_for('custom_prep') }}">Custom AI Prep</a>
       <a href="{{ url_for('winners') }}">Winners</a>
       <a href="{{ url_for('courses') }}">Courses</a>
-        
+      <a href="{{url_for('profile')}}">Profile</a>
+
       {% if current_user %}
         <span style="margin-left:1rem; font-size:0.9rem; color:#64748b;">
           Hi, {{ current_user.username }}
