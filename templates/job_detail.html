@@ -57,7 +57,7 @@
                   <article
                     class="question-block"
                     data-job-id="{{ job.id }}"
-                    data-question-index="{{ loop.index0 }}"
+                    data-question-id="{{ q.id }}"
                   >
                     <!-- QUESTION AREA -->
                     <div class="question-top">
@@ -110,7 +110,7 @@
                               method="POST"
                               action="{{ url_for('job_answer') }}">
                           <input type="hidden" name="job_id" value="{{ job.id }}">
-                          <input type="hidden" name="question_index" value="{{ loop.index0 }}">
+                          <input type="hidden" name="question_id" value="{{ q.id }}">
 
                           <textarea
                             name="answer"
@@ -180,9 +180,9 @@
                 {% endfor %}
               </div>
             {% else %}
-              <p class="subtitle" style="margin-top: 1rem;">
+              <p class="subtitle" style="margin-top: 1 rem;">
                 No specific questions added yet for this role.
-                Add them in <code>data/job_questions.json</code>.
+                Add rows to the <code>job_specific_questions</code> table.
               </p>
             {% endif %}
           {% else %}

@@ -832,16 +832,15 @@ def audio():
 # Job-specific practice (still JSON-based)
 # ---------------------------------------------------------------------------
 
-
 @app.route("/job_answer", methods=["POST"])
 def job_answer():
     """
     Receive a text answer for a job specific question, evaluate it with GPT,
-    and show feedback.
+    and show feedback. Questions are loaded from the database, not JSON.
     """
     user_answer = request.form.get("answer", "").strip()
     job_id = request.form.get("job_id")
-    question_index_raw = request.form.get("question_index")
+    question_id = request.form.get("question_id")
 
     if not user_answer:
         return render_template(
@@ -849,47 +848,36 @@ def job_answer():
             result={"error": "No answer received. Please type something."},
         )
 
-    try:
-        question_index = int(question_index_raw)
-    except (TypeError, ValueError):
+    if not question_id:
         return render_template(
             "result.html",
-            result={"error": "Invalid question index."},
+            result={"error": "Missing question ID."},
         )
 
-    job_questions_map = load_job_questions()
-    job_entry = job_questions_map.get(str(job_id))
-
-    if not job_entry:
+    question = JobSpecificQuestion.query.get(question_id)
+    if question is None:
         return render_template(
             "result.html",
-            result={"error": "Job questions not found."},
-        )
-
-    questions = job_entry.get("questions", [])
-    try:
-        current_question = questions[question_index]
-    except IndexError:
-        return render_template(
-            "result.html",
-            result={"error": "Question not found for this job."},
+            result={"error": "Job-specific question not found."},
         )
 
     eval_result = gpt_evaluate_answer(
-        question=current_question["question"],
-        ideal_answer=current_question.get("ideal_answer", ""),
+        question=question.question_text,
+        ideal_answer=question.ideal_answer or "",
         user_answer=user_answer,
     )
 
     current_user = get_current_user()
+
     save_answer_to_db(
         source="job",
         question_type="job_specific",
-        question_text=current_question["question"],
+        question_text=question.question_text,
         user_answer_text=user_answer,
         eval_result=eval_result,
         user_id=current_user.id if current_user else None,
         job_id=int(job_id) if job_id else None,
+        job_question_id=question.id,
     )
 
     return render_template("result.html", result=eval_result)
@@ -899,23 +887,24 @@ def job_answer():
 def job_audio():
     """
     Receive audio for a job specific question, transcribe and evaluate with GPT,
-    return JSON.
+    return JSON. Uses DB-backed JobSpecificQuestion.
     """
     job_id = request.form.get("job_id")
-    question_index_raw = request.form.get("question_index")
+    question_id = request.form.get("question_id")
 
     if "audio" not in request.files:
         return jsonify({"error": "No audio file received."}), 400
 
     audio_file = request.files["audio"]
-
     if audio_file.filename == "":
         return jsonify({"error": "Empty audio filename."}), 400
 
-    try:
-        question_index = int(question_index_raw)
-    except (TypeError, ValueError):
-        return jsonify({"error": "Invalid question index."}), 400
+    if not question_id:
+        return jsonify({"error": "Missing question ID."}), 400
+
+    question = JobSpecificQuestion.query.get(question_id)
+    if question is None:
+        return jsonify({"error": "Job-specific question not found."}), 400
 
     filename = secure_filename(audio_file.filename)
     temp_path = None
@@ -927,23 +916,11 @@ def job_audio():
             temp_path = tmp.name
             audio_file.save(temp_path)
 
-        job_questions_map = load_job_questions()
-        job_entry = job_questions_map.get(str(job_id))
-
-        if not job_entry:
-            return jsonify({"error": "Job questions not found."}), 400
-
-        questions = job_entry.get("questions", [])
-        try:
-            current_question = questions[question_index]
-        except IndexError:
-            return jsonify({"error": "Question not found for this job."}), 400
-
         transcript_text = transcribe_audio_whisper(temp_path)
 
         eval_result = gpt_evaluate_answer(
-            question=current_question["question"],
-            ideal_answer=current_question.get("ideal_answer", ""),
+            question=question.question_text,
+            ideal_answer=question.ideal_answer or "",
             user_answer=transcript_text,
         )
 
@@ -953,12 +930,13 @@ def job_audio():
         save_answer_to_db(
             source="job",
             question_type="job_specific",
-            question_text=current_question["question"],
+            question_text=question.question_text,
             user_answer_text=transcript_text,
             eval_result=eval_result,
             transcript=transcript_text,
             user_id=current_user.id if current_user else None,
             job_id=int(job_id) if job_id else None,
+            job_question_id=question.id,
         )
 
         return jsonify(eval_result), 200
@@ -972,6 +950,7 @@ def job_audio():
                 os.remove(temp_path)
             except Exception:
                 pass
+
 
 
 # ---------------------------------------------------------------------------
@@ -992,27 +971,36 @@ def jobs():
     return render_template("jobs.html", jobs=jobs_list)
 
 
-
 @app.route("/jobs/<int:job_id>", methods=["GET"])
 def job_detail(job_id: int):
     """
-    Show questions for a specific job from job_questions.json.
+    Show questions for a specific job from the database.
     """
-    jobs_list = load_jobs()
-    job = next((j for j in jobs_list if j["id"] == job_id), None)
+    job = Job.query.get(job_id)
+    if not job:
+        return render_template("job_detail.html", job=None, questions=[])
 
-    job_questions_map = load_job_questions()
-    job_questions_entry = job_questions_map.get(str(job_id))
-
-    questions = []
-    if job_questions_entry:
-        questions = job_questions_entry.get("questions", [])
-
-    return render_template(
-        "job_detail.html",
-        job=job,
-        questions=questions,
+    # Pull questions from job_specific_questions table
+    db_questions = (
+        JobSpecificQuestion.query
+        .filter_by(job_id=job.id)
+        .order_by(JobSpecificQuestion.id.asc())
+        .all()
     )
+
+    # Map to simple dicts matching what the template expects
+    questions = [
+        {
+            "id": q.id,
+            "question": q.question_text,
+            "ideal_answer": q.ideal_answer,
+            "tags": q.tags or [],
+        }
+        for q in db_questions
+    ]
+
+    return render_template("job_detail.html", job=job, questions=questions)
+
 
 
 # ---------------------------------------------------------------------------
