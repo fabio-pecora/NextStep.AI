@@ -982,10 +982,15 @@ def job_audio():
 @app.route("/jobs", methods=["GET"])
 def jobs():
     """
-    Show a list of predefined jobs so the user can browse role specific questions.
+    Show a list of jobs from the database so the user can browse role-specific questions.
     """
-    jobs_list = load_jobs()
+    jobs_list = (
+        Job.query
+        .order_by(Job.title.asc())
+        .all()
+    )
     return render_template("jobs.html", jobs=jobs_list)
+
 
 
 @app.route("/jobs/<int:job_id>", methods=["GET"])
