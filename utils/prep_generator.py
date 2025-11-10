@@ -159,7 +159,6 @@ STYLE AND RULES
    - If you cannot infer the candidate’s name, set candidate_name to null.
 """
 
-        # We still send the raw candidate info in the user message
         user_message = (
             "Create a full interview preparation report in the JSON format described above.\n\n"
             "Candidate info:\n"
@@ -181,7 +180,6 @@ STYLE AND RULES
         content = response.choices[0].message.content
         data = json.loads(content)
 
-        # Build a report dict that your templates can use
         report = {
             "job_title": job_title,
             "company_name": company_name,
@@ -208,10 +206,7 @@ STYLE AND RULES
 def _local_fallback_report(job_title: str, company_name: Optional[str]) -> Dict:
     """
     Cheap local fallback if GPT is unavailable.
-    This is simple and generic but keeps the feature usable for free,
-    and follows the same overall structure as the main report.
     """
-    # Very simple generic content, just so the UI does not break
     mission_values = []
     culture_snapshot = []
     recent_projects_news = []

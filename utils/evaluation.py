@@ -63,7 +63,6 @@ def get_sentence_model():
     """
     global _sentence_model
     if _sentence_model is None:
-        # This will download the model the first time and cache it locally
         _sentence_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
     return _sentence_model
 
@@ -103,7 +102,6 @@ def score_relevance(question: str, ideal_answer: str, user_answer: str) -> float
     """
     Use sentence embeddings to measure relevance between the user answer
     and the ideal answer, with a small contribution from the question text itself.
-    Returns a score between 0 and 100.
     """
     model = get_sentence_model()
 
@@ -117,10 +115,8 @@ def score_relevance(question: str, ideal_answer: str, user_answer: str) -> float
     sim_ideal = cosine_similarity(ideal_vec, user_vec)
     sim_question = cosine_similarity(question_vec, user_vec)
 
-    # Combine sims, weight ideal answer more heavily
     combined_sim = 0.7 * sim_ideal + 0.3 * sim_question
 
-    # Map from [-1, 1] to [0, 100]
     relevance_score = (combined_sim + 1.0) / 2.0 * 100.0
     relevance_score = max(0.0, min(100.0, relevance_score))
 
@@ -130,26 +126,21 @@ def score_relevance(question: str, ideal_answer: str, user_answer: str) -> float
 def score_confidence(user_answer: str) -> float:
     """
     Approximate "confidence" or communication quality.
-    We combine sentiment (more positive or neutral suggests confidence)
-    and answer length (very short answers are usually low confidence).
-    Returns a score between 0 and 100.
     """
     sentiment = get_sentiment_pipeline()(user_answer[:512])[0]
     label = sentiment["label"]
     score = float(sentiment["score"])
 
-    # Map sentiment label to numeric base
     if label.upper() == "POSITIVE":
-        base = 0.8 + 0.2 * score  # 0.8 to 1.0
+        base = 0.8 + 0.2 * score
     elif label.upper() == "NEUTRAL":
-        base = 0.5 + 0.3 * score  # 0.5 to 0.8
+        base = 0.5 + 0.3 * score
     else:
-        base = 0.2 + 0.3 * (1 - score)  # 0.2 to 0.5
+        base = 0.2 + 0.3 * (1 - score)
 
-    # Length factor: encourage at least 40 words
     words = user_answer.split()
     length = len(words)
-    length_factor = min(length / 40.0, 1.0)  # 0 to 1
+    length_factor = min(length / 40.0, 1.0)
 
     confidence_score = base * 0.6 + length_factor * 0.4
     confidence_score = confidence_score * 100.0
@@ -183,7 +174,9 @@ def build_feedback_text(
     if confidence_score > 80:
         parts.append("You sound confident and clear in your explanation.")
     elif confidence_score > 60:
-        parts.append("Your communication is okay, but you could be more structured and assertive.")
+        parts.append(
+            "Your communication is okay, but you could be more structured and assertive."
+        )
     else:
         parts.append(
             "Your answer comes across as hesitant or incomplete. Try speaking more clearly and giving concrete examples."
@@ -198,13 +191,6 @@ def build_feedback_text(
 def evaluate_answer(question: str, ideal_answer: str, user_answer: str) -> Dict:
     """
     Classical local evaluation function (no GPT).
-    Returns a dict with the fields:
-        question
-        user_answer
-        relevance_score
-        confidence_score
-        final_score
-        feedback_text
     """
     relevance_score = score_relevance(question, ideal_answer, user_answer)
     confidence_score = score_confidence(user_answer)
@@ -228,19 +214,11 @@ def evaluate_answer(question: str, ideal_answer: str, user_answer: str) -> Dict:
     }
 
 
-# Whisper transcription support
 def transcribe_audio_whisper(audio_path: str) -> str:
     """
     Transcribe an audio file using the open source Whisper model.
-
-    Uses the "base" model which is a good compromise between speed and accuracy
-    on CPU. You can change to "small" or "medium" if you have a stronger machine.
-
-    Make sure you have installed:
-        pip install openai-whisper
-    and that ffmpeg is installed on your system.
     """
-    import whisper  # imported here so that text-only runs do not require it
+    import whisper
 
     model = whisper.load_model("base")
     result = model.transcribe(audio_path, language="en")
@@ -248,7 +226,6 @@ def transcribe_audio_whisper(audio_path: str) -> str:
     return text
 
 
-# Optional GPT based evaluation for richer feedback
 def gpt_evaluate_answer(
     question: str,
     ideal_answer: str,
@@ -257,12 +234,6 @@ def gpt_evaluate_answer(
 ) -> Dict:
     """
     Use OpenAI GPT to evaluate the answer.
-
-    It returns a dict with the same fields as evaluate_answer, plus
-    strengths and improvements from the model.
-
-    The GPT model is instructed to be strict, so typical decent answers
-    should fall around 55–70 rather than getting very high scores easily.
     """
     from openai import OpenAI
     import json
@@ -284,18 +255,15 @@ def gpt_evaluate_answer(
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_prompt},
         ],
-        # Ask the API to respond with valid JSON
         response_format={"type": "json_object"},
     )
 
     content = response.choices[0].message.content
     data = json.loads(content)
 
-    # Extract scores with safe defaults
     rel = float(data.get("relevance_score", 0.0))
     conf = float(data.get("confidence_score", 0.0))
 
-    # If GPT provided a final_score, use it; otherwise compute from rel/conf
     gpt_final = data.get("final_score")
     if gpt_final is not None:
         final_score = float(gpt_final)

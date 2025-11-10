@@ -2,6 +2,7 @@ import os
 import json
 import tempfile
 import random
+from datetime import datetime, date, time, timedelta
 
 from flask import (
     Flask,
@@ -26,6 +27,7 @@ from utils.evaluation import (
 )
 from utils.prep_generator import generate_prep_report
 
+
 # ---------------------------------------------------------------------------
 # Flask app + DB config
 # ---------------------------------------------------------------------------
@@ -36,7 +38,7 @@ app = Flask(__name__)
 # For production, set FLASK_SECRET_KEY in your environment
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "change-this-in-production")
 
-# ---- Database connection (Postgres via SQLAlchemy) ----
+# Database connection (Postgres via SQLAlchemy)
 DB_USER = os.environ.get("DB_USER", "postgres")
 DB_PASSWORD = os.environ.get("DB_PASSWORD", "fabbofabbO1..")
 DB_HOST = os.environ.get("DB_HOST", "localhost")
@@ -51,7 +53,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 # ---------------------------------------------------------------------------
-# SQLAlchemy models
+# SQLAlchemy models aligned with your actual DB schema
 # ---------------------------------------------------------------------------
 
 
@@ -61,11 +63,36 @@ class User(db.Model):
     id = db.Column(db.BigInteger, primary_key=True)
     email = db.Column(db.String(255), unique=True, nullable=False)
     username = db.Column(db.String(50), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
+    password_hash = db.Column(db.Text, nullable=False)
     profile_image_url = db.Column(db.Text)
-    streak_count = db.Column(db.Integer, default=0)
-    longest_streak = db.Column(db.Integer, default=0)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+    # opt_out_emails BOOLEAN NOT NULL DEFAULT FALSE
+    opt_out_emails = db.Column(
+        db.Boolean, nullable=False, server_default=db.text("FALSE")
+    )
+
+    # streak_count INT NOT NULL DEFAULT 0
+    streak_count = db.Column(
+        db.Integer, nullable=False, server_default=db.text("0")
+    )
+
+    # longest_streak INT NOT NULL DEFAULT 0
+    longest_streak = db.Column(
+        db.Integer, nullable=False, server_default=db.text("0")
+    )
+
+    # Note: we DO NOT map last_login_at here,
+    # because the column does not exist in the current DB.
+
+    # created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    created_at = db.Column(
+        db.DateTime, nullable=False, server_default=db.func.now()
+    )
+
+    # updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    updated_at = db.Column(
+        db.DateTime, nullable=False, server_default=db.func.now()
+    )
 
 
 class UserAuthProvider(db.Model):
@@ -73,54 +100,70 @@ class UserAuthProvider(db.Model):
 
     id = db.Column(db.BigInteger, primary_key=True)
     user_id = db.Column(
-        db.BigInteger, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        db.BigInteger,
+        db.ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
     )
-    provider = db.Column(db.String(50), nullable=False)  # 'password', 'google', etc
-    provider_user_id = db.Column(db.String(255), nullable=False)  # e.g. Google sub
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    provider = db.Column(db.String(50), nullable=False)
+    provider_user_id = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(
+        db.DateTime, nullable=False, server_default=db.func.now()
+    )
 
     __table_args__ = (
         db.UniqueConstraint("provider", "provider_user_id", name="uq_provider_user"),
     )
 
 
-class Badge(db.Model):
-    __tablename__ = "badges"
+class DailyQuestion(db.Model):
+    __tablename__ = "daily_questions"
 
-    id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String(50), unique=True, nullable=False)
-    name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    id = db.Column(db.BigInteger, primary_key=True)
+    question_text = db.Column(db.Text, nullable=False)
+    ideal_answer = db.Column(db.Text)
+    active_for_date = db.Column(db.Date, nullable=False)
+    created_at = db.Column(
+        db.DateTime, nullable=False, server_default=db.func.now()
+    )
 
 
-class UserBadge(db.Model):
-    __tablename__ = "user_badges"
+class Answer(db.Model):
+    __tablename__ = "answers"
 
     id = db.Column(db.BigInteger, primary_key=True)
     user_id = db.Column(
-        db.BigInteger, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        db.BigInteger,
+        db.ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
     )
-    badge_id = db.Column(
-        db.Integer, db.ForeignKey("badges.id", ondelete="CASCADE"), nullable=False
+    question_source = db.Column(db.String(20), nullable=False)
+    question_id = db.Column(db.BigInteger)
+    raw_question_text = db.Column(db.Text, nullable=False)
+    answer_text = db.Column(db.Text, nullable=False)
+    is_voice = db.Column(
+        db.Boolean,
+        nullable=False,
+        server_default=db.text("FALSE"),
     )
-    awarded_at = db.Column(db.DateTime, server_default=db.func.now())
-
-    __table_args__ = (
-        db.UniqueConstraint("user_id", "badge_id", name="uq_user_badge"),
+    transcript = db.Column(db.Text)
+    relevance_score = db.Column(db.Numeric(5, 2))
+    confidence_score = db.Column(db.Numeric(5, 2))
+    final_score = db.Column(db.Numeric(5, 2))
+    feedback_text = db.Column(db.Text)
+    created_at = db.Column(
+        db.DateTime, nullable=False, server_default=db.func.now()
     )
 
 
 class Job(db.Model):
     __tablename__ = "jobs"
 
-    id = db.Column(db.Integer, primary_key=True)
-    slug = db.Column(db.String(80), unique=True, nullable=False)
-    title = db.Column(db.String(120), nullable=False)
-    category = db.Column(db.String(80))
-    icon_emoji = db.Column(db.String(8))
-    is_active = db.Column(db.Boolean, nullable=False, server_default=db.text("TRUE"))
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    id = db.Column(db.BigInteger, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    category = db.Column(db.String(100))
+    created_at = db.Column(
+        db.DateTime, nullable=False, server_default=db.func.now()
+    )
 
 
 class JobSpecificQuestion(db.Model):
@@ -128,108 +171,16 @@ class JobSpecificQuestion(db.Model):
 
     id = db.Column(db.BigInteger, primary_key=True)
     job_id = db.Column(
-        db.Integer, db.ForeignKey("jobs.id", ondelete="CASCADE"), nullable=False
-    )
-    question_index = db.Column(db.Integer, nullable=False)
-    question = db.Column(db.Text, nullable=False)
-    ideal_answer = db.Column(db.Text)
-    tags = db.Column(db.ARRAY(db.Text), nullable=True)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-
-    __table_args__ = (
-        db.UniqueConstraint("job_id", "question_index", name="uq_job_question_idx"),
-    )
-
-
-class DailyQuestion(db.Model):
-    __tablename__ = "daily_questions"
-
-    id = db.Column(db.Integer, primary_key=True)
-    question_date = db.Column(db.Date, unique=True, nullable=False)
-    question = db.Column(db.Text, nullable=False)
-    ideal_answer = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-
-class Answer(db.Model):
-    __tablename__ = "answers"
-
-    id = db.Column(db.BigInteger, primary_key=True)
-
-    # From your SQL script: NOT NULL and ON DELETE CASCADE
-    user_id = db.Column(
         db.BigInteger,
-        db.ForeignKey("users.id", ondelete="CASCADE"),
+        db.ForeignKey("jobs.id", ondelete="CASCADE"),
         nullable=False,
     )
-
-    # 'daily', 'generic', 'job', etc.
-    question_source = db.Column(db.String(20), nullable=False)
-
-    # ID from daily_questions / jobs / job_specific_questions (optional)
-    question_id = db.Column(db.BigInteger)
-
-    # Actual question text used when the user answered
-    raw_question_text = db.Column(db.Text, nullable=False)
-
-    # User's answer text
-    answer_text = db.Column(db.Text, nullable=False)
-
-    # Whether this came from voice or not
-    is_voice = db.Column(
-        db.Boolean,
-        nullable=False,
-        server_default=db.text("FALSE"),
+    question_text = db.Column(db.Text, nullable=False)
+    ideal_answer = db.Column(db.Text)
+    tags = db.Column(db.ARRAY(db.Text))
+    created_at = db.Column(
+        db.DateTime, nullable=False, server_default=db.func.now()
     )
-
-    transcript = db.Column(db.Text)
-
-    # Scores (NUMERIC(5,2) in your SQL)
-    relevance_score = db.Column(db.Numeric(5, 2))
-    confidence_score = db.Column(db.Numeric(5, 2))
-    final_score = db.Column(db.Numeric(5, 2))
-
-    feedback_text = db.Column(db.Text)
-
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-
-
-class StreakHistory(db.Model):
-    __tablename__ = "streak_history"
-
-    id = db.Column(db.BigInteger, primary_key=True)
-    user_id = db.Column(
-        db.BigInteger, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
-    streak_date = db.Column(db.Date, nullable=False)
-    did_answer = db.Column(db.Boolean, nullable=False, server_default=db.text("TRUE"))
-    is_daily_question = db.Column(
-        db.Boolean, nullable=False, server_default=db.text("TRUE")
-    )
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-
-    __table_args__ = (
-        db.UniqueConstraint("user_id", "streak_date", name="uq_user_streak_date"),
-    )
-
-
-class Winner(db.Model):
-    __tablename__ = "winners"
-
-    id = db.Column(db.BigInteger, primary_key=True)
-    daily_question_id = db.Column(
-        db.Integer,
-        db.ForeignKey("daily_questions.id", ondelete="CASCADE"),
-        nullable=False,
-    )
-    user_id = db.Column(
-        db.BigInteger, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
-    winner_username = db.Column(db.String(80))
-    answer_id = db.Column(
-        db.BigInteger, db.ForeignKey("answers.id", ondelete="SET NULL"), nullable=True
-    )
-    ai_comment = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
 
 
 class PrepReport(db.Model):
@@ -244,64 +195,145 @@ class PrepReport(db.Model):
     job_title = db.Column(db.String(255), nullable=False)
     company_name = db.Column(db.String(255))
     job_description = db.Column(db.Text)
-
-    # 👇 match the actual DB column name: resume_text
     resume_text = db.Column(db.Text)
-
-    # JSONB in Postgres; db.JSON is fine from SQLAlchemy’s side
     report_json = db.Column(db.JSON, nullable=False)
-
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    created_at = db.Column(
+        db.DateTime, nullable=False, server_default=db.func.now()
+    )
 
 
 class Course(db.Model):
     __tablename__ = "courses"
 
-    id = db.Column(db.Integer, primary_key=True)
-    slug = db.Column(db.String(80), unique=True, nullable=False)
-    title = db.Column(db.String(200), nullable=False)
-    short_description = db.Column(db.Text)
+    id = db.Column(db.BigInteger, primary_key=True)
+    slug = db.Column(db.String(100), unique=True, nullable=False)
+    title = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text)
     level = db.Column(db.String(50))
-    is_active = db.Column(db.Boolean, nullable=False, server_default=db.text("TRUE"))
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    created_at = db.Column(
+        db.DateTime, nullable=False, server_default=db.func.now()
+    )
 
 
 class CourseLesson(db.Model):
     __tablename__ = "course_lessons"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     course_id = db.Column(
-        db.Integer, db.ForeignKey("courses.id", ondelete="CASCADE"), nullable=False
+        db.BigInteger,
+        db.ForeignKey("courses.id", ondelete="CASCADE"),
+        nullable=False,
     )
-    lesson_index = db.Column(db.Integer, nullable=False)
-    title = db.Column(db.String(200), nullable=False)
+    title = db.Column(db.String(255), nullable=False)
     content_md = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-
-    __table_args__ = (
-        db.UniqueConstraint("course_id", "lesson_index", name="uq_course_lesson_idx"),
+    sort_order = db.Column(
+        db.Integer, nullable=False, server_default=db.text("0")
+    )
+    created_at = db.Column(
+        db.DateTime, nullable=False, server_default=db.func.now()
     )
 
 
 class CourseQuiz(db.Model):
     __tablename__ = "course_quizzes"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     course_id = db.Column(
-        db.Integer, db.ForeignKey("courses.id", ondelete="CASCADE"), nullable=False
+        db.BigInteger,
+        db.ForeignKey("courses.id", ondelete="CASCADE"),
+        nullable=False,
     )
-    lesson_id = db.Column(
-        db.Integer, db.ForeignKey("course_lessons.id", ondelete="CASCADE"), nullable=True
+    question_text = db.Column(db.Text, nullable=False)
+    correct_answer = db.Column(db.Text)
+    wrong_answers = db.Column(db.ARRAY(db.Text))
+    sort_order = db.Column(
+        db.Integer, nullable=False, server_default=db.text("0")
     )
-    question = db.Column(db.Text, nullable=False)
-    options = db.Column(db.ARRAY(db.Text))
-    correct_option_index = db.Column(db.Integer)
-    explanation = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    created_at = db.Column(
+        db.DateTime, nullable=False, server_default=db.func.now()
+    )
+
+
+class Badge(db.Model):
+    __tablename__ = "badges"
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    code = db.Column(db.String(100), unique=True, nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text)
+    created_at = db.Column(
+        db.DateTime, nullable=False, server_default=db.func.now()
+    )
+
+
+class UserBadge(db.Model):
+    __tablename__ = "user_badges"
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    user_id = db.Column(
+        db.BigInteger,
+        db.ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    badge_id = db.Column(
+        db.BigInteger,
+        db.ForeignKey("badges.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    awarded_at = db.Column(
+        db.DateTime, nullable=False, server_default=db.func.now()
+    )
+
+    __table_args__ = (
+        db.UniqueConstraint("user_id", "badge_id", name="uq_user_badge"),
+    )
+
+
+class StreakHistory(db.Model):
+    __tablename__ = "streak_history"
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    user_id = db.Column(
+        db.BigInteger,
+        db.ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    date = db.Column(db.Date, nullable=False)
+    status = db.Column(db.String(20), nullable=False)
+    created_at = db.Column(
+        db.DateTime, nullable=False, server_default=db.func.now()
+    )
+
+    __table_args__ = (
+        db.UniqueConstraint("user_id", "date", name="uq_user_streak_date"),
+    )
+
+
+class Winner(db.Model):
+    __tablename__ = "winners"
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    winner_date = db.Column(db.Date, nullable=False)
+    user_id = db.Column(
+        db.BigInteger,
+        db.ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    question_text = db.Column(db.Text, nullable=False)
+    answer_text = db.Column(db.Text, nullable=False)
+    final_score = db.Column(db.Numeric(5, 2))
+    feedback_text = db.Column(db.Text)
+    created_at = db.Column(
+        db.DateTime, nullable=False, server_default=db.func.now()
+    )
+
+    __table_args__ = (
+        db.UniqueConstraint("winner_date", name="uq_winner_date"),
+    )
 
 
 # ---------------------------------------------------------------------------
-# File paths for existing JSON-based data
+# File paths for existing JSON based data
 # ---------------------------------------------------------------------------
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -312,12 +344,12 @@ JOB_QUESTIONS_PATH = os.path.join(BASE_DIR, "data", "job_questions.json")
 WINNERS_PATH = os.path.join(BASE_DIR, "data", "winners.json")
 
 # ---------------------------------------------------------------------------
-# Helper functions & auth utilities
+# Helper functions and auth utilities
 # ---------------------------------------------------------------------------
 
 
 def get_current_user():
-    """Return the logged-in user object or None."""
+    """Return the logged in user object or None."""
     user_id = session.get("user_id")
     if not user_id:
         return None
@@ -336,12 +368,13 @@ def login_required(view_func):
 
     return wrapped
 
-
 @app.context_processor
-def inject_current_user():
-    """Make `current_user` available in all templates."""
-    return {"current_user": get_current_user()}
-
+def inject_globals():
+    """Make `current_user` and `current_year` available in all templates."""
+    return {
+        "current_user": get_current_user(),
+        "current_year": datetime.utcnow().year,
+    }
 
 def load_questions():
     with open(QUESTIONS_PATH, "r", encoding="utf-8") as f:
@@ -369,6 +402,74 @@ def load_winners():
         return json.load(f)
 
 
+def get_today_daily_question():
+    """
+    Fetch today's daily question from the daily_questions table
+    using active_for_date = today.
+    """
+    today = date.today()
+    return DailyQuestion.query.filter_by(active_for_date=today).first()
+
+
+def update_streak_for_user(user: User):
+    """
+    Update the user's streak when they answer today's daily question
+    before 20:00 (8 pm). Uses streak_history and users.streak_count/longest_streak.
+    """
+    if not user:
+        return
+
+    # Current date and time (using UTC here - if you later want precise local
+    # timezone logic you can adjust it)
+    now = datetime.utcnow()
+    today = now.date()
+    cutoff = time(20, 0)  # 8 pm
+
+    # If it's after 8 pm, do not update streak for today
+    if now.time() >= cutoff:
+        return
+
+    # If there is already a streak record for today, do nothing
+    existing_today = StreakHistory.query.filter_by(
+        user_id=user.id, date=today
+    ).first()
+    if existing_today:
+        return
+
+    # Determine if yesterday was kept
+    yesterday = today - timedelta(days=1)
+    yesterday_kept = StreakHistory.query.filter_by(
+        user_id=user.id, date=yesterday, status="kept"
+    ).first()
+
+    if yesterday_kept:
+        # Continue streak
+        current = user.streak_count or 0
+        user.streak_count = current + 1
+    else:
+        # Start new streak
+        user.streak_count = 1
+
+    # Update longest streak if needed
+    longest = user.longest_streak or 0
+    if user.streak_count > longest:
+        user.longest_streak = user.streak_count
+
+    # Create today's streak_history record
+    today_record = StreakHistory(
+        user_id=user.id,
+        date=today,
+        status="kept",
+    )
+    db.session.add(today_record)
+
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+
+
+
 def get_next_question():
     """
     Return a random question from questions.json, avoiding recent repeats
@@ -391,36 +492,25 @@ def get_next_question():
 
     return question
 
+
 def save_answer_to_db(
     *,
     source: str,
-    question_type: str,        # currently unused but kept for future if you want
+    question_type: str,
     question_text: str,
     user_answer_text: str,
     eval_result: dict,
     transcript: str = None,
     user_id: int = None,
-    job_id: int = None,        # optional, currently not used in this schema
+    job_id: int = None,
     job_question_id: int = None,
     daily_question_id: int = None,
 ) -> None:
     """
-    Best-effort helper: store an evaluated answer in the answers table.
-    Uses the *existing* answers schema from your SQL script:
-      - question_source
-      - question_id
-      - raw_question_text
-      - answer_text
-      - is_voice
-      - transcript
-      - relevance_score / confidence_score / final_score
-      - feedback_text
-    If anything fails (DB connection, etc.), it won't crash the request.
+    Best effort helper to store an evaluated answer in the answers table.
+    Matches the answers schema.
     """
     try:
-        # GPT-based evaluation returns top-level scores:
-        #   relevance_score, confidence_score, final_score, feedback_text
-        # Older / alternative evaluation might put them in eval_result["scores"]
         scores = eval_result.get("scores") or {}
 
         relevance = eval_result.get("relevance_score")
@@ -429,7 +519,6 @@ def save_answer_to_db(
 
         confidence = eval_result.get("confidence_score")
         if confidence is None:
-            # some older logic used "clarity" for this
             confidence = scores.get("confidence") or scores.get("clarity")
 
         final = eval_result.get("final_score")
@@ -442,8 +531,6 @@ def save_answer_to_db(
             or None
         )
 
-        # Decide which numeric question_id to store
-        # (you can extend this later if you want)
         question_id = None
         if job_question_id is not None:
             question_id = job_question_id
@@ -452,7 +539,7 @@ def save_answer_to_db(
 
         answer = Answer(
             user_id=user_id if user_id is not None else (session.get("user_id") or None),
-            question_source=source,          # e.g. 'practice', 'job', 'daily'
+            question_source=source,
             question_id=question_id,
             raw_question_text=question_text,
             answer_text=user_answer_text,
@@ -469,8 +556,7 @@ def save_answer_to_db(
 
     except Exception:
         db.session.rollback()
-        # swallow exceptions: we don't want DB issues to break the UX
-
+        # swallow exceptions to avoid breaking UX
 
 
 # ---------------------------------------------------------------------------
@@ -482,7 +568,7 @@ def save_answer_to_db(
 def register():
     """
     Simple registration with email, username, password, optional profile image,
-    and opt-out checkbox (stored only in DB, not yet in model).
+    and opt out checkbox.
     """
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
@@ -520,7 +606,7 @@ def register():
         db.session.add(user)
         db.session.commit()
 
-        # Optional: store opt_out_emails directly via raw SQL
+        # Store opt_out_emails via raw SQL to be explicit
         try:
             if opt_out_emails:
                 db.session.execute(
@@ -543,7 +629,7 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """
-    Login with email OR username + password.
+    Login with email OR username plus password.
     """
     if request.method == "POST":
         identifier = request.form.get("identifier", "").strip().lower()
@@ -560,14 +646,8 @@ def login():
 
         session["user_id"] = user.id
 
-        try:
-            db.session.execute(
-                db.text("UPDATE users SET last_login_at = NOW() WHERE id = :uid"),
-                {"uid": user.id},
-            )
-            db.session.commit()
-        except Exception:
-            db.session.rollback()
+        # Note: we no longer update last_login_at,
+        # since that column does not exist in the current DB.
 
         next_url = request.args.get("next") or url_for("index")
         return redirect(next_url)
@@ -592,7 +672,7 @@ def logout():
 @login_required
 def profile():
     """
-    Show profile info + recent answers + recent prep reports.
+    Show profile info plus recent answers and recent prep reports.
     """
     user = get_current_user()
 
@@ -622,21 +702,19 @@ def profile():
 # Main practice routes
 # ---------------------------------------------------------------------------
 
-
 @app.route("/", methods=["GET"])
 def index():
     """
-    Main practice page: generic interview question with text and voice answer.
-    Uses a random question instead of always the first one.
+    Home page showing today's daily question from the database.
     """
-    current_question = get_next_question()
-    return render_template("index.html", question=current_question)
+    daily_question = get_today_daily_question()
+    return render_template("index.html", question=daily_question)
 
 
 @app.route("/next_question", methods=["POST"])
 def next_question():
     """
-    Endpoint used by the "Change question" button (AJAX).
+    Endpoint used by the Change question button (AJAX).
     Returns a new random question as JSON.
     """
     question = get_next_question()
@@ -650,11 +728,11 @@ def next_question():
         }
     )
 
-
 @app.route("/answer", methods=["POST"])
 def answer():
     """
-    Receive a text answer, evaluate it with GPT, and show feedback.
+    Receive a text answer for today's daily question, evaluate it with GPT,
+    store it in the DB as a 'daily' answer, and update the user's streak.
     """
     user_answer = request.form.get("answer", "").strip()
     question_id = request.form.get("question_id")
@@ -665,33 +743,43 @@ def answer():
             result={"error": "No answer received. Please type something."},
         )
 
-    questions = load_questions()
-    current_question = next(
-        (q for q in questions if str(q["id"]) == str(question_id)),
-        None,
-    )
-
-    if current_question is None:
+    # Load the daily question from the DB
+    if not question_id:
         return render_template(
             "result.html",
-            result={"error": "Question not found."},
+            result={"error": "Missing question ID."},
         )
 
+    daily_q = DailyQuestion.query.get(question_id)
+    if daily_q is None:
+        return render_template(
+            "result.html",
+            result={"error": "Daily question not found."},
+        )
+
+    # Evaluate with GPT
     eval_result = gpt_evaluate_answer(
-        question=current_question["question"],
-        ideal_answer=current_question.get("ideal_answer", ""),
+        question=daily_q.question_text,
+        ideal_answer=daily_q.ideal_answer or "",
         user_answer=user_answer,
     )
 
     current_user = get_current_user()
+
+    # Save answer in the answers table, marking it as 'daily'
     save_answer_to_db(
-        source="practice",
-        question_type="generic",
-        question_text=current_question["question"],
+        source="daily",
+        question_type="daily",
+        question_text=daily_q.question_text,
         user_answer_text=user_answer,
         eval_result=eval_result,
         user_id=current_user.id if current_user else None,
+        daily_question_id=daily_q.id,
     )
+
+    # Update streak if the user is logged in
+    if current_user:
+        update_streak_for_user(current_user)
 
     return render_template("result.html", result=eval_result)
 
@@ -766,7 +854,7 @@ def audio():
 
 
 # ---------------------------------------------------------------------------
-# Job-specific practice
+# Job specific practice (still JSON based)
 # ---------------------------------------------------------------------------
 
 
@@ -827,7 +915,6 @@ def job_answer():
         eval_result=eval_result,
         user_id=current_user.id if current_user else None,
         job_id=int(job_id) if job_id else None,
-        # We’re not using real job_question_id from DB yet
     )
 
     return render_template("result.html", result=eval_result)
@@ -958,7 +1045,7 @@ def job_detail(job_id: int):
 def custom_prep():
     """
     Page where the user enters job title, company, job description, and resume.
-    Backend calls GPT (with local fallback) to generate a tailored prep report.
+    Backend calls GPT to generate a tailored prep report.
     """
     report = None
     error = None
@@ -1006,7 +1093,7 @@ def custom_prep():
 
 
 # ---------------------------------------------------------------------------
-# Winners & Courses
+# Winners and Courses
 # ---------------------------------------------------------------------------
 
 
