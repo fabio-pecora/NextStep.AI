@@ -17,7 +17,7 @@
       <a href="{{ url_for('custom_prep') }}">Custom AI Prep</a>
       <a href="{{ url_for('winners') }}">Winners</a>
       <a href="{{ url_for('courses') }}">Courses</a>
-      <a href="{{url_for('profile')}}">Profile</a>
+      <a href="{{ url_for('profile') }}">Profile</a>
 
       {% if current_user %}
         <span style="margin-left:1rem; font-size:0.9rem; color:#64748b;">
@@ -29,7 +29,6 @@
         <a href="{{ url_for('register') }}">Sign up</a>
       {% endif %}
     </nav>
-
   </header>
 
   <main>
@@ -55,7 +54,6 @@
           <a href="{{ url_for('jobs') }}" class="btn btn-blue">Start practicing</a>
           <a href="{{ url_for('custom_prep') }}" class="btn btn-outline">Tailored report</a>
         </div>
-
       </div>
 
       <!-- HERO GALLERY -->
@@ -78,7 +76,8 @@
         </div>
       </div>
     </section>
-    <!-- MISSION (Refined & Elegant) -->
+
+    <!-- MISSION -->
     <section class="mission mission-highlight">
       <div class="mission-inner">
         <div class="mission-copy">
@@ -89,7 +88,7 @@
             sharpen those skills through guided questions, smart feedback, and steady growth.
           </p>
         </div>
-      
+
         <div class="mission-pill-row">
           <div class="mission-pill mission-pill-glow">
             <span class="mission-pill-icon">🎯</span>
@@ -98,7 +97,7 @@
               <p>Students, switchers, and pros all get personalized guidance and insights.</p>
             </div>
           </div>
-        
+
           <div class="mission-pill mission-pill-glow">
             <span class="mission-pill-icon">⚡</span>
             <div>
@@ -106,7 +105,7 @@
               <p>Turn vague prep into structured reps with clarity and measurable progress.</p>
             </div>
           </div>
-        
+
           <div class="mission-pill mission-pill-glow">
             <span class="mission-pill-icon">💪</span>
             <div>
@@ -117,7 +116,6 @@
         </div>
       </div>
     </section>
-    
 
     <!-- FEATURES -->
     <section class="features">
@@ -150,7 +148,7 @@
       </div>
     </section>
 
-    <!-- DAILY QUESTION (with glow / streak) -->
+    <!-- DAILY QUESTION -->
     <section class="daily daily-hero" id="daily-question">
       <div class="daily-hero-inner">
         <div class="daily-header-row">
@@ -163,7 +161,16 @@
           </div>
           <div class="daily-streak-card">
             <span class="daily-streak-label">Daily streak</span>
-            <span class="daily-streak-value">Come back every day to keep it alive.</span>
+            {% if current_user %}
+              <span class="daily-streak-value">
+                Current: <strong>{{ current_user.streak_count or 0 }}</strong> days ·
+                Best: <strong>{{ current_user.longest_streak or 0 }}</strong> days
+              </span>
+            {% else %}
+              <span class="daily-streak-value">
+                Log in to start your streak.
+              </span>
+            {% endif %}
           </div>
         </div>
 

@@ -94,13 +94,13 @@
             <div class="question-header">
               <h2 style="margin:0;">Recent answers</h2>
               <span class="question-count-pill">
-                Showing latest {{ recent_answers|length }} (max 20)
+                Showing latest {{ answers|length }} (max 20)
               </span>
             </div>
 
-            {% if recent_answers %}
+            {% if answers %}
               <ul style="list-style:none; padding:0; margin:0.6rem 0 0;">
-                {% for ans in recent_answers %}
+                {% for ans in answers %}
                   <li style="margin-bottom:0.8rem; padding-bottom:0.8rem; border-bottom:1px solid #e5e7eb;">
                     <div style="font-size:0.8rem; color:#6b7280; margin-bottom:0.25rem;">
                       Source:

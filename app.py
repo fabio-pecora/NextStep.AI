@@ -53,7 +53,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 # ---------------------------------------------------------------------------
-# SQLAlchemy models aligned with your actual DB schema
+# SQLAlchemy models aligned with DB schema
 # ---------------------------------------------------------------------------
 
 
@@ -66,30 +66,19 @@ class User(db.Model):
     password_hash = db.Column(db.Text, nullable=False)
     profile_image_url = db.Column(db.Text)
 
-    # opt_out_emails BOOLEAN NOT NULL DEFAULT FALSE
     opt_out_emails = db.Column(
         db.Boolean, nullable=False, server_default=db.text("FALSE")
     )
-
-    # streak_count INT NOT NULL DEFAULT 0
     streak_count = db.Column(
         db.Integer, nullable=False, server_default=db.text("0")
     )
-
-    # longest_streak INT NOT NULL DEFAULT 0
     longest_streak = db.Column(
         db.Integer, nullable=False, server_default=db.text("0")
     )
 
-    # Note: we DO NOT map last_login_at here,
-    # because the column does not exist in the current DB.
-
-    # created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     created_at = db.Column(
         db.DateTime, nullable=False, server_default=db.func.now()
     )
-
-    # updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     updated_at = db.Column(
         db.DateTime, nullable=False, server_default=db.func.now()
     )
@@ -333,7 +322,7 @@ class Winner(db.Model):
 
 
 # ---------------------------------------------------------------------------
-# File paths for existing JSON based data
+# JSON data paths (still used for job library etc.)
 # ---------------------------------------------------------------------------
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -344,7 +333,7 @@ JOB_QUESTIONS_PATH = os.path.join(BASE_DIR, "data", "job_questions.json")
 WINNERS_PATH = os.path.join(BASE_DIR, "data", "winners.json")
 
 # ---------------------------------------------------------------------------
-# Helper functions and auth utilities
+# Helpers / auth utilities
 # ---------------------------------------------------------------------------
 
 
@@ -368,13 +357,15 @@ def login_required(view_func):
 
     return wrapped
 
+
 @app.context_processor
 def inject_globals():
-    """Make `current_user` and `current_year` available in all templates."""
+    """Make current_user and current_year available in all templates."""
     return {
         "current_user": get_current_user(),
         "current_year": datetime.utcnow().year,
     }
+
 
 def load_questions():
     with open(QUESTIONS_PATH, "r", encoding="utf-8") as f:
@@ -419,43 +410,34 @@ def update_streak_for_user(user: User):
     if not user:
         return
 
-    # Current date and time (using UTC here - if you later want precise local
-    # timezone logic you can adjust it)
-    now = datetime.utcnow()
+    now = now = datetime.now()
     today = now.date()
-    cutoff = time(20, 0)  # 8 pm
+    cutoff = time(20, 0)  # 8 pm UTC (you can tweak later)
 
-    # If it's after 8 pm, do not update streak for today
     if now.time() >= cutoff:
         return
 
-    # If there is already a streak record for today, do nothing
     existing_today = StreakHistory.query.filter_by(
         user_id=user.id, date=today
     ).first()
     if existing_today:
         return
 
-    # Determine if yesterday was kept
     yesterday = today - timedelta(days=1)
     yesterday_kept = StreakHistory.query.filter_by(
         user_id=user.id, date=yesterday, status="kept"
     ).first()
 
     if yesterday_kept:
-        # Continue streak
         current = user.streak_count or 0
         user.streak_count = current + 1
     else:
-        # Start new streak
         user.streak_count = 1
 
-    # Update longest streak if needed
     longest = user.longest_streak or 0
     if user.streak_count > longest:
         user.longest_streak = user.streak_count
 
-    # Create today's streak_history record
     today_record = StreakHistory(
         user_id=user.id,
         date=today,
@@ -469,11 +451,10 @@ def update_streak_for_user(user: User):
         db.session.rollback()
 
 
-
 def get_next_question():
     """
     Return a random question from questions.json, avoiding recent repeats
-    within this browser session.
+    within this browser session. (Still used for generic practice/audio.)
     """
     questions = load_questions()
     if not questions:
@@ -507,8 +488,7 @@ def save_answer_to_db(
     daily_question_id: int = None,
 ) -> None:
     """
-    Best effort helper to store an evaluated answer in the answers table.
-    Matches the answers schema.
+    Best-effort helper to store an evaluated answer in the answers table.
     """
     try:
         scores = eval_result.get("scores") or {}
@@ -556,7 +536,7 @@ def save_answer_to_db(
 
     except Exception:
         db.session.rollback()
-        # swallow exceptions to avoid breaking UX
+        # Swallow exceptions to avoid breaking UX
 
 
 # ---------------------------------------------------------------------------
@@ -646,9 +626,6 @@ def login():
 
         session["user_id"] = user.id
 
-        # Note: we no longer update last_login_at,
-        # since that column does not exist in the current DB.
-
         next_url = request.args.get("next") or url_for("index")
         return redirect(next_url)
 
@@ -694,13 +671,14 @@ def profile():
         "profile.html",
         user=user,
         answers=recent_answers,
-        reports=recent_reports,
+        prep_reports=recent_reports,  # <<< matches template
     )
 
 
 # ---------------------------------------------------------------------------
 # Main practice routes
 # ---------------------------------------------------------------------------
+
 
 @app.route("/", methods=["GET"])
 def index():
@@ -714,8 +692,8 @@ def index():
 @app.route("/next_question", methods=["POST"])
 def next_question():
     """
-    Endpoint used by the Change question button (AJAX).
-    Returns a new random question as JSON.
+    Endpoint used by a 'Change question' button for generic practice (if used).
+    Returns a new random question from questions.json as JSON.
     """
     question = get_next_question()
     if question is None:
@@ -727,6 +705,7 @@ def next_question():
             "question": question["question"],
         }
     )
+
 
 @app.route("/answer", methods=["POST"])
 def answer():
@@ -743,7 +722,6 @@ def answer():
             result={"error": "No answer received. Please type something."},
         )
 
-    # Load the daily question from the DB
     if not question_id:
         return render_template(
             "result.html",
@@ -757,7 +735,6 @@ def answer():
             result={"error": "Daily question not found."},
         )
 
-    # Evaluate with GPT
     eval_result = gpt_evaluate_answer(
         question=daily_q.question_text,
         ideal_answer=daily_q.ideal_answer or "",
@@ -766,7 +743,6 @@ def answer():
 
     current_user = get_current_user()
 
-    # Save answer in the answers table, marking it as 'daily'
     save_answer_to_db(
         source="daily",
         question_type="daily",
@@ -777,7 +753,6 @@ def answer():
         daily_question_id=daily_q.id,
     )
 
-    # Update streak if the user is logged in
     if current_user:
         update_streak_for_user(current_user)
 
@@ -788,7 +763,7 @@ def answer():
 def audio():
     """
     Receive audio, transcribe with Whisper, evaluate with GPT, return JSON.
-    For the generic practice page.
+    Generic practice using questions.json.
     """
     question_id = request.form.get("question_id")
 
@@ -854,7 +829,7 @@ def audio():
 
 
 # ---------------------------------------------------------------------------
-# Job specific practice (still JSON based)
+# Job-specific practice (still JSON-based)
 # ---------------------------------------------------------------------------
 
 
@@ -1000,7 +975,7 @@ def job_audio():
 
 
 # ---------------------------------------------------------------------------
-# Jobs library (still using JSON for now)
+# Jobs library (still JSON for now)
 # ---------------------------------------------------------------------------
 
 
@@ -1008,7 +983,6 @@ def job_audio():
 def jobs():
     """
     Show a list of predefined jobs so the user can browse role specific questions.
-    For now this still uses jobs.json; later we can move to the jobs table.
     """
     jobs_list = load_jobs()
     return render_template("jobs.html", jobs=jobs_list)
