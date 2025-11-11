@@ -19,6 +19,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.pool import NullPool
 
 from utils.evaluation import (
     evaluate_answer,
@@ -35,22 +36,32 @@ from utils.prep_generator import generate_prep_report
 app = Flask(__name__)
 
 # Secret key for sessions (needed to track used questions)
-# For production, set FLASK_SECRET_KEY in your environment
+# In production, set FLASK_SECRET_KEY in your environment.
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "change-this-in-production")
 
-# Database connection (Postgres via SQLAlchemy)
-DB_USER = os.environ.get("DB_USER", "postgres")
-DB_PASSWORD = os.environ.get("DB_PASSWORD", "fabbofabbO1..")
-DB_HOST = os.environ.get("DB_HOST", "localhost")
-DB_PORT = os.environ.get("DB_PORT", "5433")
-DB_NAME = os.environ.get("DB_NAME", "nextstepai_dev")
+# Supabase Session Pooler connection string.
+# Prefer putting DATABASE_URL in your environment; otherwise it falls back
+# to the literal URI below.
 
-app.config["SQLALCHEMY_DATABASE_URI"] = (
-    f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+SUPABASE_URL = os.environ.get(
+    "DATABASE_URL",
+    "postgresql+psycopg://"
+    "postgres.zbqzfmjdcfagobdyrvva:fabbofabbO1.."
+    "@aws-1-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require",
 )
+
+app.config["SQLALCHEMY_DATABASE_URI"] = SUPABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-db = SQLAlchemy(app)
+db = SQLAlchemy(
+    app,
+    engine_options={
+        "pool_pre_ping": True,
+        "poolclass": NullPool,
+    },
+)
+
+
 
 # ---------------------------------------------------------------------------
 # SQLAlchemy models aligned with DB schema
@@ -332,6 +343,7 @@ JOBS_PATH = os.path.join(BASE_DIR, "data", "jobs.json")
 JOB_QUESTIONS_PATH = os.path.join(BASE_DIR, "data", "job_questions.json")
 WINNERS_PATH = os.path.join(BASE_DIR, "data", "winners.json")
 
+
 # ---------------------------------------------------------------------------
 # Helpers / auth utilities
 # ---------------------------------------------------------------------------
@@ -410,9 +422,9 @@ def update_streak_for_user(user: User):
     if not user:
         return
 
-    now = now = datetime.now()
+    now = datetime.now()
     today = now.date()
-    cutoff = time(20, 0)  # 8 pm UTC (you can tweak later)
+    cutoff = time(20, 0)  # 8 pm
 
     if now.time() >= cutoff:
         return
@@ -511,16 +523,16 @@ def save_answer_to_db(
             or None
         )
 
-        question_id = None
+        question_id_val = None
         if job_question_id is not None:
-            question_id = job_question_id
+            question_id_val = job_question_id
         elif daily_question_id is not None:
-            question_id = daily_question_id
+            question_id_val = daily_question_id
 
         answer = Answer(
             user_id=user_id if user_id is not None else (session.get("user_id") or None),
             question_source=source,
-            question_id=question_id,
+            question_id=question_id_val,
             raw_question_text=question_text,
             answer_text=user_answer_text,
             is_voice=bool(transcript),
@@ -536,7 +548,6 @@ def save_answer_to_db(
 
     except Exception:
         db.session.rollback()
-        # Swallow exceptions to avoid breaking UX
 
 
 # ---------------------------------------------------------------------------
@@ -586,7 +597,6 @@ def register():
         db.session.add(user)
         db.session.commit()
 
-        # Store opt_out_emails via raw SQL to be explicit
         try:
             if opt_out_emails:
                 db.session.execute(
@@ -671,7 +681,7 @@ def profile():
         "profile.html",
         user=user,
         answers=recent_answers,
-        prep_reports=recent_reports,  # <<< matches template
+        prep_reports=recent_reports,
     )
 
 
@@ -829,8 +839,9 @@ def audio():
 
 
 # ---------------------------------------------------------------------------
-# Job-specific practice (still JSON-based)
+# Job-specific practice
 # ---------------------------------------------------------------------------
+
 
 @app.route("/job_answer", methods=["POST"])
 def job_answer():
@@ -952,9 +963,8 @@ def job_audio():
                 pass
 
 
-
 # ---------------------------------------------------------------------------
-# Jobs library (still JSON for now)
+# Jobs library
 # ---------------------------------------------------------------------------
 
 
@@ -963,11 +973,7 @@ def jobs():
     """
     Show a list of jobs from the database so the user can browse role-specific questions.
     """
-    jobs_list = (
-        Job.query
-        .order_by(Job.title.asc())
-        .all()
-    )
+    jobs_list = Job.query.order_by(Job.title.asc()).all()
     return render_template("jobs.html", jobs=jobs_list)
 
 
@@ -980,7 +986,6 @@ def job_detail(job_id: int):
     if not job:
         return render_template("job_detail.html", job=None, questions=[])
 
-    # Pull questions from job_specific_questions table
     db_questions = (
         JobSpecificQuestion.query
         .filter_by(job_id=job.id)
@@ -988,7 +993,6 @@ def job_detail(job_id: int):
         .all()
     )
 
-    # Map to simple dicts matching what the template expects
     questions = [
         {
             "id": q.id,
@@ -1000,7 +1004,6 @@ def job_detail(job_id: int):
     ]
 
     return render_template("job_detail.html", job=job, questions=questions)
-
 
 
 # ---------------------------------------------------------------------------
@@ -1099,6 +1102,5 @@ def courses():
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    # with app.app_context():
-    #     db.create_all()
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    # debug=False so Flask doesn't spawn extra processes that open extra DB connections
+    app.run(host="0.0.0.0", port=5000, debug=False)
