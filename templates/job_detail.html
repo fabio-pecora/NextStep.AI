@@ -3,25 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <title>NextStep.AI - Job questions</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/job_detail.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
 <body class="landing-body">
-  <!-- Same header as jobs.html for consistency -->
-  <header class="landing-header">
-    <div class="logo">
-      <a href="{{ url_for('index') }}" class="brand">NextStep.<span>AI</span></a>
-    </div>
-    <nav>
-      <a href="{{ url_for('index') }}">Home</a>
-      <a href="{{ url_for('jobs') }}" class="active">Job library</a>
-      <a href="{{ url_for('custom_prep') }}">Custom AI prep</a>
-      <a href="{{ url_for('winners') }}">Winners</a>
-      <a href="{{ url_for('courses') }}">Courses</a>
-    </nav>
-  </header>
-
+  {% include "navbar.html" %}
   <main>
     <section class="job-detail-section">
       <div class="app-shell job-detail-shell">

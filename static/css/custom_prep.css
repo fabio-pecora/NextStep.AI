@@ -1,0 +1,410 @@
+/* ============ CUSTOM AI PREP PAGE ============ */
+
+.custom-page-section {
+  padding: 2.5rem 1rem 4rem;
+  background: var(--bg);
+}
+
+.custom-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+}
+
+/* ===== Banner section ===== */
+.custom-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.custom-banner-main h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.custom-banner-main .subtitle {
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.custom-banner-steps {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.custom-step {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 200px;
+}
+
+.step-circle {
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.step-info h4 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.step-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ===== Layout ===== */
+.custom-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.custom-form-card {
+  flex: 1 1 340px;
+}
+
+.custom-report-card {
+  flex: 2 1 600px;
+  background: white;
+  min-height: 220px;
+}
+
+/* ===== Form section ===== */
+.custom-form .field {
+  margin-bottom: 1.25rem;
+}
+
+.custom-form label {
+  font-weight: 600;
+}
+
+.required-dot {
+  color: var(--primary);
+}
+
+.custom-form input,
+.custom-form textarea {
+  width: 100%;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.custom-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.custom-form input:focus,
+.custom-form textarea:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+.custom-small-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ===== Right side: placeholder / ready card ===== */
+
+.report-ready-panel h2 {
+  margin: 0 0 0.4rem;
+}
+
+.report-ready-panel .subtitle {
+  margin-top: 0.15rem;
+  margin-bottom: 0.9rem;
+}
+
+.report-ready-panel .btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.report-key-points {
+  padding-left: 1.1rem;
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.report-key-points li + li {
+  margin-top: 0.2rem;
+}
+
+/* ===== Empty report ===== */
+.custom-empty-report {
+  text-align: center;
+  padding: 3rem 1.5rem;
+}
+
+.custom-empty-report h2 {
+  margin-bottom: 0.75rem;
+}
+
+/* ===== Report popup ===== */
+
+.report-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.report-modal-backdrop.is-visible {
+  display: flex;
+}
+
+.report-modal-inner {
+  position: relative;
+  background: var(--card-bg);
+  border-radius: 1rem;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.28);
+  width: min(980px, 100% - 3rem);
+  max-height: calc(100vh - 3rem);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Header strip similar to a form top */
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.2rem 1.75rem 1rem;
+  border-bottom: 1px solid var(--border-soft);
+  background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+}
+
+.report-logo-text {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--primary);
+}
+
+.report-logo-text span {
+  color: #111827;
+}
+
+.report-logo-tagline {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.report-meta {
+  text-align: right;
+}
+
+.report-job {
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+}
+
+.report-candidate {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0.1rem 0;
+}
+
+.report-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.35rem 0 0.55rem;
+}
+
+.report-tag {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-radius: 999px;
+  padding: 0.25rem 0.8rem;
+  font-size: 0.8rem;
+}
+
+.report-tag-warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.report-download-btn {
+  font-size: 0.85rem;
+}
+
+/* Body of the popup */
+
+.report-modal-body {
+  padding: 1.4rem 1.75rem 1.5rem;
+  overflow-y: auto;
+  background: #f9fafb;
+}
+
+/* Each big section looks like a form block */
+
+.report-section {
+  margin-bottom: 1.3rem;
+  background: #ffffff;
+  border-radius: 0.9rem;
+  padding: 1.05rem 1.1rem 1.15rem;
+  border: 1px solid var(--border-soft);
+}
+
+.report-heading {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0 0 0.5rem;
+}
+
+.report-subheading {
+  margin-top: 0.45rem;
+  font-size: 0.98rem;
+  color: var(--primary);
+}
+
+.report-paragraph {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0.18rem 0;
+}
+
+/* Example blocks inside sections */
+
+.report-example-block {
+  background: var(--primary-soft);
+  border-radius: 0.75rem;
+  padding: 0.8rem 0.9rem;
+  margin: 0.6rem 0;
+}
+
+.report-example-question {
+  font-weight: 600;
+  margin: 0 0 0.35rem;
+}
+
+.report-example-answer {
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+.report-legend {
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Close icon */
+
+.report-modal-close {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.9rem;
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.report-modal-close:hover {
+  color: #111827;
+}
+
+/* When popup is open, prevent page scroll */
+body.report-modal-open {
+  overflow: hidden;
+}
+
+/* ===== Loading overlay ===== */
+.report-loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.report-loading-inner {
+  text-align: center;
+}
+
+.report-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-soft);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== Print optimization ===== */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+  }
+
+  /* Always print the popup content, styled as a plain page */
+  .report-modal-backdrop {
+    position: static;
+    inset: auto;
+    display: block !important;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .report-modal-inner {
+    box-shadow: none;
+    border-radius: 0;
+    width: 100%;
+    max-height: none;
+  }
+
+  .report-modal-body {
+    overflow: visible;
+  }
+}

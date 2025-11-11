@@ -1,0 +1,47 @@
+<header class="landing-header">
+  <div class="logo">
+    <a href="{{ url_for('index') }}" class="brand">NextStep.<span>AI</span></a>
+  </div>
+  <nav aria-label="Main navigation">
+    <a href="{{ url_for('index') }}"
+       class="{% if request.endpoint == 'index' %}active{% endif %}">
+      Home
+    </a>
+    <a href="{{ url_for('jobs') }}"
+       class="{% if request.endpoint == 'jobs' %}active{% endif %}">
+      Job Library
+    </a>
+    <a href="{{ url_for('custom_prep') }}"
+       class="{% if request.endpoint == 'custom_prep' %}active{% endif %}">
+      Custom AI Prep
+    </a>
+    <a href="{{ url_for('winners') }}"
+       class="{% if request.endpoint == 'winners' %}active{% endif %}">
+      Winners
+    </a>
+    <a href="{{ url_for('courses') }}"
+       class="{% if request.endpoint == 'courses' %}active{% endif %}">
+      Courses
+    </a>
+    <a href="{{ url_for('profile') }}"
+       class="{% if request.endpoint == 'profile' %}active{% endif %}">
+      Profile
+    </a>
+
+    {% if current_user %}
+      <span style="margin-left:1rem; font-size:0.9rem; color:#64748b;">
+        Hi, {{ current_user.username }}
+      </span>
+      <a href="{{ url_for('logout') }}">Logout</a>
+    {% else %}
+      <a href="{{ url_for('login') }}"
+         class="{% if request.endpoint == 'login' %}active{% endif %}">
+        Login
+      </a>
+      <a href="{{ url_for('register') }}"
+         class="{% if request.endpoint == 'register' %}active{% endif %}">
+        Sign up
+      </a>
+    {% endif %}
+  </nav>
+</header>

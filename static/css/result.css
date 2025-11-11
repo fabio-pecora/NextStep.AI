@@ -1,0 +1,238 @@
+/* ===========================
+   Global tweaks for this page
+   =========================== */
+
+/* Make sure the page uses the same font + colors as other landing pages */
+body.landing-body {
+  margin: 0;
+  background: #f9fbfd;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #1e293b;
+}
+
+/* Navbar – duplicate of base.css so it always looks right here */
+.landing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 6%;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-decoration: none;
+  color: #0f172a;
+}
+
+.brand span {
+  color: #2563eb;
+}
+
+.landing-header nav a {
+  margin-left: 1.4rem;
+  text-decoration: none;
+  color: #334155;
+  font-weight: 500;
+}
+
+.landing-header nav a:hover {
+  color: #2563eb;
+}
+
+.landing-header nav a.active {
+  color: #2563eb;
+}
+
+/* ===========================
+   Feedback / result page
+   =========================== */
+
+/* Page background */
+.result-section {
+  padding: 3.5rem 6% 4rem;
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 55%),
+    #f5f7fb;
+}
+
+/* Main feedback card */
+.result-card {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2.2rem 2.4rem 2.5rem;
+  border-radius: 1.4rem;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
+}
+
+/* Header */
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.8rem;
+}
+
+.result-title {
+  margin: 0 0 0.4rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+
+/* Body blocks */
+
+.result-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.result-block {
+  border-radius: 1rem;
+}
+
+/* Question / answer styling */
+
+.result-text {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.7;
+  color: #111827;
+}
+
+.result-question {
+  padding: 0.9rem 1rem;
+  border-radius: 0.9rem;
+  background: #eef2ff;
+  border: 1px solid #e0e7ff;
+}
+
+.result-answer {
+  padding: 0.9rem 1rem;
+  border-radius: 0.9rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+/* Section titles */
+
+.section-title {
+  margin-top: 0.4rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* ===========================
+   Scores
+   =========================== */
+
+.scores {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.8rem 1.6rem;
+  margin: 0.4rem 0 0.5rem;
+  font-size: 0.9rem;
+}
+
+.score-pill {
+  background: #eef2ff;
+  border-radius: 999px;
+  padding: 0.2rem 0.75rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #1e3a8a;
+}
+
+/* ===========================
+   Feedback grid
+   =========================== */
+
+.feedback-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-top: 0.6rem;
+}
+
+.feedback-section h3 {
+  margin: 0 0 0.6rem;
+  font-size: 1.02rem;
+}
+
+.feedback-section ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.feedback-section li {
+  color: #111827;
+  margin-bottom: 0.45rem;
+  line-height: 1.5;
+}
+
+/* Strengths & improvements panels */
+
+.feedback-strengths {
+  background: #ecfdf5;
+  border: 1px solid #bbf7d0;
+  border-radius: 0.9rem;
+  padding: 1rem 1.1rem;
+}
+
+.feedback-improvements {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 0.9rem;
+  padding: 1rem 1.1rem;
+}
+
+/* ===========================
+   Error + Back link
+   =========================== */
+
+.error {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 2rem;
+  text-decoration: none;
+  font-weight: 500;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+  padding: 0.5rem 1.2rem;
+  transition: all 0.2s ease;
+}
+
+.back-link:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+/* ===========================
+   Responsive tweaks
+   =========================== */
+
+@media (max-width: 768px) {
+  .result-card {
+    padding: 1.7rem 1.5rem 2rem;
+  }
+
+  .result-title {
+    font-size: 1.5rem;
+  }
+}

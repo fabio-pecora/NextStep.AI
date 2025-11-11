@@ -1,0 +1,270 @@
+/* ============ COURSES PAGE ============ */
+
+.courses-hero {
+  background: var(--bg);
+  padding: 4rem 1rem 3rem;
+}
+
+.courses-hero-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.courses-hero-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 2rem;
+  padding: 2rem;
+  background: var(--card-bg);
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.courses-hero-text {
+  flex: 1 1 480px;
+}
+
+.courses-hero-text h1 {
+  font-size: 2.2rem;
+  line-height: 1.3;
+  margin-bottom: 1rem;
+}
+
+.courses-hero-text p {
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.courses-hero-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 2rem;
+}
+
+.courses-hero-list li {
+  margin-bottom: 0.5rem;
+}
+
+.courses-hero-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.btn-pill {
+  border-radius: 50px;
+  padding: 0.6rem 1.4rem;
+}
+
+.courses-hero-note {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.courses-hero-highlight {
+  flex: 1 1 350px;
+}
+
+.courses-metric-card {
+  background: var(--primary-soft);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  color: var(--text-main);
+}
+
+.courses-metric-label {
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.courses-metric-text {
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.courses-metric-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+}
+
+.courses-metric-pill-row li {
+  background: var(--card-bg);
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.85rem;
+}
+
+/* ======== COURSE GRID ======== */
+.courses-section {
+  padding: 3rem 1rem 4rem;
+  background: var(--bg);
+}
+
+.courses-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.courses-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.courses-title {
+  font-size: 1.8rem;
+  margin-bottom: 0.25rem;
+}
+
+.courses-subtitle {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.courses-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.courses-filter-label {
+  font-weight: 500;
+}
+
+.courses-filter-chips {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chip {
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chip:hover {
+  border-color: var(--primary);
+}
+
+.chip-filter-active {
+  background: var(--primary);
+  color: white;
+}
+
+/* ======== COURSE CARDS ======== */
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 1.5rem;
+}
+
+.course-card {
+  background: var(--card-bg);
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease;
+}
+
+.course-card:hover {
+  transform: translateY(-3px);
+}
+
+.course-image-wrap {
+  position: relative;
+}
+
+.course-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.course-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+}
+
+.course-tag-primary {
+  background: var(--primary);
+}
+
+.course-tag-soft {
+  background: var(--primary-soft);
+  color: var(--text-main);
+}
+
+.course-body {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.course-name {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.course-description {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.course-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.course-meta-pill {
+  background: var(--primary-soft);
+  color: var(--text-main);
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+
+.course-footer {
+  text-align: right;
+  margin-top: auto;
+}
+
+.course-cta {
+  font-size: 0.85rem;
+}
+
+/* ======== FOOTER ======== */
+.landing-footer {
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  background: var(--card-bg);
+}

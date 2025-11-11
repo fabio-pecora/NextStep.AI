@@ -3,23 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <title>NextStep.AI - Courses</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/courses.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="landing-body">
-  <header class="landing-header">
-    <div class="logo">
-      <a href="{{ url_for('index') }}" class="brand">NextStep.<span>AI</span></a>
-    </div>
-    <nav aria-label="Main navigation">
-      <a href="{{ url_for('index') }}">Home</a>
-      <a href="{{ url_for('jobs') }}">Job Library</a>
-      <a href="{{ url_for('custom_prep') }}">Custom AI Prep</a>
-      <a href="{{ url_for('winners') }}">Winners</a>
-      <a href="{{ url_for('courses') }}" class="active">Courses</a>
-    </nav>
-  </header>
-
+  {% include "navbar.html" %}
   <main>
     <!-- HERO / INTRO SECTION -->
     <section class="courses-hero">

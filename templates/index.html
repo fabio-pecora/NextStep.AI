@@ -3,33 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <title>NextStep.AI - Practice smarter. Get your dream job.</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="landing-body">
-  <header class="landing-header">
-    <div class="logo">
-      <a href="{{ url_for('index') }}" class="brand">NextStep.<span>AI</span></a>
-    </div>
-    <nav aria-label="Main navigation">
-      <a href="{{ url_for('index') }}" class="active">Home</a>
-      <a href="{{ url_for('jobs') }}">Job Library</a>
-      <a href="{{ url_for('custom_prep') }}">Custom AI Prep</a>
-      <a href="{{ url_for('winners') }}">Winners</a>
-      <a href="{{ url_for('courses') }}">Courses</a>
-      <a href="{{ url_for('profile') }}">Profile</a>
-
-      {% if current_user %}
-        <span style="margin-left:1rem; font-size:0.9rem; color:#64748b;">
-          Hi, {{ current_user.username }}
-        </span>
-        <a href="{{ url_for('logout') }}">Logout</a>
-      {% else %}
-        <a href="{{ url_for('login') }}">Login</a>
-        <a href="{{ url_for('register') }}">Sign up</a>
-      {% endif %}
-    </nav>
-  </header>
+  {% include "navbar.html" %}
 
   <main>
     <!-- HERO -->
@@ -60,11 +39,21 @@
       <div class="hero-illustration">
         <div class="hero-gallery">
           <div class="hero-gallery-track">
-            <div class="hero-gallery-item"><img src="{{ url_for('static', filename='img/gallery-1.png') }}" alt="Candidate practicing interview with AI"></div>
-            <div class="hero-gallery-item"><img src="{{ url_for('static', filename='img/gallery-2.png') }}" alt="AI assistant giving feedback"></div>
-            <div class="hero-gallery-item"><img src="{{ url_for('static', filename='img/gallery-3.png') }}" alt="Person reviewing notes"></div>
-            <div class="hero-gallery-item"><img src="{{ url_for('static', filename='img/gallery-4.png') }}" alt="Candidate in online interview"></div>
-            <div class="hero-gallery-item"><img src="{{ url_for('static', filename='img/gallery-5.png') }}" alt="Job offer celebration"></div>
+            <div class="hero-gallery-item">
+              <img src="{{ url_for('static', filename='img/gallery-1.png') }}" alt="Candidate practicing interview with AI">
+            </div>
+            <div class="hero-gallery-item">
+              <img src="{{ url_for('static', filename='img/gallery-2.png') }}" alt="AI assistant giving feedback">
+            </div>
+            <div class="hero-gallery-item">
+              <img src="{{ url_for('static', filename='img/gallery-3.png') }}" alt="Person reviewing notes">
+            </div>
+            <div class="hero-gallery-item">
+              <img src="{{ url_for('static', filename='img/gallery-4.png') }}" alt="Candidate in online interview">
+            </div>
+            <div class="hero-gallery-item">
+              <img src="{{ url_for('static', filename='img/gallery-5.png') }}" alt="Job offer celebration">
+            </div>
 
             <!-- duplicate set for seamless looping -->
             <div class="hero-gallery-item"><img src="{{ url_for('static', filename='img/gallery-1.png') }}" alt=""></div>
@@ -83,7 +72,7 @@
         <div class="mission-copy">
           <h2 class="mission-title">Our Mission</h2>
           <p class="mission-subtext">
-            We want you to get your dream job. Great interviews aren’t about luck — they’re
+            We want you to get your dream job. Great interviews are not about luck, they are
             about <strong>practice, reflection, and focus</strong>. NextStep.AI helps you
             sharpen those skills through guided questions, smart feedback, and steady growth.
           </p>
@@ -110,7 +99,7 @@
             <span class="mission-pill-icon">💪</span>
             <div>
               <h3>Confidence you can feel</h3>
-              <p>Walk into interviews ready — knowing what to say, how to say it, and why it matters.</p>
+              <p>Walk into interviews ready, knowing what to say, how to say it, and why it matters.</p>
             </div>
           </div>
         </div>
@@ -133,7 +122,7 @@
           <img src="{{ url_for('static', filename='img/aifeedback.png') }}" alt="">
           <h3>AI feedback that feels human</h3>
           <p>
-            Our model evaluates your answers for clarity, confidence, and relevance —
+            Our model evaluates your answers for clarity, confidence, and relevance,
             then gives you specific suggestions to improve.
           </p>
         </div>
@@ -155,7 +144,7 @@
           <div class="daily-header-copy">
             <h2>Question of the day</h2>
             <p>
-              Answer today’s behavioral question and come back at 8 PM to see the best
+              Answer todays behavioral question and come back at 8 PM to see the best
               answers selected by our AI reviewers. Keep showing up to build your streak.
             </p>
           </div>
@@ -177,7 +166,7 @@
         {% if question %}
           <div class="daily-card-stack">
             <div class="daily-question-card daily-question-glow">
-              <p class="question-label">Today’s question</p>
+              <p class="question-label">Todays question</p>
               <p class="daily-question-text">{{ question.question_text }}</p>
             </div>
 

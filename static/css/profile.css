@@ -1,0 +1,584 @@
+/* ===========================
+   Overall layout
+   =========================== */
+
+.profile-main {
+  background: #f5f7fb;
+}
+
+/* ===========================
+   HERO SECTION (unchanged)
+   =========================== */
+
+.profile-hero {
+  padding: 3.5rem 6% 3.2rem;
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.12), transparent 60%),
+    #eef4ff;
+}
+
+.profile-hero-inner {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 2.2rem;
+}
+
+.profile-hero-left {
+  flex: 1.4;
+}
+
+.profile-kicker {
+  margin: 0 0 0.4rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.profile-title {
+  margin: 0 0 0.6rem;
+  font-size: 2rem;
+  letter-spacing: -0.03em;
+  color: #0f172a;
+}
+
+.profile-subtitle {
+  margin: 0 0 0.7rem;
+  max-width: 34rem;
+  font-size: 0.98rem;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.profile-email {
+  margin: 0 0 1.1rem;
+  font-size: 0.9rem;
+  color: #0f172a;
+}
+
+/* Hero small stats */
+
+.profile-stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.profile-stat {
+  min-width: 130px;
+  padding: 0.6rem 0.9rem;
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(209, 213, 219, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+.profile-stat-label {
+  display: block;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+  margin-bottom: 0.18rem;
+}
+
+.profile-stat-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Streak card */
+
+.profile-hero-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.streak-card {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  border-radius: 1.4rem;
+  padding: 1.1rem 1.2rem 1.3rem;
+  background: radial-gradient(circle at top, #020617 0, #020617 40%, #020617 100%);
+  color: #e5e7eb;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.6);
+}
+
+.streak-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  background: conic-gradient(
+    from 0deg,
+    #38bdf8,
+    #6366f1,
+    #a855f7,
+    #22c55e,
+    #eab308,
+    #f97316,
+    #38bdf8
+  );
+  opacity: 0.65;
+  z-index: -2;
+}
+
+.streak-card::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background: radial-gradient(circle at top, #0b1220 0, #020617 55%);
+  z-index: -1;
+}
+
+.streak-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.7rem;
+}
+
+.streak-label {
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #c4d5ff;
+}
+
+.streak-badge {
+  font-size: 0.78rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(248, 250, 252, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+}
+
+.streak-main {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.9rem;
+}
+
+.streak-current {
+  flex-shrink: 0;
+}
+
+.streak-number {
+  display: block;
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  color: #f9fafb;
+}
+
+.streak-caption {
+  font-size: 0.85rem;
+  color: #cbd5f5;
+}
+
+.streak-meta {
+  flex: 1;
+  font-size: 0.8rem;
+}
+
+.streak-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+  color: #cbd5f5;
+}
+
+.streak-meta-value {
+  font-weight: 600;
+}
+
+.streak-progress-track {
+  width: 100%;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.7);
+  overflow: hidden;
+  position: relative;
+}
+
+.streak-progress-bar {
+  --ratio: clamp(0, var(--streak-ratio), 1);
+  width: calc(var(--ratio) * 100%);
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #22c55e, #eab308, #f97316);
+  box-shadow: 0 0 12px rgba(248, 250, 252, 0.4);
+  animation: streakPulse 2.6s ease-in-out infinite;
+}
+
+.streak-hint {
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  color: #9ca3af;
+}
+
+@keyframes streakPulse {
+  0%, 100% { opacity: 0.85; }
+  50%      { opacity: 1; }
+}
+
+/* ===========================
+   BODY GRID SECTION (redone)
+   =========================== */
+
+.profile-body {
+  padding: 2.8rem 6% 4.2rem;
+  background: #f9fafb;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+/* Shared card style */
+.profile-card {
+  border-radius: 1.2rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.07);
+  padding: 1.5rem 1.7rem 1.7rem;
+}
+
+/* Card headers */
+
+.profile-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.profile-card-header h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.2rem;
+}
+
+.profile-card-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* ===========================
+   ANSWERS CARD (timeline)
+   =========================== */
+
+.answers-list {
+  position: relative;
+  margin: 0;
+  padding: 0 0 0 1.4rem; /* space for timeline line */
+  list-style: none;
+}
+
+/* Vertical line */
+.answers-list::before {
+  content: "";
+  position: absolute;
+  top: 0.3rem;
+  bottom: 0.3rem;
+  left: 0.55rem;
+  width: 2px;
+  background: linear-gradient(to bottom, #bfdbfe, #e5e7eb);
+  opacity: 0.9;
+}
+
+/* Each answer item */
+.profile-list-item {
+  position: relative;
+  border-radius: 1rem;
+  padding: 0.8rem 0.9rem 0.9rem;
+  border: 1px solid transparent;
+  background: #f9fafb;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.12s ease;
+}
+
+/* Spacing between items */
+.profile-list-item + .profile-list-item {
+  margin-top: 0.7rem;
+}
+
+/* Timeline bullet */
+.answers-list .profile-list-item::before {
+  content: "";
+  position: absolute;
+  top: 1rem;
+  left: -1.1rem;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #2563eb;
+  box-shadow: 0 0 0 4px rgba(191, 219, 254, 0.7);
+}
+
+/* Hover state */
+.answers-list .profile-list-item:hover {
+  background: #eef2ff;
+  border-color: #d4d4ff;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.18);
+  transform: translateY(-1px);
+}
+
+/* Top row: source/date + final score */
+.profile-list-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.15rem;
+  flex-wrap: wrap;              /* prevents overlap */
+}
+
+.profile-list-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+.profile-list-source {
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.profile-list-dot {
+  opacity: 0.6;
+}
+
+.profile-list-date {
+  color: #9ca3af;
+}
+
+/* Final score pill */
+.profile-list-final-score {
+  font-size: 0.8rem;
+  padding: 0.18rem 0.7rem;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #1e3a8a;
+  font-weight: 500;
+}
+
+/* Question / answer text */
+
+.profile-list-question {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0.2rem 0 0.1rem;
+}
+
+.profile-list-answer {
+  font-size: 0.9rem;
+  color: #374151;
+  margin: 0 0 0.25rem;
+}
+
+/* Scores row */
+.profile-list-scores {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.9rem;
+  margin: 0.1rem 0 0.2rem;
+}
+
+.profile-list-scores > div {
+  font-size: 0.8rem;
+  color: #4b5563;
+}
+
+/* Feedback text */
+.profile-list-feedback {
+  margin: 0.3rem 0 0;
+  font-size: 0.82rem;
+  color: #4b5563;
+}
+
+/* ===========================
+   EMPTY STATE
+   =========================== */
+
+.profile-empty {
+  margin: 0.6rem 0 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.profile-empty a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.profile-empty a:hover {
+  text-decoration: underline;
+}
+
+/* ===========================
+   REPORTS CARD
+   =========================== */
+
+.reports-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.reports-list .profile-list-item {
+  background: #f9fafb;
+}
+
+/* separate hover so reports don’t “pop” as much as answers */
+.reports-list .profile-list-item:hover {
+  background: #fefce8;
+  border-color: #facc15;
+  box-shadow: 0 10px 24px rgba(250, 204, 21, 0.18);
+  transform: translateY(-1px);
+}
+
+/* Report header */
+.profile-report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.2rem;
+}
+
+.profile-report-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.profile-report-company {
+  font-weight: 400;
+  color: #4b5563;
+  margin-left: 0.1rem;
+}
+
+.profile-report-date {
+  font-size: 0.78rem;
+  color: #9ca3af;
+}
+
+/* Report body text */
+.profile-report-focus {
+  margin: 0.35rem 0 0.1rem;
+  font-size: 0.86rem;
+  color: #4b5563;
+}
+
+.profile-report-hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* ===========================
+   Responsive tweaks
+   =========================== */
+
+@media (max-width: 900px) {
+  .profile-hero-inner {
+    flex-direction: column;
+  }
+
+  .profile-hero-right {
+    justify-content: flex-start;
+  }
+
+  .profile-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .profile-hero {
+    padding: 2.6rem 4% 2.4rem;
+  }
+
+  .profile-body {
+    padding: 2.4rem 4% 3.4rem;
+  }
+
+  .profile-card {
+    padding: 1.25rem 1.2rem 1.4rem;
+  }
+
+  .answers-list {
+    padding-left: 1.2rem;
+  }
+
+  .answers-list::before {
+    left: 0.5rem;
+  }
+
+  .answers-list .profile-list-item::before {
+    left: -1rem;
+  }
+}
+
+/* ===========================
+   Per-answer feedback panels
+   =========================== */
+
+.profile-feedback-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.45rem;
+}
+
+.profile-feedback-section {
+  border-radius: 0.7rem;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.profile-feedback-section h4 {
+  margin: 0 0 0.25rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.profile-feedback-section ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.profile-feedback-section li {
+  margin-bottom: 0.25rem;
+}
+
+/* Light green for strengths, soft orange for improvements */
+
+.profile-feedback-strengths {
+  background: #ecfdf5;
+  border: 1px solid #bbf7d0;
+}
+
+.profile-feedback-improvements {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+}

@@ -3,201 +3,247 @@
 <head>
   <meta charset="UTF-8">
   <title>NextStep.AI - Your profile</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet">
 </head>
 <body class="landing-body">
-  <!-- Shared header -->
-  <header class="landing-header">
-    <div class="logo">
-      <a href="{{ url_for('index') }}" class="brand">NextStep.<span>AI</span></a>
-    </div>
-    <nav aria-label="Main navigation">
-      <a href="{{ url_for('index') }}"
-         class="{% if request.endpoint == 'index' %}active{% endif %}">
-        Home
-      </a>
-      <a href="{{ url_for('jobs') }}"
-         class="{% if request.endpoint == 'jobs' %}active{% endif %}">
-        Job Library
-      </a>
-      <a href="{{ url_for('custom_prep') }}"
-         class="{% if request.endpoint == 'custom_prep' %}active{% endif %}">
-        Custom AI Prep
-      </a>
-      <a href="{{ url_for('winners') }}"
-         class="{% if request.endpoint == 'winners' %}active{% endif %}">
-        Winners
-      </a>
-      <a href="{{ url_for('courses') }}"
-         class="{% if request.endpoint == 'courses' %}active{% endif %}">
-        Courses
-      </a>
+  {% include "navbar.html" %}
 
-      {% if current_user %}
-        <a href="{{ url_for('profile') }}"
-           class="{% if request.endpoint == 'profile' %}active{% endif %}">
-          Profile
-        </a>
-        <span style="margin-left:0.75rem; font-size:0.9rem; color:#64748b;">
-          Hi, {{ current_user.username }}
-        </span>
-        <a href="{{ url_for('logout') }}" style="margin-left:0.75rem;">
-          Logout
-        </a>
-      {% else %}
-        <a href="{{ url_for('login') }}">Login</a>
-        <a href="{{ url_for('register') }}">Sign up</a>
-      {% endif %}
-    </nav>
-  </header>
+  <main class="profile-main">
+    <!-- HERO: user + streak -->
+    <section class="profile-hero">
+      <div class="app-shell profile-hero-inner">
+        <div class="profile-hero-left">
+          <p class="profile-kicker">Your interview hub</p>
+          <h1 class="profile-title">Hi, {{ current_user.username }}</h1>
+          <p class="profile-subtitle">
+            This is where you can track your daily streak, review recent answers,
+            and keep an eye on your custom prep reports.
+          </p>
+          {% if current_user.email %}
+            <p class="profile-email">Logged in as <strong>{{ current_user.email }}</strong></p>
+          {% endif %}
 
-  <main>
-    <section class="job-library-section">
-      <div class="app-shell">
-        <div class="card">
-          <!-- Top: profile info -->
-          <div class="job-header-row">
-            <div>
-              <h1>Your profile</h1>
-              <p class="subtitle">
-                Track your recent answers, AI feedback, and custom prep reports.
-              </p>
+          <div class="profile-stat-row">
+            <div class="profile-stat">
+              <span class="profile-stat-label">Saved answers</span>
+              <span class="profile-stat-value">{{ answers|length }}</span>
+            </div>
+            <div class="profile-stat">
+              <span class="profile-stat-label">Prep reports</span>
+              <span class="profile-stat-value">{{ prep_reports|length }}</span>
             </div>
           </div>
+        </div>
 
-          <!-- Basic profile info -->
-          <div class="section-card" style="margin-top:0;">
-            <div class="question-header">
-              <div>
-                <h2 style="margin:0 0 0.25rem;">Account</h2>
-                <p class="subtitle">
-                  Logged in as <strong>{{ current_user.username }}</strong>
-                  {% if current_user.email %} ({{ current_user.email }}){% endif %}
+        <div class="profile-hero-right">
+          <div class="streak-card">
+            <div class="streak-header">
+              <span class="streak-label">Daily streak</span>
+              <span class="streak-badge">Keep it going 🔥</span>
+            </div>
+            <div class="streak-main">
+              <div class="streak-current">
+                <span class="streak-number">
+                  {{ current_user.streak_count or 0 }}
+                </span>
+                <span class="streak-caption">days in a row</span>
+              </div>
+              <div class="streak-meta">
+                <div class="streak-meta-row">
+                  <span>Best streak</span>
+                  <span class="streak-meta-value">
+                    {{ current_user.longest_streak or 0 }} days
+                  </span>
+                </div>
+                <div class="streak-progress-track">
+                  <div class="streak-progress-bar"
+                       style="--streak-ratio: {{
+                         ((current_user.streak_count or 0) /
+                         ((current_user.longest_streak or 1) | float))
+                       }};">
+                  </div>
+                </div>
+                <p class="streak-hint">
+                  Answer today’s question to extend your streak.
                 </p>
               </div>
-              <div style="text-align:right; font-size:0.9rem;">
-                <div>
-                  Current streak:
-                  <strong>{{ current_user.streak_count or 0 }}</strong> days
-                </div>
-                <div>
-                  Longest streak:
-                  <strong>{{ current_user.longest_streak or 0 }}</strong> days
-                </div>
-              </div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
 
-          <!-- Recent answers -->
-          <div class="section-card">
-            <div class="question-header">
-              <h2 style="margin:0;">Recent answers</h2>
-              <span class="question-count-pill">
-                Showing latest {{ answers|length }} (max 20)
-              </span>
+    <!-- BODY GRID: answers + reports -->
+    <section class="profile-body">
+      <div class="app-shell profile-grid">
+        <!-- Recent answers -->
+        <section class="profile-card profile-answers-card">
+          <header class="profile-card-header">
+            <div>
+              <h2>Recent answers</h2>
+              <p class="profile-card-subtitle">
+                Latest {{ answers|length }} saved answers (max 20).
+              </p>
             </div>
+          </header>
 
-            {% if answers %}
-              <ul style="list-style:none; padding:0; margin:0.6rem 0 0;">
-                {% for ans in answers %}
-                  <li style="margin-bottom:0.8rem; padding-bottom:0.8rem; border-bottom:1px solid #e5e7eb;">
-                    <div style="font-size:0.8rem; color:#6b7280; margin-bottom:0.25rem;">
-                      Source:
-                      <strong>{{ ans.question_source }}</strong>
-                      ·
-                      {{ ans.created_at.strftime("%Y-%m-%d %H:%M") if ans.created_at else "" }}
-                    </div>
-
-                    <div style="font-size:0.9rem; font-weight:600; margin-bottom:0.2rem;">
-                      Q: {{ ans.raw_question_text }}
-                    </div>
-
-                    <div style="font-size:0.9rem; color:#374151; margin-bottom:0.35rem;">
-                      A: {{ ans.answer_text }}
-                    </div>
-
-                    <div class="scores">
-                      {% if ans.relevance_score is not none %}
-                        <div>
-                          Relevance:
-                          <span class="score-pill">
-                            {{ ans.relevance_score }}
-                          </span>
-                        </div>
-                      {% endif %}
-                      {% if ans.confidence_score is not none %}
-                        <div>
-                          Confidence:
-                          <span class="score-pill">
-                            {{ ans.confidence_score }}
-                          </span>
-                        </div>
-                      {% endif %}
-                      {% if ans.final_score is not none %}
-                        <div>
-                          Final:
-                          <span class="score-pill">
-                            {{ ans.final_score }}
-                          </span>
-                        </div>
+          {% if answers %}
+            <ul class="profile-list answers-list">
+              {% for ans in answers %}
+                <li class="profile-list-item">
+                  <div class="profile-list-top-row">
+                    <div class="profile-list-meta">
+                      <span class="profile-list-source">
+                        {{ ans.question_source }}
+                      </span>
+                      {% if ans.created_at %}
+                        <span class="profile-list-dot">•</span>
+                        <span class="profile-list-date">
+                          {{ ans.created_at.strftime("%Y-%m-%d %H:%M") }}
+                        </span>
                       {% endif %}
                     </div>
+                    {% if ans.final_score is not none %}
+                      <span class="profile-list-final-score">
+                        Final: {{ ans.final_score }}
+                      </span>
+                    {% endif %}
+                  </div>
 
-                    {% if ans.feedback_text %}
-                      <p style="font-size:0.85rem; color:#4b5563; margin-top:0.35rem;">
+                  <div class="profile-list-question">
+                    Q: {{ ans.raw_question_text }}
+                  </div>
+
+                  <div class="profile-list-answer">
+                    A: {{ ans.answer_text }}
+                  </div>
+
+                  <div class="scores profile-list-scores">
+                    {% if ans.relevance_score is not none %}
+                      <div>
+                        Relevance:
+                        <span class="score-pill">{{ ans.relevance_score }}</span>
+                      </div>
+                    {% endif %}
+                    {% if ans.confidence_score is not none %}
+                      <div>
+                        Confidence:
+                        <span class="score-pill">{{ ans.confidence_score }}</span>
+                      </div>
+                    {% endif %}
+                  </div>
+                  {% if ans.feedback_text %}
+                    {# Split into Strengths / Improvements like in result.html #}
+                    {% set raw = ans.feedback_text or "" %}
+                    {% set parts = raw.split("Improvements:") %}
+                    {% set strengths_part = parts[0] %}
+                    {% set improvements_part = parts[1] if parts|length > 1 else "" %}
+
+                    {% set strengths_clean = strengths_part.replace("Strengths:", "").strip() %}
+                    {% set improvements_clean = improvements_part.strip() %}
+
+                    {% set strengths_items = strengths_clean.split(";") if strengths_clean else [] %}
+                    {% set improvements_items = improvements_clean.split(";") if improvements_clean else [] %}
+
+                    <div class="profile-feedback-grid">
+                      {% if strengths_items %}
+                        <div class="profile-feedback-section profile-feedback-strengths">
+                          <h4>Strengths</h4>
+                          <ul>
+                            {% for item in strengths_items %}
+                              {% if item.strip() %}
+                                <li>{{ item.strip() }}</li>
+                              {% endif %}
+                            {% endfor %}
+                          </ul>
+                        </div>
+                      {% endif %}
+                      
+                      {% if improvements_items %}
+                        <div class="profile-feedback-section profile-feedback-improvements">
+                          <h4>Improvements</h4>
+                          <ul>
+                            {% for item in improvements_items %}
+                              {% if item.strip() %}
+                                <li>{{ item.strip() }}</li>
+                              {% endif %}
+                            {% endfor %}
+                          </ul>
+                        </div>
+                      {% endif %}
+                    </div>
+                  
+                    {# Fallback: if we somehow couldn't parse, show raw text #}
+                    {% if not strengths_items and not improvements_items %}
+                      <p class="profile-list-feedback">
                         {{ ans.feedback_text }}
                       </p>
                     {% endif %}
-                  </li>
-                {% endfor %}
-              </ul>
-            {% else %}
-              <p class="subtitle" style="margin-top:0.6rem;">
-                You don’t have any answers saved yet.
-                Go to the <a href="{{ url_for('index') }}">Home</a> page and practice a question!
+                  {% endif %}                
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="profile-empty">
+              You don’t have any answers saved yet.
+              Go to the <a href="{{ url_for('index') }}">Home</a> page and practice a question.
+            </p>
+          {% endif %}
+        </section>
+
+        <!-- Prep reports -->
+        <section class="profile-card profile-reports-card">
+          <header class="profile-card-header">
+            <div>
+              <h2>Custom prep reports</h2>
+              <p class="profile-card-subtitle">
+                All the interview guides you’ve generated with NextStep.AI.
               </p>
-            {% endif %}
-          </div>
-
-          <!-- Prep reports -->
-          <div class="section-card">
-            <div class="question-header">
-              <h2 style="margin:0;">Custom prep reports</h2>
             </div>
+          </header>
 
-            {% if prep_reports %}
-              <ul style="list-style:none; padding:0; margin:0.6rem 0 0;">
-                {% for r in prep_reports %}
-                  <li style="margin-bottom:0.8rem; padding-bottom:0.8rem; border-bottom:1px solid #e5e7eb;">
-                    <div style="font-size:0.9rem; font-weight:600;">
+          {% if prep_reports %}
+            <ul class="profile-list reports-list">
+              {% for r in prep_reports %}
+                <li class="profile-list-item">
+                  <div class="profile-report-header">
+                    <div class="profile-report-title">
                       {{ r.job_title }}
                       {% if r.company_name %}
-                        · <span style="color:#4b5563;">{{ r.company_name }}</span>
+                        <span class="profile-report-company">· {{ r.company_name }}</span>
                       {% endif %}
                     </div>
-                    <div style="font-size:0.8rem; color:#6b7280;">
-                      Generated:
-                      {{ r.created_at.strftime("%Y-%m-%d %H:%M") if r.created_at else "" }}
-                    </div>
-                    {% if r.report_json and r.report_json.get("behavioral_practice") %}
-                      <div style="font-size:0.85rem; color:#4b5563; margin-top:0.35rem;">
-                        Behavioral focus:
-                        {{ r.report_json["behavioral_practice"].get("title", "") }}
-                      </div>
+                    {% if r.created_at %}
+                      <span class="profile-report-date">
+                        {{ r.created_at.strftime("%Y-%m-%d") }}
+                      </span>
                     {% endif %}
-                  </li>
-                {% endfor %}
-              </ul>
-            {% else %}
-              <p class="subtitle" style="margin-top:0.6rem;">
-                You haven’t generated any custom prep reports yet.
-                Try the <a href="{{ url_for('custom_prep') }}">Custom AI Prep</a> page before your next interview.
-              </p>
-            {% endif %}
-          </div>
+                  </div>
 
-        </div>
+                  {% if r.report_json and r.report_json.get("behavioral_practice") %}
+                    <p class="profile-report-focus">
+                      Behavioral focus:
+                      {{ r.report_json["behavioral_practice"].get("title", "") }}
+                    </p>
+                  {% endif %}
+
+                  <p class="profile-report-hint">
+                    Open this report from the Custom AI Prep page to review questions,
+                    examples, and next steps.
+                  </p>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="profile-empty">
+              No custom prep reports yet.
+              Try the <a href="{{ url_for('custom_prep') }}">Custom AI Prep</a> page before your next interview.
+            </p>
+          {% endif %}
+        </section>
       </div>
     </section>
   </main>

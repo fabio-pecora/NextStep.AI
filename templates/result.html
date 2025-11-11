@@ -1,94 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>NextStep.AI - Feedback</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/nextstepai_main.css') }}">
+  <meta charset="UTF-8">
+  <title>NextStep.AI - Feedback</title>
+
+  <!-- Shared styles + page styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/result.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet">
 </head>
-<body>
-<div class="app-shell result-shell">
-    <header>
-        <div class="brand">NextStep.<span>AI</span></div>
-        <nav>
-            <a href="{{ url_for('index') }}">Practice</a>
-            <a href="{{ url_for('jobs') }}">Job library</a>
-            <a href="{{ url_for('custom_prep') }}">Custom AI prep</a>
-            <a href="{{ url_for('winners') }}">Winners</a>
-            <a href="{{ url_for('courses') }}">Courses</a>
-        </nav>
-    </header>
+<body class="landing-body">
+  {% include "navbar.html" %}
 
-    <section class="card">
-        {% if result.error %}
-            <h1>Feedback</h1>
+  <main>
+    <section class="result-section">
+      <div class="app-shell">
+        <div class="card result-card">
+          {% if result.error %}
+            <h1 class="result-title">Feedback</h1>
             <p class="error">{{ result.error }}</p>
-        {% else %}
-            <h1>Interview feedback</h1>
-            <p class="subtitle">Automatic evaluation from NextStep.AI.</p>
+          {% else %}
+            <header class="result-header">
+              <div>
+                <h1 class="result-title">Interview feedback</h1>
+                <p class="subtitle">Automatic evaluation from NextStep.AI.</p>
+              </div>
+            </header>
 
-            <h2 class="section-title">Question</h2>
-            <p>{{ result.question }}</p>
+            <div class="result-body">
 
-            <h2 class="section-title">Your answer</h2>
-            <p>{{ result.user_answer }}</p>
+              <section class="result-block">
+                <h2 class="section-title">Question</h2>
+                <p class="result-text result-question">{{ result.question }}</p>
+              </section>
 
-            <h2 class="section-title">Scores</h2>
-            <div class="scores">
-                <div>Relevance: <span class="score-pill">{{ result.relevance_score }}</span></div>
-                <div>Confidence: <span class="score-pill">{{ result.confidence_score }}</span></div>
-                <div>Final: <span class="score-pill">{{ result.final_score }}</span></div>
-            </div>
+              <section class="result-block">
+                <h2 class="section-title">Your answer</h2>
+                <p class="result-text result-answer">{{ result.user_answer }}</p>
+              </section>
 
-            <h2 class="section-title">Feedback</h2>
+              <section class="result-block">
+                <h2 class="section-title">Scores</h2>
+                <div class="scores">
+                  <div>Relevance: <span class="score-pill">{{ result.relevance_score }}</span></div>
+                  <div>Confidence: <span class="score-pill">{{ result.confidence_score }}</span></div>
+                  <div>Final: <span class="score-pill">{{ result.final_score }}</span></div>
+                </div>
+              </section>
 
-            {# Parse strengths and improvements from the feedback_text string #}
-            {% set raw = result.feedback_text or "" %}
-            {% set parts = raw.split("Improvements:") %}
-            {% set strengths_part = parts[0] %}
-            {% set improvements_part = parts[1] if parts|length > 1 else "" %}
+              <section class="result-block">
+                <h2 class="section-title">Feedback</h2>
 
-            {% set strengths_clean = strengths_part.replace("Strengths:", "").strip() %}
-            {% set improvements_clean = improvements_part.strip() %}
+                {# Parse strengths and improvements from the feedback_text string #}
+                {% set raw = result.feedback_text or "" %}
+                {% set parts = raw.split("Improvements:") %}
+                {% set strengths_part = parts[0] %}
+                {% set improvements_part = parts[1] if parts|length > 1 else "" %}
 
-            {% set strengths_items = strengths_clean.split(";") if strengths_clean else [] %}
-            {% set improvements_items = improvements_clean.split(";") if improvements_clean else [] %}
+                {% set strengths_clean = strengths_part.replace("Strengths:", "").strip() %}
+                {% set improvements_clean = improvements_part.strip() %}
 
-            <div class="feedback-grid">
-                {% if strengths_items %}
+                {% set strengths_items = strengths_clean.split(";") if strengths_clean else [] %}
+                {% set improvements_items = improvements_clean.split(";") if improvements_clean else [] %}
+
+                <div class="feedback-grid">
+                  {% if strengths_items %}
                     <div class="feedback-section feedback-strengths">
-                        <h3>Strengths</h3>
-                        <ul>
-                            {% for item in strengths_items %}
-                                {% if item.strip() %}
-                                    <li>{{ item.strip() }}</li>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
+                      <h3>Strengths</h3>
+                      <ul>
+                        {% for item in strengths_items %}
+                          {% if item.strip() %}
+                            <li>{{ item.strip() }}</li>
+                          {% endif %}
+                        {% endfor %}
+                      </ul>
                     </div>
-                {% endif %}
+                  {% endif %}
 
-                {% if improvements_items %}
+                  {% if improvements_items %}
                     <div class="feedback-section feedback-improvements">
-                        <h3>Improvements</h3>
-                        <ul>
-                            {% for item in improvements_items %}
-                                {% if item.strip() %}
-                                    <li>{{ item.strip() }}</li>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
+                      <h3>Improvements</h3>
+                      <ul>
+                        {% for item in improvements_items %}
+                          {% if item.strip() %}
+                            <li>{{ item.strip() }}</li>
+                          {% endif %}
+                        {% endfor %}
+                      </ul>
                     </div>
+                  {% endif %}
+                </div>
+
+                {# Fallback: if parsing failed and everything was empty, show the raw text #}
+                {% if not strengths_items and not improvements_items and result.feedback_text %}
+                  <p class="result-text">{{ result.feedback_text }}</p>
                 {% endif %}
+              </section>
             </div>
+          {% endif %}
 
-            {# Fallback: if parsing failed and everything was empty, show the raw text #}
-            {% if not strengths_items and not improvements_items and result.feedback_text %}
-                <p>{{ result.feedback_text }}</p>
-            {% endif %}
-        {% endif %}
-
-        <a href="{{ url_for('index') }}" class="back-link">Back to question</a>
+          <a href="{{ url_for('index') }}" class="back-link">Back to question</a>
+        </div>
+      </div>
     </section>
-</div>
+  </main>
+
+  <footer class="landing-footer">
+    <p>© {{ current_year or "2025" }} NextStep.AI. All rights reserved.</p>
+  </footer>
 </body>
 </html>

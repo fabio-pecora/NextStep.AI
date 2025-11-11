@@ -76,7 +76,7 @@ Generate a structured JSON object (response_format=json_object) with these main 
     "example_answers": [
       {
         "question": "...",
-        "answer": "🔴Situation ... 🔵Task ... 🟢Action ... 🟣Result ..."
+        "answer": "🔴 ... 🔵 ... 🟢 ... 🟣 ..."
       }
     ],
     "key_concepts": ["...", "..."],
