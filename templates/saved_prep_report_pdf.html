@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Prep report – {{ prep_report.job_title }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/saved_prep_report.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+</head>
+
+<body class="prep-view-body">
+  <!-- top controls stay on-screen, but are hidden in print/pdf -->
+  <div class="prep-view-main no-print">
+    <div class="prep-view-header-row">
+      <a class="prep-back-link" href="{{ url_for('profile') }}">← Back to profile</a>
+      <a class="btn btn-primary" href="{{ url_for('download_saved_prep_report_pdf', report_id=prep_report.id) }}">Download as PDF</a>
+    </div>
+  </div>
+
+  <!-- Only this wrapper is rendered to PDF -->
+  <main id="report-page" class="report-page">
+    <header class="report-topbar">
+      <div class="brand">NextStep.<span>AI</span></div>
+      <div class="meta">
+        <div class="title">Prep report for <strong>{{ prep_report.job_title }}</strong>{% if prep_report.company_name %} · {{ prep_report.company_name }}{% endif %}</div>
+        <div class="stamp">Generated on {{ prep_report.created_at.date() }}</div>
+      </div>
+    </header>
+
+    <section class="report-card">
+      <div class="report-badges">
+        <span class="tag">AI generated</span>
+        {% if prep_report.company_name %}<span class="tag">Company specific</span>{% endif %}
+        <span class="tag">Role and company insights</span>
+      </div>
+
+      <div class="report-content" id="report-content">
+        {# Reuse the same section rendering you already had in the modal #}
+        {% set report = report or prep_report.report_json %}
+        {# --- SECTION 1 --- #}
+        {% set know = report.know_all_about_them or {} %}
+        {% if know.mission_values or know.culture_snapshot or know.recent_projects_news or know.competitors_industry_trends %}
+          <section class="block">
+            <h2>1. Know their world</h2>
+
+            {% if know.mission_values %}
+              <h3>Mission and values</h3>
+              <ul>{% for item in know.mission_values %}<li>{{ item }}</li>{% endfor %}</ul>
+            {% endif %}
+
+            {% if know.culture_snapshot %}
+              <h3>Culture snapshot</h3>
+              <ul>{% for item in know.culture_snapshot %}<li>{{ item }}</li>{% endfor %}</ul>
+            {% endif %}
+
+            {% if know.recent_projects_news %}
+              <h3>Recent projects and news</h3>
+              <ul>{% for item in know.recent_projects_news %}<li>{{ item }}</li>{% endfor %}</ul>
+            {% endif %}
+
+            {% if know.competitors_industry_trends %}
+              <h3>Competitors and industry trends</h3>
+              <ul>{% for item in know.competitors_industry_trends %}<li>{{ item }}</li>{% endfor %}</ul>
+            {% endif %}
+          </section>
+        {% endif %}
+
+        {# --- SECTION 2 --- #}
+        {% set fit = report.perfect_fit_map or {} %}
+        {% if fit.top_strengths or fit.best_projects %}
+          <section class="block">
+            <h2>2. Your perfect fit map</h2>
+
+            {% if fit.top_strengths %}
+              <h3>Strengths to lean into</h3>
+              <ul>{% for s in fit.top_strengths %}<li>{{ s }}</li>{% endfor %}</ul>
+            {% endif %}
+
+            {% if fit.best_projects %}
+              <h3>Projects to spotlight</h3>
+              <ul>
+                {% for p in fit.best_projects %}
+                  <li>
+                    <strong>{{ p.title }}</strong>{% if p.summary %} — {{ p.summary }}{% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </section>
+        {% endif %}
+
+        {# --- SECTION 3 --- #}
+        {% set beh = report.behavioral_practice or {} %}
+        {% if beh.questions or beh.example_answers %}
+          <section class="block">
+            <h2>3. Behavioral interview practice</h2>
+
+            {% if beh.questions %}
+              <h3>Questions to prepare for</h3>
+              <ul>{% for q in beh.questions %}<li>{{ q }}</li>{% endfor %}</ul>
+            {% endif %}
+
+            {% if beh.example_answers %}
+              <h3>Sample STAR answers</h3>
+              {% for ex in beh.example_answers %}
+                <div class="example">
+                  <p class="q">{{ ex.question }}</p>
+                  <p class="a">{{ ex.answer }}</p>
+                  {% if ex.legend %}
+                    <p class="legend">
+                      {% for k, v in ex.legend.items() %}<span>{{ k }} {{ v }}</span>{% endfor %}
+                    </p>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            {% endif %}
+          </section>
+        {% endif %}
+
+        {# --- SECTION 4 --- #}
+        {% set tech = report.technical_prep or {} %}
+        {% if tech.questions or tech.example_answers or tech.key_concepts or tech.red_flags %}
+          <section class="block">
+            <h2>4. Technical or role specific preparation</h2>
+
+            {% if tech.questions %}
+              <h3>Questions they may ask you</h3>
+              <ul>{% for q in tech.questions %}<li>{{ q }}</li>{% endfor %}</ul>
+            {% endif %}
+
+            {% if tech.example_answers %}
+              <h3>Example responses</h3>
+              {% for ex in tech.example_answers %}
+                <div class="example">
+                  <p class="q">{{ ex.question }}</p>
+                  <p class="a">{{ ex.answer }}</p>
+                </div>
+              {% endfor %}
+            {% endif %}
+
+            {% if tech.key_concepts %}
+              <h3>Key concepts to review</h3>
+              <ul>{% for item in tech.key_concepts %}<li>{{ item }}</li>{% endfor %}</ul>
+            {% endif %}
+
+            {% if tech.red_flags %}
+              <h3>Common red flags to avoid</h3>
+              <ul>{% for item in tech.red_flags %}<li>{{ item }}</li>{% endfor %}</ul>
+            {% endif %}
+          </section>
+        {% endif %}
+
+        {# --- SECTION 5 --- #}
+        {% set imp = report.improvement_zone or {} %}
+        {% if imp.skill_gaps or imp.soft_skills or imp.learning_focus %}
+          <section class="block">
+            <h2>5. Upgrade yourself before the interview</h2>
+
+            {% if imp.skill_gaps %}
+              <h3>Skill gaps to work on</h3>
+              <ul>{% for item in imp.skill_gaps %}<li>{{ item }}</li>{% endfor %}</ul>
+            {% endif %}
+
+            {% if imp.soft_skills %}
+              <h3>Soft skills to sharpen</h3>
+              <ul>{% for item in imp.soft_skills %}<li>{{ item }}</li>{% endfor %}</ul>
+            {% endif %}
+
+            {% if imp.learning_focus %}
+              <h3>Focus for this week</h3>
+              <ul>{% for item in imp.learning_focus %}<li>{{ item }}</li>{% endfor %}</ul>
+            {% endif %}
+          </section>
+        {% endif %}
+
+        {# --- SECTION 6 --- #}
+        {% set itm = report.impress_them_back or {} %}
+        {% if itm.team_culture or itm.impact_growth or itm.technical_depth or itm.company_direction or itm.next_steps %}
+          <section class="block">
+            <h2>6. Smart questions to ask them</h2>
+
+            {% if itm.team_culture %}<h3>Team and culture</h3><ul>{% for q in itm.team_culture %}<li>{{ q }}</li>{% endfor %}</ul>{% endif %}
+            {% if itm.impact_growth %}<h3>Impact and growth</h3><ul>{% for q in itm.impact_growth %}<li>{{ q }}</li>{% endfor %}</ul>{% endif %}
+            {% if itm.technical_depth %}<h3>Technical depth</h3><ul>{% for q in itm.technical_depth %}<li>{{ q }}</li>{% endfor %}</ul>{% endif %}
+            {% if itm.company_direction %}<h3>Company direction</h3><ul>{% for q in itm.company_direction %}<li>{{ q }}</li>{% endfor %}</ul>{% endif %}
+            {% if itm.next_steps %}<h3>Next steps</h3><ul>{% for q in itm.next_steps %}<li>{{ q }}</li>{% endfor %}</ul>{% endif %}
+          </section>
+        {% endif %}
+      </div>
+    </section>
+
+    <footer class="report-footer">
+      © {{ (current_year or 2025) }} NextStep.AI. All rights reserved.
+    </footer>
+  </main>
+</body>
+</html>

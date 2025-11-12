@@ -3,6 +3,7 @@ import json
 import tempfile
 import random
 from datetime import datetime, date, time, timedelta
+import pdfkit
 
 from flask import (
     Flask,
@@ -15,6 +16,7 @@ from flask import (
     flash,
     abort,
     make_response,
+    abort,
 )
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -22,6 +24,8 @@ from functools import wraps
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.pool import NullPool
+
+import pdfkit 
 
 from utils.evaluation import (
     evaluate_answer,
@@ -1067,24 +1071,81 @@ def custom_prep():
 @login_required
 def view_saved_prep_report(report_id: int):
     """
-    Open a previously generated prep report from the profile page.
-    Only allows access to reports owned by the current user.
+    Full-page viewer for a previously generated prep report.
+    Used by the profile page cards.
     """
     user = get_current_user()
     if not user:
         return redirect(url_for("login", next=request.path))
 
-    report_row = PrepReport.query.filter_by(
-        id=report_id, user_id=user.id
+    prep_report = PrepReport.query.filter_by(
+        id=report_id,
+        user_id=user.id,
     ).first()
 
-    if not report_row:
+    if not prep_report:
         abort(404)
 
     return render_template(
-        "custom_prep.html",
-        report=report_row.report_json,
-        error=None,
+        "saved_prep_report.html",
+        prep_report=prep_report,
+        report=prep_report.report_json,
+    )
+
+
+# --- PDF download for a saved prep report (ONLY the report area) ---
+@app.route("/custom_prep/report/<int:report_id>/pdf", methods=["GET"])
+@login_required
+def download_saved_prep_report_pdf(report_id: int):
+    prep_report = PrepReport.query.get_or_404(report_id)
+
+    # 1) Render the same HTML used on the screen
+    html = render_template(
+        "saved_prep_report.html",
+        prep_report=prep_report,
+        report=prep_report.report_json,
+        for_pdf=True,   # small hint flag if you want any tiny print tweaks in the template
+    )
+
+    # 2) Absolute paths to your CSS on disk
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    css_files = [
+        os.path.join(base_dir, "static", "css", "base.css"),
+        os.path.join(base_dir, "static", "css", "saved_prep_report.css"),
+    ]
+
+    # 3) wkhtmltopdf path (adjust if your install path differs)
+    import pdfkit
+    config = pdfkit.configuration(
+        wkhtmltopdf=r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
+    )
+
+    # 4) Options so CSS loads and page looks clean
+    options = {
+        "enable-local-file-access": None,  # allow file:// access
+        "page-size": "Letter",
+        "margin-top": "10mm",
+        "margin-right": "10mm",
+        "margin-bottom": "12mm",
+        "margin-left": "10mm",
+        "print-media-type": None,
+        "quiet": "",  # suppress wkhtmltopdf banner
+        # optional, helps long lines wrap more predictably:
+        # "disable-smart-shrinking": None,
+    }
+
+    pdf_bytes = pdfkit.from_string(
+        html, False, css=css_files, options=options, configuration=config
+    )
+
+    filename = f"prep_report_{report_id}.pdf"
+    return (
+        pdf_bytes,
+        200,
+        {
+            "Content-Type": "application/pdf",
+            "Content-Disposition": f'attachment; filename="{filename}"',
+        },
     )
 
 

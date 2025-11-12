@@ -1,0 +1,109 @@
+/* Page shell */
+.prep-view-body {
+  background: #f5f7fb;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.prep-view-main {
+  padding: 2.5rem 6% 3.5rem;
+}
+
+/* Header row */
+.prep-view-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.prep-title {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.muted { color: #6b7280; }
+.gen-date { margin-left: 0.5rem; color: #6b7280; font-size: 0.9rem; }
+
+.prep-subtitle {
+  margin: 0.2rem 0 0;
+  color: #4b5563;
+  font-size: 0.98rem;
+}
+
+.prep-view-actions { display: flex; gap: 0.6rem; }
+
+/* Report card */
+.report-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 24px rgba(15,23,42,0.08);
+}
+
+/* Header strip */
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.2rem 1.6rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+}
+
+.report-logo-text { font-weight: 700; font-size: 1.15rem; color: #2563eb; }
+.report-logo-text span { color: #111827; }
+.report-logo-tagline { font-size: 0.85rem; color: #6b7280; }
+
+.report-meta { text-align: right; }
+.report-job { margin: 0 0 0.25rem; font-weight: 600; }
+.report-candidate { margin: 0.1rem 0; color: #6b7280; font-size: 0.9rem; }
+
+.report-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; justify-content: flex-end; }
+.report-tag {
+  background: #dbeafe; color: #2563eb;
+  padding: 0.2rem 0.7rem; border-radius: 999px;
+  font-size: 0.78rem;
+}
+.report-tag-warning { background: #fef3c7; color: #92400e; }
+
+/* Body */
+.report-body { padding: 1.3rem 1.6rem 1.5rem; background: #f9fafb; }
+.report-debug-note { margin: 0 0 0.75rem; color: #92400e; font-size: 0.9rem; }
+
+/* Sections */
+.report-section {
+  margin-bottom: 1.1rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.9rem;
+  padding: 1rem 1.05rem 1.05rem;
+}
+
+.report-heading {
+  margin: 0 0 0.45rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.report-subheading {
+  margin: 0.45rem 0 0.25rem;
+  font-size: 1rem;
+  color: #2563eb;
+}
+
+.report-paragraph { margin: 0.18rem 0; font-size: 0.94rem; line-height: 1.5; }
+
+.report-example-block {
+  background: #eef2ff;
+  border-radius: 0.75rem;
+  padding: 0.8rem 0.9rem;
+  margin: 0.6rem 0;
+}
+
+.report-example-question { margin: 0 0 0.35rem; font-weight: 600; }
+.report-example-answer { margin: 0; font-size: 0.94rem; color: #111827; }
+.report-legend { margin-top: 0.4rem; font-size: 0.82rem; color: #6b7280; }

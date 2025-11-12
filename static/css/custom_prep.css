@@ -325,7 +325,7 @@
   color: var(--text-muted);
 }
 
-/* Close button: now a pill "Back to profile" button */
+/* Close button: pill "Back to profile" button */
 
 .report-modal-close {
   position: absolute;
@@ -382,33 +382,45 @@ body.report-modal-open {
   }
 }
 
-/* ===== Print optimization ===== */
+/* ===== Print: ONLY print the report modal ===== */
 @media print {
+  /* Hide anything explicitly marked no-print */
   .no-print {
     display: none !important;
   }
 
   body {
-    background: white;
+    background: #ffffff;
   }
 
-  /* Always print the popup content, styled as a plain page */
-  .report-modal-backdrop {
-    position: static;
-    inset: auto;
+  /* Hide everything on the page by default */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Show only the report modal and its contents */
+  #report-modal,
+  #report-modal * {
+    visibility: visible;
+  }
+
+  /* Make the modal behave like a normal page when printing */
+  #report-modal {
+    position: static !important;
+    inset: auto !important;
     display: block !important;
-    background: transparent;
-    box-shadow: none;
+    background: transparent !important;
+    box-shadow: none !important;
   }
 
   .report-modal-inner {
-    box-shadow: none;
-    border-radius: 0;
-    width: 100%;
-    max-height: none;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    width: 100% !important;
+    max-height: none !important;
   }
 
   .report-modal-body {
-    overflow: visible;
+    overflow: visible !important;
   }
 }
