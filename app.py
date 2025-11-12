@@ -13,6 +13,8 @@ from flask import (
     redirect,
     url_for,
     flash,
+    abort,
+    make_response,
 )
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -60,7 +62,6 @@ db = SQLAlchemy(
         "poolclass": NullPool,
     },
 )
-
 
 
 # ---------------------------------------------------------------------------
@@ -1062,6 +1063,58 @@ def custom_prep():
     )
 
 
+@app.route("/custom_prep/report/<int:report_id>", methods=["GET"])
+@login_required
+def view_saved_prep_report(report_id: int):
+    """
+    Open a previously generated prep report from the profile page.
+    Only allows access to reports owned by the current user.
+    """
+    user = get_current_user()
+    if not user:
+        return redirect(url_for("login", next=request.path))
+
+    report_row = PrepReport.query.filter_by(
+        id=report_id, user_id=user.id
+    ).first()
+
+    if not report_row:
+        abort(404)
+
+    return render_template(
+        "custom_prep.html",
+        report=report_row.report_json,
+        error=None,
+    )
+
+
+@app.route("/custom_prep/report/<int:report_id>/download", methods=["GET"])
+@login_required
+def download_saved_prep_report(report_id: int):
+    """
+    Download the raw JSON of a saved prep report for the current user.
+    """
+    user = get_current_user()
+    if not user:
+        return redirect(url_for("login", next=request.path))
+
+    report_row = PrepReport.query.filter_by(
+        id=report_id, user_id=user.id
+    ).first()
+
+    if not report_row:
+        abort(404)
+
+    json_str = json.dumps(report_row.report_json or {}, ensure_ascii=False, indent=2)
+
+    response = make_response(json_str)
+    response.headers["Content-Type"] = "application/json"
+    response.headers["Content-Disposition"] = (
+        f"attachment; filename=prep_report_{report_row.id}.json"
+    )
+    return response
+
+
 # ---------------------------------------------------------------------------
 # Winners and Courses
 # ---------------------------------------------------------------------------
@@ -1102,5 +1155,5 @@ def courses():
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    # debug=False so Flask doesn't spawn extra processes that open extra DB connections
+    # debug=False so Flask does not spawn extra processes that open extra DB connections
     app.run(host="0.0.0.0", port=5000, debug=False)

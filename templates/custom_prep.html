@@ -159,8 +159,13 @@
   {% if report %}
     <div id="report-modal" class="report-modal-backdrop">
       <div class="report-modal-inner" id="report-modal-inner">
-        <button type="button" class="report-modal-close no-print" id="close-report-modal-btn" aria-label="Close report">
-          ×
+        <!-- CHANGED: close button is now a "Back to profile" button -->
+        <button
+          type="button"
+          class="report-modal-close no-print"
+          id="close-report-modal-btn"
+        >
+          Back to profile
         </button>
 
         <!-- Header strip -->
@@ -429,11 +434,9 @@
       document.body.classList.add('report-modal-open');
     }
 
+    // CHANGED: instead of just hiding the modal, go back to profile page
     function closeReportModal() {
-      const backdrop = document.getElementById('report-modal');
-      if (!backdrop) return;
-      backdrop.classList.remove('is-visible');
-      document.body.classList.remove('report-modal-open');
+      window.location.href = "{{ url_for('profile') }}";
     }
 
     function downloadReportPDF() {

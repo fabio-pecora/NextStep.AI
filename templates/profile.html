@@ -176,7 +176,7 @@
                       {% endif %}
                     </div>
                   
-                    {# Fallback: if we somehow couldn't parse, show raw text #}
+                    {# Fallback: if we somehow could not parse, show raw text #}
                     {% if not strengths_items and not improvements_items %}
                       <p class="profile-list-feedback">
                         {{ ans.feedback_text }}
@@ -188,7 +188,7 @@
             </ul>
           {% else %}
             <p class="profile-empty">
-              You don’t have any answers saved yet.
+              You do not have any answers saved yet.
               Go to the <a href="{{ url_for('index') }}">Home</a> page and practice a question.
             </p>
           {% endif %}
@@ -200,7 +200,7 @@
             <div>
               <h2>Custom prep reports</h2>
               <p class="profile-card-subtitle">
-                All the interview guides you’ve generated with NextStep.AI.
+                All the interview guides you have generated with NextStep.AI.
               </p>
             </div>
           </header>
@@ -209,31 +209,35 @@
             <ul class="profile-list reports-list">
               {% for r in prep_reports %}
                 <li class="profile-list-item">
-                  <div class="profile-report-header">
-                    <div class="profile-report-title">
-                      {{ r.job_title }}
-                      {% if r.company_name %}
-                        <span class="profile-report-company">· {{ r.company_name }}</span>
+                  <a
+                    href="{{ url_for('view_saved_prep_report', report_id=r.id) }}"
+                    class="profile-report-link"
+                  >
+                    <div class="profile-report-header">
+                      <div class="profile-report-title">
+                        {{ r.job_title }}
+                        {% if r.company_name %}
+                          <span class="profile-report-company">· {{ r.company_name }}</span>
+                        {% endif %}
+                      </div>
+                      {% if r.created_at %}
+                        <span class="profile-report-date">
+                          {{ r.created_at.strftime("%Y-%m-%d") }}
+                        </span>
                       {% endif %}
                     </div>
-                    {% if r.created_at %}
-                      <span class="profile-report-date">
-                        {{ r.created_at.strftime("%Y-%m-%d") }}
-                      </span>
+
+                    {% if r.report_json and r.report_json.get("behavioral_practice") %}
+                      <p class="profile-report-focus">
+                        Behavioral focus:
+                        {{ r.report_json["behavioral_practice"].get("title", "") }}
+                      </p>
                     {% endif %}
-                  </div>
 
-                  {% if r.report_json and r.report_json.get("behavioral_practice") %}
-                    <p class="profile-report-focus">
-                      Behavioral focus:
-                      {{ r.report_json["behavioral_practice"].get("title", "") }}
+                    <p class="profile-report-hint">
+                      Click to reopen this report, review everything, and download it.
                     </p>
-                  {% endif %}
-
-                  <p class="profile-report-hint">
-                    Open this report from the Custom AI Prep page to review questions,
-                    examples, and next steps.
-                  </p>
+                  </a>
                 </li>
               {% endfor %}
             </ul>

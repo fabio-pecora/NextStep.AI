@@ -448,7 +448,7 @@
   background: #f9fafb;
 }
 
-/* separate hover so reports don’t “pop” as much as answers */
+/* separate hover so reports do not pop as much as answers */
 .reports-list .profile-list-item:hover {
   background: #fefce8;
   border-color: #facc15;
@@ -492,6 +492,18 @@
   margin: 0;
   font-size: 0.8rem;
   color: #6b7280;
+}
+
+/* Make whole report card clickable */
+.profile-report-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.profile-report-link:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
 }
 
 /* ===========================

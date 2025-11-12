@@ -325,21 +325,25 @@
   color: var(--text-muted);
 }
 
-/* Close icon */
+/* Close button: now a pill "Back to profile" button */
 
 .report-modal-close {
   position: absolute;
   top: 0.7rem;
   right: 0.9rem;
-  border: none;
-  background: transparent;
-  font-size: 1.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-soft);
+  padding: 0.25rem 0.9rem;
+  background: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 500;
   cursor: pointer;
-  color: #6b7280;
+  color: #111827;
 }
 
 .report-modal-close:hover {
-  color: #111827;
+  background: #eef2ff;
+  border-color: #a5b4fc;
 }
 
 /* When popup is open, prevent page scroll */
