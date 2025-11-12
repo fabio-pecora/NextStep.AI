@@ -2,11 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>NextStep.AI — Winning answers</title>
+  <title>NextStep.AI · Winning answers</title>
 
-  <!-- Global styles -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" />
-  <!-- Page styles -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/winners.css') }}" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -15,128 +13,157 @@
 <body class="landing-body winners-body">
   {% include "navbar.html" %}
 
+  {% if winners and winners|length > 0 %}
+  <div class="name-rails" aria-hidden="true">
+    <aside class="name-rail left">
+      <div class="rail-line"></div>
+      <ul class="name-rail-list fade-mask">
+        {% for w in winners %}
+          <li class="name-pill">{{ w.username or "Anonymous" }}</li>
+        {% endfor %}
+      </ul>
+    </aside>
+
+    <aside class="name-rail right">
+      <div class="rail-line"></div>
+      <ul class="name-rail-list fade-mask">
+        {% for w in winners|reverse %}
+          <li class="name-pill">{{ w.username or "Anonymous" }}</li>
+        {% endfor %}
+      </ul>
+    </aside>
+  </div>
+  {% endif %}
+
   <main>
     <!-- HERO -->
     <section class="w-hero">
       <div class="app-shell w-hero-shell">
-        <div class="w-hero-glow" aria-hidden="true"></div>
         <header class="w-hero-head">
           <div class="w-hero-pill">Daily winners</div>
           <h1 class="w-hero-title">Winning answers</h1>
-          <p class="w-hero-subtitle">
-            The latest daily question winners. Most recent first, up to the last 20.
-          </p>
+          <p class="w-hero-subtitle">Most recent first, up to the last 20.</p>
         </header>
 
-        <!-- Top controls -->
         <div class="w-controls">
           <div class="w-search">
-            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10 4a6 6 0 0 1 4.8 9.6l4.8 4.8l-1.4 1.4l-4.8-4.8A6 6 0 1 1 10 4m0 2a4 4 0 1 0 0 8a4 4 0 0 0 0-8"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M10 4a6 6 0 0 1 4.8 9.6l4.8 4.8l-1.4 1.4l-4.8-4.8A6 6 0 1 1 10 4m0 2a4 4 0 1 0 0 8a4 4 0 0 0 0-8"/>
+            </svg>
             <input id="winnerSearch" type="search" placeholder="Search question or answer" autocomplete="off" />
           </div>
 
           <div class="w-chips" role="tablist" aria-label="Sort">
             <button class="chip active" data-sort="recent" role="tab" aria-selected="true">Recent</button>
-            <button class="chip" data-sort="short" role="tab" aria-selected="false">Short answers</button>
-            <button class="chip" data-sort="long" role="tab" aria-selected="false">Long answers</button>
+            <button class="chip" data-sort="short" role="tab" aria-selected="false">Short</button>
+            <button class="chip" data-sort="long" role="tab" aria-selected="false">Long</button>
           </div>
         </div>
-
-        <!-- Avatars marquee -->
-        {% if winners and winners|length > 0 %}
-        <div class="w-marquee" aria-hidden="true">
-          <div class="w-marquee-track">
-            {% for w in winners %}
-              <div class="w-bubble">
-                {% if w.avatar_url %}
-                  <img src="{{ w.avatar_url }}" alt="" />
-                {% else %}
-                  <span>{{ (w.username or '?')[:1] | upper }}</span>
-                {% endif %}
-              </div>
-            {% endfor %}
-          </div>
-        </div>
-        {% endif %}
       </div>
     </section>
 
-    <!-- LIST -->
+    <!-- TOP 3 -->
+    {% set top3 = winners[:3] if winners else [] %}
+    {% if top3 %}
+    <section class="top3-section" aria-label="Last 3 days winners">
+      <div class="app-shell top3-shell">
+        <div class="section-bar"><span>Last 3 days winners</span></div>
+
+        <ol class="top3-grid">
+          {% for w in top3 %}
+          <li class="top3-item">
+            <article class="card top3-card">
+              <div class="top-row">
+                <div class="u">
+                  <div class="avatar">
+                    {% if w.avatar_url %}<img src="{{ w.avatar_url }}" alt="User avatar" />{% else %}
+                    <div class="avatar-fallback">{{ (w.username or '?')[:1] | upper }}</div>{% endif %}
+                  </div>
+                  <div class="meta">
+                    <div class="name">{% if w.username %}@{{ w.username }}{% else %}Anonymous{% endif %}</div>
+                    {% if w.date %}<div class="date">{{ w.date }}</div>{% endif %}
+                  </div>
+                </div>
+                <div class="rank">#{{ loop.index }}</div>
+              </div>
+
+              <div class="q">
+                <span class="label">Question</span>
+                <p class="text">{{ w.question }}</p>
+              </div>
+
+              <div class="a">
+                <span class="label">Answer</span>
+                <p class="text clamp-6">{{ w.answer }}</p>
+              </div>
+
+              <div class="actions">
+                <button type="button" class="ghost top3-toggle">Read more</button>
+                <button type="button" class="ghost copy" data-copy="{{ w.answer|e }}">Copy</button>
+              </div>
+            </article>
+          </li>
+          {% endfor %}
+        </ol>
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- REST 4..20 -->
     <section class="winners-section">
       <div class="app-shell winners-shell">
-        {% if winners and winners|length > 0 %}
-          <ol class="winner-grid" id="winnerGrid">
-            {% for w in winners %}
-              <li class="winner-card" data-length="{{ (w.answer | length) if w.answer else 0 }}">
-                <article class="w-card">
-                  <div class="w-card-glow" aria-hidden="true"></div>
+        {% set rest = winners[3:20] if winners else [] %}
+        {% if rest %}
+        <ol class="grid" id="winnerGrid">
+          {% for w in rest %}
+          <li class="grid-item" data-length="{{ (w.answer | length) if w.answer else 0 }}">
+            <article class="card">
+              <div class="accent" aria-hidden="true"></div>
 
-                  <!-- Top row -->
-                  <div class="w-top">
-                    <div class="w-user">
-                      <div class="w-avatar">
-                        {% if w.avatar_url %}
-                          <img src="{{ w.avatar_url }}" alt="User avatar" />
-                        {% else %}
-                          <div class="w-avatar-fallback">
-                            {% if w.username %} {{ w.username[0]|upper }} {% else %} ? {% endif %}
-                          </div>
-                        {% endif %}
-                      </div>
-                      <div class="w-meta">
-                        <div class="w-name">
-                          {% if w.username %}@{{ w.username }}{% else %}Anonymous{% endif %}
-                        </div>
-                        {% if w.date %}
-                          <div class="w-date">{{ w.date }}</div>
-                        {% endif %}
-                      </div>
-                    </div>
-
-                    <div class="w-rank">#{{ loop.index }}</div>
+              <div class="top-row">
+                <div class="u">
+                  <div class="avatar">
+                    {% if w.avatar_url %}<img src="{{ w.avatar_url }}" alt="User avatar" />{% else %}
+                    <div class="avatar-fallback">{{ (w.username or '?')[:1] | upper }}</div>{% endif %}
                   </div>
-
-                  <!-- Body -->
-                  <div class="w-body">
-                    <div class="w-block">
-                      <span class="w-label">Question</span>
-                      <p class="w-text">{{ w.question }}</p>
-                    </div>
-
-                    <div class="w-block w-answer">
-                      <span class="w-label">Answer</span>
-
-                      <div class="answer-wrap">
-                        <p class="w-text w-text-answer">{{ w.answer }}</p>
-                        <div class="fade"></div>
-                      </div>
-
-                      <div class="w-actions">
-                        <button type="button" class="btn-ghost toggle">Read more</button>
-                        <button type="button" class="btn-ghost copy" data-copy="{{ w.answer|e }}">Copy</button>
-                      </div>
-                    </div>
-
-                    {% if w.tags %}
-                      <ul class="w-tags">
-                        {% for t in w.tags %}
-                          <li>{{ t }}</li>
-                        {% endfor %}
-                      </ul>
-                    {% endif %}
+                  <div class="meta">
+                    <div class="name">{% if w.username %}@{{ w.username }}{% else %}Anonymous{% endif %}</div>
+                    {% if w.date %}<div class="date">{{ w.date }}</div>{% endif %}
                   </div>
-                </article>
-              </li>
-            {% endfor %}
-          </ol>
+                </div>
+                <div class="rank">#{{ loop.index + 3 }}</div>
+              </div>
+
+              <div class="q">
+                <span class="label">Question</span>
+                <p class="text">{{ w.question }}</p>
+              </div>
+
+              <div class="a">
+                <span class="label">Answer</span>
+                <p class="text answer clamp-5">{{ w.answer }}</p>
+                <div class="actions">
+                  <button type="button" class="ghost toggle">Read more</button>
+                  <button type="button" class="ghost copy" data-copy="{{ w.answer|e }}">Copy</button>
+                </div>
+              </div>
+
+              {% if w.tags %}
+              <ul class="tags">
+                {% for t in w.tags %}<li>{{ t }}</li>{% endfor %}
+              </ul>
+              {% endif %}
+            </article>
+          </li>
+          {% endfor %}
+        </ol>
         {% else %}
-          <div class="w-empty">
-            <div class="w-empty-card">
-              <div class="w-empty-glow" aria-hidden="true"></div>
-              <h3>No winning answers yet</h3>
-              <p>Once the first daily winners are selected, you will see the latest 20 here.</p>
-            </div>
+        <div class="empty">
+          <div class="empty-card">
+            <h3>No winning answers yet</h3>
+            <p>Once the first daily winners are selected, the latest 20 will appear here.</p>
           </div>
+        </div>
         {% endif %}
       </div>
     </section>
@@ -152,42 +179,39 @@
       const search = document.getElementById("winnerSearch");
       const chips = document.querySelectorAll(".chip");
 
-      // Expand and collapse
       document.querySelectorAll(".toggle").forEach(btn => {
         btn.addEventListener("click", () => {
-          const block = btn.closest(".w-answer");
-          block.classList.toggle("expanded");
-          btn.textContent = block.classList.contains("expanded") ? "Hide answer" : "Read more";
+          const p = btn.closest(".a").querySelector(".answer");
+          p.classList.toggle("clamp-5");
+          btn.textContent = p.classList.contains("clamp-5") ? "Read more" : "Hide";
         });
       });
 
-      // Copy to clipboard
+      document.querySelectorAll(".top3-toggle").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const p = btn.closest(".top3-card").querySelector(".a .text");
+          p.classList.toggle("clamp-6");
+          btn.textContent = p.classList.contains("clamp-6") ? "Read more" : "Hide";
+        });
+      });
+
       document.querySelectorAll(".copy").forEach(btn => {
         btn.addEventListener("click", async () => {
           const text = btn.getAttribute("data-copy") || "";
-          try {
-            await navigator.clipboard.writeText(text);
-            btn.textContent = "Copied";
-            setTimeout(() => (btn.textContent = "Copy"), 1200);
-          } catch {
-            btn.textContent = "Unable to copy";
-            setTimeout(() => (btn.textContent = "Copy"), 1400);
-          }
+          try { await navigator.clipboard.writeText(text); btn.textContent = "Copied"; setTimeout(()=>btn.textContent="Copy", 1000); }
+          catch { btn.textContent = "Unable"; setTimeout(()=>btn.textContent="Copy", 1000); }
         });
       });
 
-      // Search filter
       if (search && grid) {
         search.addEventListener("input", () => {
           const q = search.value.trim().toLowerCase();
-          grid.querySelectorAll(".winner-card").forEach(card => {
-            const txt = card.innerText.toLowerCase();
-            card.style.display = txt.includes(q) ? "" : "none";
+          grid.querySelectorAll(".grid-item").forEach(card => {
+            card.style.display = card.innerText.toLowerCase().includes(q) ? "" : "none";
           });
         });
       }
 
-      // Sort chips
       chips.forEach(chip => {
         chip.addEventListener("click", () => {
           chips.forEach(c => c.classList.remove("active"));
@@ -196,7 +220,6 @@
           sortCards(mode);
         });
       });
-
       function sortCards(mode) {
         if (!grid) return;
         const items = Array.from(grid.children);
@@ -205,7 +228,7 @@
           const lb = parseInt(b.getAttribute("data-length") || "0", 10);
           if (mode === "short") return la - lb;
           if (mode === "long") return lb - la;
-          return 0; // recent as provided by server
+          return 0;
         });
         items.forEach(el => grid.appendChild(el));
       }
