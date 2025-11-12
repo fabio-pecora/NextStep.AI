@@ -181,3 +181,51 @@ html {
   scroll-behavior: smooth;
 }
 
+.logo a {
+  text-decoration: none;   /* removes underline */
+  color: #4c1d95;          /* dark purple like in your screenshot */
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.logo a span {
+  color: #2563eb;          /* blue accent for “AI” */
+}
+
+nav a {
+  color: #374151; /* gray-700 */
+  text-decoration: none;
+  margin: 0 0.75rem;
+  font-weight: 500;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+nav a::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: #2563eb; /* same blue accent */
+  transition: width 0.3s ease;
+}
+
+nav a:hover {
+  color: #2563eb;
+}
+
+nav a:hover::after {
+  width: 100%;
+}
+
+/* Highlight the active page */
+nav a.active {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+nav a.active::after {
+  width: 100%;
+}
