@@ -9,18 +9,19 @@
 </head>
 <body class="landing-body">
   {% include "navbar.html" %}
+
   <main>
-    <!-- HERO / INTRO SECTION -->
+    <!-- HERO -->
     <section class="courses-hero">
-      <div class="app-shell courses-hero-shell">
-        <div class="courses-hero-content card">
+      <div class="courses-hero-shell">
+        <div class="courses-hero-content">
           <div class="courses-hero-text">
             <div class="hero-pill courses-pill">Guided interview prep · Coming soon</div>
             <h1>Don’t wait for your opportunity.<br>Prepare before it arrives.</h1>
             <p>
               Build your skills with structured, instructor-led courses that match how you
-              practice on NextStep.AI. Learn frameworks, apply them to real questions, and
-              walk into interviews already warmed up.
+              practice on NextStep.AI. Learn frameworks, apply them to real questions,
+              and walk into interviews already warmed up.
             </p>
 
             <ul class="courses-hero-list">
@@ -33,18 +34,16 @@
               <button type="button" class="btn btn-primary btn-pill">
                 Get notified when courses launch
               </button>
-              <span class="courses-hero-note">
-                Explore sample courses below.
-              </span>
+              <span class="courses-hero-note">Explore sample courses below.</span>
             </div>
           </div>
 
-          <div class="courses-hero-highlight">
+          <aside class="courses-hero-highlight">
             <div class="courses-metric-card">
               <div class="courses-metric-label">Practice + Courses</div>
               <p class="courses-metric-text">
-                Use courses to learn the frameworks, and the NextStep.AI practice area to
-                drill real questions every day.
+                Use courses to learn the frameworks, and the NextStep.AI practice area
+                to drill real questions every day.
               </p>
               <ul class="courses-metric-pill-row">
                 <li>Structured lessons</li>
@@ -52,14 +51,14 @@
                 <li>AI powered feedback</li>
               </ul>
             </div>
-          </div>
+          </aside>
         </div>
       </div>
     </section>
 
-    <!-- COURSE GRID SECTION -->
+    <!-- GRID -->
     <section class="courses-section">
-      <div class="app-shell courses-shell">
+      <div class="courses-shell">
         <div class="courses-header-row">
           <div>
             <h2 class="courses-title">Explore upcoming course tracks</h2>
@@ -68,7 +67,8 @@
               Replace them with real offerings when you’re ready.
             </p>
           </div>
-          <div class="courses-filter-row">
+
+          <div class="courses-filter-row" role="tablist" aria-label="Browse by focus">
             <span class="courses-filter-label">Browse by focus</span>
             <div class="courses-filter-chips">
               <button type="button" class="chip chip-filter chip-filter-active">All</button>
@@ -80,7 +80,7 @@
         </div>
 
         <div class="course-grid">
-          <!-- Course 1 -->
+          <!-- 1 -->
           <article class="course-card">
             <div class="course-image-wrap">
               <img src="{{ url_for('static', filename='img/course-interview-basics.jpg') }}"
@@ -94,22 +94,18 @@
                 A structured, beginner-friendly course that teaches you how interviews work,
                 what hiring managers look for, and how to avoid the most common mistakes.
               </p>
-
               <div class="course-meta-row">
                 <span class="course-meta-pill">Level: Beginner</span>
                 <span class="course-meta-pill">Duration: 3 weeks</span>
                 <span class="course-meta-pill">Format: Video + practice</span>
               </div>
-
               <div class="course-footer">
-                <button type="button" class="btn btn-outline btn-pill course-cta">
-                  View course details
-                </button>
+                <button type="button" class="btn btn-outline btn-pill course-cta">View course details</button>
               </div>
             </div>
           </article>
 
-          <!-- Course 2 -->
+          <!-- 2 -->
           <article class="course-card">
             <div class="course-image-wrap">
               <img src="{{ url_for('static', filename='img/course-star-method.jpg') }}"
@@ -121,25 +117,20 @@
               <h3 class="course-name">Mastering the STAR Method</h3>
               <p class="course-description">
                 Learn how to turn your experiences into concise, compelling stories using
-                the Situation-Task-Action-Result framework, then apply it directly in
-                NextStep.AI practice questions.
+                the Situation-Task-Action-Result framework, then apply it in practice questions.
               </p>
-
               <div class="course-meta-row">
                 <span class="course-meta-pill">Level: All levels</span>
                 <span class="course-meta-pill">Duration: 6 hours</span>
                 <span class="course-meta-pill">Includes: Templates & worksheets</span>
               </div>
-
               <div class="course-footer">
-                <button type="button" class="btn btn-outline btn-pill course-cta">
-                  View course details
-                </button>
+                <button type="button" class="btn btn-outline btn-pill course-cta">View course details</button>
               </div>
             </div>
           </article>
 
-          <!-- Course 3 -->
+          <!-- 3 -->
           <article class="course-card">
             <div class="course-image-wrap">
               <img src="{{ url_for('static', filename='img/course-product-manager.jpg') }}"
@@ -150,25 +141,21 @@
             <div class="course-body">
               <h3 class="course-name">Cracking Product Manager Interviews</h3>
               <p class="course-description">
-                A deep dive into PM interviews: product sense, execution, strategy,
-                and behavioral. Each module pairs with targeted questions in the Job Library.
+                A deep dive into PM interviews covering product sense, execution, strategy,
+                and behavioral modules paired with Job Library questions.
               </p>
-
               <div class="course-meta-row">
-                <span class="course-meta-pill">Level: Mid–Senior</span>
+                <span class="course-meta-pill">Level: Mid to Senior</span>
                 <span class="course-meta-pill">Duration: 4 weeks</span>
-                <span class="course-meta-pill">Format: Cohort-based</span>
+                <span class="course-meta-pill">Format: Cohort based</span>
               </div>
-
               <div class="course-footer">
-                <button type="button" class="btn btn-outline btn-pill course-cta">
-                  View course details
-                </button>
+                <button type="button" class="btn btn-outline btn-pill course-cta">View course details</button>
               </div>
             </div>
           </article>
 
-          <!-- Course 4 -->
+          <!-- 4 -->
           <article class="course-card">
             <div class="course-image-wrap">
               <img src="{{ url_for('static', filename='img/course-engineering-systemdesign.jpg') }}"
@@ -179,25 +166,21 @@
             <div class="course-body">
               <h3 class="course-name">System Design for Software Engineers</h3>
               <p class="course-description">
-                Learn how to structure system design answers, communicate trade-offs, and
-                avoid rambling. Includes frameworks, diagrams, and practice prompts.
+                Structure answers, communicate trade-offs, and avoid rambling. Includes frameworks,
+                diagrams, and practice prompts.
               </p>
-
               <div class="course-meta-row">
                 <span class="course-meta-pill">Level: Intermediate</span>
                 <span class="course-meta-pill">Duration: 8 hours</span>
                 <span class="course-meta-pill">Includes: Mock interview bank</span>
               </div>
-
               <div class="course-footer">
-                <button type="button" class="btn btn-outline btn-pill course-cta">
-                  View course details
-                </button>
+                <button type="button" class="btn btn-outline btn-pill course-cta">View course details</button>
               </div>
             </div>
           </article>
 
-          <!-- Course 5 -->
+          <!-- 5 -->
           <article class="course-card">
             <div class="course-image-wrap">
               <img src="{{ url_for('static', filename='img/course-executive-presence.jpg') }}"
@@ -208,25 +191,20 @@
             <div class="course-body">
               <h3 class="course-name">Confidence & Executive Presence in Interviews</h3>
               <p class="course-description">
-                Work on the “how” of your answers: tone, pacing, body language, and
-                confidence under pressure. Built for ambitious candidates at any level.
+                Work on the how of your answers: tone, pacing, body language, and confidence under pressure.
               </p>
-
               <div class="course-meta-row">
                 <span class="course-meta-pill">Level: All levels</span>
                 <span class="course-meta-pill">Duration: 2 weeks</span>
                 <span class="course-meta-pill">Format: Video + exercises</span>
               </div>
-
               <div class="course-footer">
-                <button type="button" class="btn btn-outline btn-pill course-cta">
-                  View course details
-                </button>
+                <button type="button" class="btn btn-outline btn-pill course-cta">View course details</button>
               </div>
             </div>
           </article>
 
-          <!-- Course 6 -->
+          <!-- 6 -->
           <article class="course-card">
             <div class="course-image-wrap">
               <img src="{{ url_for('static', filename='img/course-career-reset.jpg') }}"
@@ -237,20 +215,15 @@
             <div class="course-body">
               <h3 class="course-name">Career Switch: Tell Your Story with Clarity</h3>
               <p class="course-description">
-                Designed for people changing industries or roles. Learn how to reframe
-                your past experience so it makes sense for where you want to go next.
+                Reframe past experience so it makes sense for where you want to go next.
               </p>
-
               <div class="course-meta-row">
                 <span class="course-meta-pill">Level: All levels</span>
                 <span class="course-meta-pill">Duration: 3 weeks</span>
                 <span class="course-meta-pill">Includes: Storybuilding toolkit</span>
               </div>
-
               <div class="course-footer">
-                <button type="button" class="btn btn-outline btn-pill course-cta">
-                  View course details
-                </button>
+                <button type="button" class="btn btn-outline btn-pill course-cta">View course details</button>
               </div>
             </div>
           </article>
