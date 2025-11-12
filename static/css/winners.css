@@ -134,16 +134,15 @@
   border-radius: 999px;
 }
 
-/* ---------- GRID STRUCTURE ---------- */
-.top3-grid,
-.grid {
+.top3-grid {
   list-style: none;
   padding: 0;
-  margin: 0.6rem 0 0;
+  margin: 1.5rem 0 0;
   display: grid;
-  gap: 1rem;
+  gap: 1.4rem;
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
+
 
 @media (min-width: 720px) {
   .grid {
@@ -477,3 +476,10 @@
     display: none;
   }
 }
+
+.top3-card .text {
+  position: relative;
+  z-index: 2;
+}
+
+
