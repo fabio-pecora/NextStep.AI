@@ -73,6 +73,97 @@
   color: var(--text-muted);
 }
 
+/* ===== NEW: Report preview section ===== */
+
+.report-preview-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.report-preview-head {
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.report-preview-section h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.sparkle-orb {
+  position: absolute;
+  right: -60px;
+  top: -60px;
+  width: 180px;
+  height: 180px;
+  border-radius: 999px;
+  background: radial-gradient(closest-side, rgba(37,99,235,0.18), rgba(219,234,254,0.0));
+  filter: blur(1px);
+  animation: floaty 7s ease-in-out infinite;
+}
+
+@keyframes floaty {
+  0% { transform: translateY(0px) }
+  50% { transform: translateY(8px) }
+  100% { transform: translateY(0px) }
+}
+
+.report-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.feature-card {
+  grid-column: span 6;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 0.75rem;
+  align-items: start;
+  padding: 0.9rem 0.95rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 0.9rem;
+  background:
+    linear-gradient(180deg, rgba(219,234,254,0.35), rgba(219,234,254,0) 40%) padding-box,
+    linear-gradient(135deg, rgba(37,99,235,0.15), rgba(59,130,246,0.05)) border-box;
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+  border-color: rgba(37,99,235,0.35);
+}
+
+@media (min-width: 860px) {
+  .feature-card { grid-column: span 4; }
+}
+
+.feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+  color: var(--primary);
+  box-shadow: inset 0 0 0 1px rgba(37,99,235,0.12);
+}
+
+.feature-text h3 {
+  margin: 0 0 0.15rem;
+  font-size: 0.98rem;
+}
+
+.feature-text p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
 /* ===== Layout ===== */
 .custom-layout {
   display: flex;
@@ -196,7 +287,7 @@
   overflow: hidden;
 }
 
-/* Header strip similar to a form top */
+/* Header strip */
 .report-header {
   display: flex;
   justify-content: space-between;
@@ -270,7 +361,7 @@
   background: #f9fafb;
 }
 
-/* Each big section looks like a form block */
+/* Each big section */
 
 .report-section {
   margin-bottom: 1.3rem;
@@ -300,7 +391,7 @@
   margin: 0.18rem 0;
 }
 
-/* Example blocks inside sections */
+/* Example blocks */
 
 .report-example-block {
   background: var(--primary-soft);
@@ -325,7 +416,7 @@
   color: var(--text-muted);
 }
 
-/* Close button: pill "Back to profile" button */
+/* Close button */
 
 .report-modal-close {
   position: absolute;
@@ -377,34 +468,15 @@ body.report-modal-open {
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
 /* ===== Print: ONLY print the report modal ===== */
 @media print {
-  /* Hide anything explicitly marked no-print */
-  .no-print {
-    display: none !important;
-  }
-
-  body {
-    background: #ffffff;
-  }
-
-  /* Hide everything on the page by default */
-  body * {
-    visibility: hidden;
-  }
-
-  /* Show only the report modal and its contents */
-  #report-modal,
-  #report-modal * {
-    visibility: visible;
-  }
-
-  /* Make the modal behave like a normal page when printing */
+  .no-print { display: none !important; }
+  body { background: #ffffff; }
+  body * { visibility: hidden; }
+  #report-modal, #report-modal * { visibility: visible; }
   #report-modal {
     position: static !important;
     inset: auto !important;
@@ -412,15 +484,11 @@ body.report-modal-open {
     background: transparent !important;
     box-shadow: none !important;
   }
-
   .report-modal-inner {
     box-shadow: none !important;
     border-radius: 0 !important;
     width: 100% !important;
     max-height: none !important;
   }
-
-  .report-modal-body {
-    overflow: visible !important;
-  }
+  .report-modal-body { overflow: visible !important; }
 }
