@@ -1,109 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>NextStep.AI - Winning answers</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/winners.css') }}">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-        rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>NextStep.AI — Winning answers</title>
+
+  <!-- Global styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" />
+  <!-- Page styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/winners.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 
-<body class="landing-body">
+<body class="landing-body winners-body">
   {% include "navbar.html" %}
 
   <main>
+    <!-- HERO -->
+    <section class="w-hero">
+      <div class="app-shell w-hero-shell">
+        <div class="w-hero-glow" aria-hidden="true"></div>
+        <header class="w-hero-head">
+          <div class="w-hero-pill">Daily winners</div>
+          <h1 class="w-hero-title">Winning answers</h1>
+          <p class="w-hero-subtitle">
+            The latest daily question winners. Most recent first, up to the last 20.
+          </p>
+        </header>
+
+        <!-- Top controls -->
+        <div class="w-controls">
+          <div class="w-search">
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10 4a6 6 0 0 1 4.8 9.6l4.8 4.8l-1.4 1.4l-4.8-4.8A6 6 0 1 1 10 4m0 2a4 4 0 1 0 0 8a4 4 0 0 0 0-8"/></svg>
+            <input id="winnerSearch" type="search" placeholder="Search question or answer" autocomplete="off" />
+          </div>
+
+          <div class="w-chips" role="tablist" aria-label="Sort">
+            <button class="chip active" data-sort="recent" role="tab" aria-selected="true">Recent</button>
+            <button class="chip" data-sort="short" role="tab" aria-selected="false">Short answers</button>
+            <button class="chip" data-sort="long" role="tab" aria-selected="false">Long answers</button>
+          </div>
+        </div>
+
+        <!-- Avatars marquee -->
+        {% if winners and winners|length > 0 %}
+        <div class="w-marquee" aria-hidden="true">
+          <div class="w-marquee-track">
+            {% for w in winners %}
+              <div class="w-bubble">
+                {% if w.avatar_url %}
+                  <img src="{{ w.avatar_url }}" alt="" />
+                {% else %}
+                  <span>{{ (w.username or '?')[:1] | upper }}</span>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- LIST -->
     <section class="winners-section">
       <div class="app-shell winners-shell">
-        <div class="card winners-card">
-          <header class="winners-header">
-            <h1 class="winners-title">Winning answers</h1>
-            <p class="winners-subtitle">
-              The latest daily question winners. Most recent first, up to the last 20.
-            </p>
-          </header>
+        {% if winners and winners|length > 0 %}
+          <ol class="winner-grid" id="winnerGrid">
+            {% for w in winners %}
+              <li class="winner-card" data-length="{{ (w.answer | length) if w.answer else 0 }}">
+                <article class="w-card">
+                  <div class="w-card-glow" aria-hidden="true"></div>
 
-          {% if winners and winners|length > 0 %}
-            <ol class="winner-list">
-              {% for w in winners %}
-                <li class="winner-item">
-                  <article class="winner-card">
-                    <!-- Top row: avatar, username, date, rank -->
-                    <div class="winner-top-row">
-                      <div class="winner-avatar-wrap">
+                  <!-- Top row -->
+                  <div class="w-top">
+                    <div class="w-user">
+                      <div class="w-avatar">
                         {% if w.avatar_url %}
-                          <img
-                            src="{{ w.avatar_url }}"
-                            alt="User avatar"
-                            class="winner-avatar"
-                          >
+                          <img src="{{ w.avatar_url }}" alt="User avatar" />
                         {% else %}
-                          <div class="winner-avatar-fallback">
-                            {% if w.username %}
-                              {{ w.username[0]|upper }}
-                            {% else %}
-                              ?
-                            {% endif %}
+                          <div class="w-avatar-fallback">
+                            {% if w.username %} {{ w.username[0]|upper }} {% else %} ? {% endif %}
                           </div>
                         {% endif %}
                       </div>
-
-                      <div class="winner-user-meta">
-                        <div class="winner-username">
-                          {% if w.username %}
-                            @{{ w.username }}
-                          {% else %}
-                            Anonymous
-                          {% endif %}
+                      <div class="w-meta">
+                        <div class="w-name">
+                          {% if w.username %}@{{ w.username }}{% else %}Anonymous{% endif %}
                         </div>
-
                         {% if w.date %}
-                          <div class="winner-date">
-                            {{ w.date }}
-                          </div>
+                          <div class="w-date">{{ w.date }}</div>
                         {% endif %}
                       </div>
+                    </div>
 
-                      <div class="winner-rank-pill">
-                        #{{ loop.index }}
+                    <div class="w-rank">#{{ loop.index }}</div>
+                  </div>
+
+                  <!-- Body -->
+                  <div class="w-body">
+                    <div class="w-block">
+                      <span class="w-label">Question</span>
+                      <p class="w-text">{{ w.question }}</p>
+                    </div>
+
+                    <div class="w-block w-answer">
+                      <span class="w-label">Answer</span>
+
+                      <div class="answer-wrap">
+                        <p class="w-text w-text-answer">{{ w.answer }}</p>
+                        <div class="fade"></div>
+                      </div>
+
+                      <div class="w-actions">
+                        <button type="button" class="btn-ghost toggle">Read more</button>
+                        <button type="button" class="btn-ghost copy" data-copy="{{ w.answer|e }}">Copy</button>
                       </div>
                     </div>
 
-                    <!-- Body: question then answer -->
-                    <div class="winner-body winner-body-vertical">
-                      <div class="winner-block">
-                        <span class="winner-label">Question</span>
-                        <p class="winner-text">
-                          {{ w.question }}
-                        </p>
-                      </div>
-
-                      <div class="winner-block winner-block-answer">
-                        <span class="winner-label">Answer</span>
-
-                        <div class="answer-text-wrapper">
-                          <p class="winner-text winner-text-answer">
-                            {{ w.answer }}
-                          </p>
-                          <div class="answer-fade"></div>
-                        </div>
-
-                        <button type="button" class="answer-toggle">
-                          Read more
-                        </button>
-                      </div>
-                    </div>
-                  </article>
-                </li>
-              {% endfor %}
-            </ol>
-          {% else %}
-            <p class="winners-empty">
-              No winning answers yet. Once the first daily winners are selected,
-              you will see the latest 20 here.
-            </p>
-          {% endif %}
-        </div>
+                    {% if w.tags %}
+                      <ul class="w-tags">
+                        {% for t in w.tags %}
+                          <li>{{ t }}</li>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                  </div>
+                </article>
+              </li>
+            {% endfor %}
+          </ol>
+        {% else %}
+          <div class="w-empty">
+            <div class="w-empty-card">
+              <div class="w-empty-glow" aria-hidden="true"></div>
+              <h3>No winning answers yet</h3>
+              <p>Once the first daily winners are selected, you will see the latest 20 here.</p>
+            </div>
+          </div>
+        {% endif %}
       </div>
     </section>
   </main>
@@ -112,20 +146,69 @@
     <p>© {{ current_year or "2025" }} NextStep.AI. All rights reserved.</p>
   </footer>
 
-  <!-- Read more / hide answer toggle -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      const toggles = document.querySelectorAll(".answer-toggle");
+      const grid = document.getElementById("winnerGrid");
+      const search = document.getElementById("winnerSearch");
+      const chips = document.querySelectorAll(".chip");
 
-      toggles.forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          const block = btn.closest(".winner-block-answer");
+      // Expand and collapse
+      document.querySelectorAll(".toggle").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const block = btn.closest(".w-answer");
           block.classList.toggle("expanded");
-
-          const isExpanded = block.classList.contains("expanded");
-          btn.textContent = isExpanded ? "Hide answer" : "Read more";
+          btn.textContent = block.classList.contains("expanded") ? "Hide answer" : "Read more";
         });
       });
+
+      // Copy to clipboard
+      document.querySelectorAll(".copy").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const text = btn.getAttribute("data-copy") || "";
+          try {
+            await navigator.clipboard.writeText(text);
+            btn.textContent = "Copied";
+            setTimeout(() => (btn.textContent = "Copy"), 1200);
+          } catch {
+            btn.textContent = "Unable to copy";
+            setTimeout(() => (btn.textContent = "Copy"), 1400);
+          }
+        });
+      });
+
+      // Search filter
+      if (search && grid) {
+        search.addEventListener("input", () => {
+          const q = search.value.trim().toLowerCase();
+          grid.querySelectorAll(".winner-card").forEach(card => {
+            const txt = card.innerText.toLowerCase();
+            card.style.display = txt.includes(q) ? "" : "none";
+          });
+        });
+      }
+
+      // Sort chips
+      chips.forEach(chip => {
+        chip.addEventListener("click", () => {
+          chips.forEach(c => c.classList.remove("active"));
+          chip.classList.add("active");
+          const mode = chip.getAttribute("data-sort");
+          sortCards(mode);
+        });
+      });
+
+      function sortCards(mode) {
+        if (!grid) return;
+        const items = Array.from(grid.children);
+        items.sort((a, b) => {
+          const la = parseInt(a.getAttribute("data-length") || "0", 10);
+          const lb = parseInt(b.getAttribute("data-length") || "0", 10);
+          if (mode === "short") return la - lb;
+          if (mode === "long") return lb - la;
+          return 0; // recent as provided by server
+        });
+        items.forEach(el => grid.appendChild(el));
+      }
     });
   </script>
 </body>
