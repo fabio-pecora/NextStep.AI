@@ -3,70 +3,140 @@
     "username": "Sofia Ramirez",
     "avatar_url": null,
     "question": "Describe a time you improved a process.",
-    "answer": "At my previous role the reporting workflow required manual weekly updates from multiple teams which caused delays. I centralized all reporting into a shared dashboard, automated data pulls using scheduled scripts, and standardized formats. This reduced manual work by 70 percent and cut delivery time from three days to a few hours.",
+    "answer": "Our weekly reporting workflow required manual updates from four teams and regularly delayed product reviews. I mapped the entire process, consolidated data sources, and automated the update pipeline using scheduled scripts. Delivery time dropped from three days to a few hours and leadership adopted the workflow company-wide.",
     "date": "2025-11-05"
   },
   {
     "username": "Daniel Foster",
     "avatar_url": null,
     "question": "Tell me about a time you resolved a conflict on your team.",
-    "answer": "Two engineers disagreed on a technical direction and progress stalled. I scheduled a focused conversation, had each person present their reasoning with data, and highlighted shared goals. We combined the strongest parts of both approaches into a hybrid design. The team moved forward aligned and later reused this decision framework to avoid future conflicts.",
+    "answer": "Two engineers strongly disagreed on an architecture decision which stalled progress. I hosted a structured session where each presented evidence, highlighted shared goals, and guided us toward a hybrid solution using the strongest components from both proposals. The team aligned quickly and delivery continued without further conflict.",
     "date": "2025-11-05"
   },
   {
     "username": "Mia Thompson",
     "avatar_url": null,
     "question": "Give an example of when you took initiative.",
-    "answer": "While onboarding I noticed the company lacked clear API examples, causing new hires to struggle. I created a structured sample project, documented key use cases, and shared it with engineering. It became the official onboarding resource and reduced new-hire setup time by 40 percent.",
+    "answer": "During onboarding I noticed new hires struggled with unclear API documentation. I created a complete sample project, added clear code comments, and built a quickstart guide. The project became the official onboarding resource and cut new-hire setup time by 40 percent.",
     "date": "2025-11-05"
   },
   {
     "username": "Ethan Walker",
     "avatar_url": null,
     "question": "Describe a time you had to learn something quickly.",
-    "answer": "When my team decided to migrate to a new CI tool I volunteered to lead despite having no prior experience. I dedicated a week to tutorials, docs, and testing. I built the initial pipeline, trained teammates, and documented the full process. We reduced build times by 35 percent and gained full automation coverage.",
+    "answer": "When my team migrated to a new CI system I volunteered to lead despite having no experience with it. I spent a week learning through docs and prototypes, built a working pipeline, and trained the rest of the team. Our builds became 35 percent faster with full automation coverage.",
     "date": "2025-11-05"
   },
   {
     "username": "Lily Chen",
     "avatar_url": null,
-    "question": "Tell me about a time you working under pressure.",
-    "answer": "During a major product release we discovered a critical bug hours before launch. I organized a quick triage, identified the failing module, patched the issue, and coordinated QA to validate the fix. We met the launch deadline and the post-mortem I led established a pre-release checklist we still use today.",
+    "question": "Tell me about a time you worked under pressure.",
+    "answer": "A release-critical module failed hours before deployment. I quickly organized triage, identified the failing component, fixed the bug, and coordinated QA validation. We met the launch deadline and used the post-mortem to improve our pre-release checklist.",
     "date": "2025-11-05"
   },
   {
     "username": "Omar Hassan",
     "avatar_url": null,
     "question": "Describe a time you led a project.",
-    "answer": "I led a cross-functional effort to redesign our internal analytics system. I defined the roadmap, assigned responsibilities, and set up weekly checkpoints. We delivered one week early, decreased query times by 50 percent, and adoption reached 90 percent across the org within the first month.",
+    "answer": "I led a cross-functional initiative to modernize our internal analytics dashboard. I defined the roadmap, assigned responsibilities, and set weekly checkpoints. We delivered early, cut query times by 50 percent, and saw 90 percent team adoption within the first month.",
     "date": "2025-11-05"
   },
   {
     "username": "Ava Martinez",
     "avatar_url": null,
     "question": "Tell me about a failure and what you learned.",
-    "answer": "Early in my career I underestimated testing timelines and delivered a feature with several bugs. I took ownership, fixed the issues, and redesigned the QA workflow to include earlier testing and automated checks. Since then I’ve consistently delivered projects with minimal defects and stronger planning.",
+    "answer": "I once underestimated testing timelines and shipped a feature with several defects. I took responsibility, fixed the issues, and redesigned our testing plan to include automated checks and earlier QA involvement. Since then, my project delivery has consistently met quality expectations.",
     "date": "2025-11-05"
   },
   {
     "username": "Noah Bennett",
     "avatar_url": null,
     "question": "Describe a time you worked with someone difficult.",
-    "answer": "I collaborated with a colleague who often dismissed ideas quickly. Instead of reacting, I scheduled one-on-one sessions to understand his concerns. I aligned proposals with his priorities and gave him early visibility. He became one of my strongest collaborators and our combined work improved team output by 20 percent.",
+    "answer": "A teammate frequently dismissed ideas early, creating tension. I initiated one-on-one meetings to understand his concerns, involved him earlier in planning, and aligned proposals to shared goals. Collaboration improved drastically and our combined work increased team output by 20 percent.",
     "date": "2025-11-05"
   },
   {
     "username": "Isabella Russo",
     "avatar_url": null,
     "question": "Give an example of strong communication on your part.",
-    "answer": "During a company-wide update I had to present a technical change to non-technical stakeholders. I simplified terminology, used visuals, and focused on impact instead of code. Multiple teams later referenced that presentation as the clarity standard, and leadership asked me to train others on communication best practices.",
+    "answer": "I presented a complex backend change to non-technical stakeholders. I translated technical concepts into clear visuals, simplified language, and focused on business impact. The presentation became a clarity benchmark and leadership asked me to mentor others on communication skills.",
     "date": "2025-11-05"
   },
   {
     "username": "Julian Carter",
     "avatar_url": null,
     "question": "Tell me about a time you solved a complex problem.",
-    "answer": "A data pipeline was failing unpredictably. I traced logs, isolated a race condition, and redesigned the scheduling logic to remove the dependency cycle. After deploying the fix the pipeline reached 99.9 percent reliability and weekly incidents dropped to zero.",
+    "answer": "A data pipeline was failing intermittently. I analyzed logs, isolated a race condition, and redesigned the scheduling logic to eliminate dependency cycles. The fix brought reliability to 99.9 percent and prevented recurring incidents.",
+    "date": "2025-11-05"
+  },
+  {
+    "username": "Camila Alvarez",
+    "avatar_url": null,
+    "question": "Describe a time you showed leadership without being asked.",
+    "answer": "During a roadmap shift my team was uncertain about priorities. I created a temporary action plan, clarified ownership, and presented it to my manager. It was adopted immediately and helped the team maintain momentum during the transition.",
+    "date": "2025-11-05"
+  },
+  {
+    "username": "Ryan Matthews",
+    "avatar_url": null,
+    "question": "Tell me about a time you improved team efficiency.",
+    "answer": "Our daily standups often ran long and unfocused. I redesigned the format into a time-boxed structure with clear prompts and rotating facilitation. Meeting time dropped by 40 percent and the team became more prepared and aligned.",
+    "date": "2025-11-05"
+  },
+  {
+    "username": "Emily Rivera",
+    "avatar_url": null,
+    "question": "Describe a time you had to influence someone.",
+    "answer": "A senior engineer was hesitant about adopting a security update. I prepared a short analysis showing risk exposure and long-term benefits, then walked him through proof-of-concept results. He approved the change and it later prevented a major vulnerability.",
+    "date": "2025-11-05"
+  },
+  {
+    "username": "Leo Martins",
+    "avatar_url": null,
+    "question": "Tell me about a time you managed multiple priorities.",
+    "answer": "During a sprint I was handling two features and a production bug. I prioritized by impact, delegated part of one feature, and blocked dedicated time for debugging. Everything shipped on schedule and the quick fix prevented customer impact.",
+    "date": "2025-11-05"
+  },
+  {
+    "username": "Hannah Brooks",
+    "avatar_url": null,
+    "question": "Describe a time you mentored someone.",
+    "answer": "A junior engineer struggled with debugging complex issues. I paired with her weekly, explained structured debugging techniques, and built small guided exercises. Within a month she was solving tasks independently and became one of the fastest troubleshooters on the team.",
+    "date": "2025-11-05"
+  },
+  {
+    "username": "Nathan Kim",
+    "avatar_url": null,
+    "question": "Tell me about a time you exceeded expectations.",
+    "answer": "I was assigned to optimize a slow API. Instead of small tweaks, I redesigned the caching logic, documented integration patterns, and created monitoring dashboards. Response time improved by 60 percent and several teams reused my documentation for their services.",
+    "date": "2025-11-05"
+  },
+  {
+    "username": "Gianna Romano",
+    "avatar_url": null,
+    "question": "Describe a time you built something from scratch.",
+    "answer": "Our team lacked a central knowledge base, so I created a structured wiki with architecture diagrams, troubleshooting guides, and onboarding material. Adoption spread quickly and onboarding time decreased by 50 percent.",
+    "date": "2025-11-05"
+  },
+  {
+    "username": "Oliver Hayes",
+    "avatar_url": null,
+    "question": "Tell me about a time you made a data-driven decision.",
+    "answer": "We debated whether a feature should be prioritized. I analyzed usage metrics, customer feedback, and effort estimates. The data showed low impact, so we deprioritized it and focused on a feature that increased retention by 12 percent.",
+    "date": "2025-11-05"
+  },
+  {
+    "username": "Zoe Park",
+    "avatar_url": null,
+    "question": "Describe a time you handled ambiguity.",
+    "answer": "Our leadership defined a vague goal without clear requirements. I interviewed stakeholders, collected constraints, and built a lightweight prototype to validate assumptions. The prototype clarified expectations and shaped the final roadmap.",
+    "date": "2025-11-05"
+  },
+  {
+    "username": "Marcus Silva",
+    "avatar_url": null,
+    "question": "Tell me about a time you motivated others.",
+    "answer": "During a tough release cycle the team was overwhelmed. I organized short daily syncs to celebrate progress, redistributed overload, and shared quick wins with leadership. Morale improved visibly and we delivered the release on time.",
     "date": "2025-11-05"
   }
 ]
