@@ -1,149 +1,72 @@
 [
   {
-    "username": "fabio pecora",
+    "username": "Sofia Ramirez",
     "avatar_url": null,
     "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
+    "answer": "At my previous role the reporting workflow required manual weekly updates from multiple teams which caused delays. I centralized all reporting into a shared dashboard, automated data pulls using scheduled scripts, and standardized formats. This reduced manual work by 70 percent and cut delivery time from three days to a few hours.",
     "date": "2025-11-05"
   },
   {
-    "username": "marco pecora",
+    "username": "Daniel Foster",
     "avatar_url": null,
-    "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
+    "question": "Tell me about a time you resolved a conflict on your team.",
+    "answer": "Two engineers disagreed on a technical direction and progress stalled. I scheduled a focused conversation, had each person present their reasoning with data, and highlighted shared goals. We combined the strongest parts of both approaches into a hybrid design. The team moved forward aligned and later reused this decision framework to avoid future conflicts.",
     "date": "2025-11-05"
   },
   {
-    "username": "luca pecora",
+    "username": "Mia Thompson",
     "avatar_url": null,
-    "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
+    "question": "Give an example of when you took initiative.",
+    "answer": "While onboarding I noticed the company lacked clear API examples, causing new hires to struggle. I created a structured sample project, documented key use cases, and shared it with engineering. It became the official onboarding resource and reduced new-hire setup time by 40 percent.",
     "date": "2025-11-05"
   },
   {
-    "username": "andrea pecora",
+    "username": "Ethan Walker",
     "avatar_url": null,
-    "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
+    "question": "Describe a time you had to learn something quickly.",
+    "answer": "When my team decided to migrate to a new CI tool I volunteered to lead despite having no prior experience. I dedicated a week to tutorials, docs, and testing. I built the initial pipeline, trained teammates, and documented the full process. We reduced build times by 35 percent and gained full automation coverage.",
     "date": "2025-11-05"
   },
   {
-    "username": "francesco pecora",
+    "username": "Lily Chen",
     "avatar_url": null,
-    "question": "Tell me about yourself.",
-    "answer": "I dont know",
+    "question": "Tell me about a time you working under pressure.",
+    "answer": "During a major product release we discovered a critical bug hours before launch. I organized a quick triage, identified the failing module, patched the issue, and coordinated QA to validate the fix. We met the launch deadline and the post-mortem I led established a pre-release checklist we still use today.",
     "date": "2025-11-05"
   },
   {
-    "username": "carlo pecora",
+    "username": "Omar Hassan",
     "avatar_url": null,
-    "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
+    "question": "Describe a time you led a project.",
+    "answer": "I led a cross-functional effort to redesign our internal analytics system. I defined the roadmap, assigned responsibilities, and set up weekly checkpoints. We delivered one week early, decreased query times by 50 percent, and adoption reached 90 percent across the org within the first month.",
     "date": "2025-11-05"
   },
   {
-    "username": "fabio pecora",
+    "username": "Ava Martinez",
     "avatar_url": null,
-    "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
+    "question": "Tell me about a failure and what you learned.",
+    "answer": "Early in my career I underestimated testing timelines and delivered a feature with several bugs. I took ownership, fixed the issues, and redesigned the QA workflow to include earlier testing and automated checks. Since then I’ve consistently delivered projects with minimal defects and stronger planning.",
     "date": "2025-11-05"
   },
   {
-    "username": "fabio pecora",
+    "username": "Noah Bennett",
     "avatar_url": null,
-    "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
+    "question": "Describe a time you worked with someone difficult.",
+    "answer": "I collaborated with a colleague who often dismissed ideas quickly. Instead of reacting, I scheduled one-on-one sessions to understand his concerns. I aligned proposals with his priorities and gave him early visibility. He became one of my strongest collaborators and our combined work improved team output by 20 percent.",
     "date": "2025-11-05"
   },
   {
-    "username": "fabio pecora",
+    "username": "Isabella Russo",
     "avatar_url": null,
-    "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
+    "question": "Give an example of strong communication on your part.",
+    "answer": "During a company-wide update I had to present a technical change to non-technical stakeholders. I simplified terminology, used visuals, and focused on impact instead of code. Multiple teams later referenced that presentation as the clarity standard, and leadership asked me to train others on communication best practices.",
     "date": "2025-11-05"
   },
   {
-    "username": "fabio pecora",
+    "username": "Julian Carter",
     "avatar_url": null,
-    "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
-    "date": "2025-11-05"
-  },
-  {
-    "username": "fabio pecora",
-    "avatar_url": null,
-    "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
-    "date": "2025-11-05"
-  },
-  {
-    "username": "fabio pecora",
-    "avatar_url": null,
-    "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
-    "date": "2025-11-05"
-  },
-  {
-    "username": "fabio pecora",
-    "avatar_url": null,
-    "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
-    "date": "2025-11-05"
-  },
-  {
-    "username": "fabio pecora",
-    "avatar_url": null,
-    "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
-    "date": "2025-11-05"
-  },
-  {
-    "username": "fabio pecora",
-    "avatar_url": null,
-    "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
-    "date": "2025-11-05"
-  },
-  {
-    "username": "fabio pecora",
-    "avatar_url": null,
-    "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
-    "date": "2025-11-05"
-  },
-  {
-    "username": "fabio pecora",
-    "avatar_url": null,
-    "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
-    "date": "2025-11-05"
-  },
-  {
-    "username": "fabio pecora",
-    "avatar_url": null,
-    "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
-    "date": "2025-11-05"
-  },
-  {
-    "username": "fabio pecora",
-    "avatar_url": null,
-    "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
-    "date": "2025-11-05"
-  },
-  {
-    "username": "fabio pecora",
-    "avatar_url": null,
-    "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
-    "date": "2025-11-05"
-  },
-  {
-    "username": "fabio pecora",
-    "avatar_url": null,
-    "question": "Describe a time you improved a process.",
-    "answer": "Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...Our onboarding docs were outdated, so I created a single source of truth and automated updates from Git...",
+    "question": "Tell me about a time you solved a complex problem.",
+    "answer": "A data pipeline was failing unpredictably. I traced logs, isolated a race condition, and redesigned the scheduling logic to remove the dependency cycle. After deploying the fix the pipeline reached 99.9 percent reliability and weekly incidents dropped to zero.",
     "date": "2025-11-05"
   }
 ]
