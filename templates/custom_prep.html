@@ -18,7 +18,7 @@
           <div class="custom-banner-main">
             <h1>Custom AI prep report</h1>
             <p class="subtitle">
-              Paste your role, company, and description. NextStep.AI turns it into a focused interview guide with questions, tips, and clear next steps.
+              Fill in the role, company, description, and upload your resume. NextStep.AI turns it into a focused interview guide with questions, tips, and clear next steps.
             </p>
           </div>
           <div class="custom-banner-steps">
@@ -46,7 +46,7 @@
           </div>
         </div>
 
-        <!-- NEW: What you will see in the report -->
+        <!-- What you will see in the report -->
         <section class="card report-preview-section no-print" aria-labelledby="report-preview-title">
           <div class="report-preview-head">
             <div class="sparkle-orb" aria-hidden="true"></div>
@@ -60,7 +60,6 @@
             <!-- 1 Company values and mission -->
             <article class="feature-card">
               <div class="feature-icon" aria-hidden="true">
-                <!-- target icon -->
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" role="img">
                   <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
                   <circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.5"/>
@@ -76,7 +75,6 @@
             <!-- 2 Recent news -->
             <article class="feature-card">
               <div class="feature-icon" aria-hidden="true">
-                <!-- newspaper -->
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" role="img">
                   <rect x="3" y="5" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
                   <path d="M7 8h6M7 11h6M7 14h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -92,7 +90,6 @@
             <!-- 3 Behavioral questions -->
             <article class="feature-card">
               <div class="feature-icon" aria-hidden="true">
-                <!-- chat bubbles -->
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" role="img">
                   <path d="M7 15H6a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v1" stroke="currentColor" stroke-width="1.5"/>
                   <path d="M10 17h5l3 3v-3h0a4 4 0 0 0 4-4v-2a4 4 0 0 0-4-4h-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -107,7 +104,6 @@
             <!-- 4 Technical questions -->
             <article class="feature-card">
               <div class="feature-icon" aria-hidden="true">
-                <!-- cpu -->
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" role="img">
                   <rect x="7" y="7" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/>
                   <path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M17 5l2 2M5 17l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -122,7 +118,6 @@
             <!-- 5 Use your resume in answers -->
             <article class="feature-card">
               <div class="feature-icon" aria-hidden="true">
-                <!-- document check -->
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" role="img">
                   <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.5"/>
                   <path d="M14 3v5h5" stroke="currentColor" stroke-width="1.5"/>
@@ -138,7 +133,6 @@
             <!-- 6 What makes you stand out -->
             <article class="feature-card">
               <div class="feature-icon" aria-hidden="true">
-                <!-- star badge -->
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" role="img">
                   <path d="M12 3l2.6 5.3 5.9.9-4.2 4.1 1 5.8L12 16.9 6.7 19l1-5.8-4.2-4.1 5.9-.9z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
                 </svg>
@@ -152,7 +146,6 @@
             <!-- 7 Study material -->
             <article class="feature-card">
               <div class="feature-icon" aria-hidden="true">
-                <!-- book open -->
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" role="img">
                   <path d="M3 6.5A3.5 3.5 0 0 1 6.5 3H12v16H6.5A3.5 3.5 0 0 0 3 22z" stroke="currentColor" stroke-width="1.5"/>
                   <path d="M21 6.5A3.5 3.5 0 0 0 17.5 3H12v16h5.5A3.5 3.5 0 0 1 21 22z" stroke="currentColor" stroke-width="1.5"/>
@@ -167,7 +160,6 @@
             <!-- 8 Smart follow ups -->
             <article class="feature-card">
               <div class="feature-icon" aria-hidden="true">
-                <!-- question mark -->
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" role="img">
                   <path d="M9.5 8a3.5 3.5 0 1 1 3.7 3.5c-.8.1-1.2.7-1.2 1.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                   <circle cx="12" cy="18" r="1" fill="currentColor"/>
@@ -186,7 +178,7 @@
           <section class="card custom-form-card no-print">
             <h2 class="section-title">Tell us about the interview</h2>
             <p class="subtitle">
-              Only the job position is required. Everything else helps the AI personalize your prep.
+              All fields below are required so the AI can build a precise, tailored prep plan for you.
             </p>
 
             {% if error %}
@@ -197,7 +189,8 @@
               <p class="error">{{ report.error }}</p>
             {% endif %}
 
-            <form method="POST" class="custom-form" id="custom-prep-form">
+            <form method="POST" enctype="multipart/form-data" class="custom-form" id="custom-prep-form">
+              <!-- Job position (required) -->
               <div class="field">
                 <label for="job_title">Job position <span class="required-dot">*</span></label><br>
                 <input
@@ -209,32 +202,72 @@
                 >
               </div>
 
+              <!-- Company name (required) -->
               <div class="field">
-                <label for="company_name">Company name (optional)</label><br>
+                <label for="company_name">Company name <span class="required-dot">*</span></label><br>
                 <input
                   type="text"
                   id="company_name"
                   name="company_name"
                   placeholder="Google, Amazon, Spotify..."
+                  required
                 >
               </div>
 
+              <!-- Job description (required) -->
               <div class="field">
-                <label for="job_description">Job description (optional)</label><br>
+                <label for="job_description">Job description <span class="required-dot">*</span></label><br>
                 <textarea
                   id="job_description"
                   name="job_description"
                   placeholder="Paste the job description here. The AI will pick themes, responsibilities, and required skills."
+                  required
                 ></textarea>
               </div>
 
+              <!-- Resume PDF (required) -->
               <div class="field">
-                <label for="resume">Your resume or key experience (optional)</label><br>
+                <label for="resume_file">Your resume (PDF) <span class="required-dot">*</span></label><br>
+
+                <div class="resume-upload-wrapper">
+                  <div class="resume-dropzone" id="resume-dropzone">
+                    <input
+                      type="file"
+                      id="resume_file"
+                      name="resume_file"
+                      accept="application/pdf"
+                      class="resume-file-input"
+                      required
+                    >
+                    <div class="resume-dropzone-inner">
+                      <div class="resume-icon">
+                        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" aria-hidden="true">
+                          <path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="1.4" />
+                          <path d="M14 3v5h5" stroke="currentColor" stroke-width="1.4" />
+                          <path d="M9 13h6M9 16h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+                        </svg>
+                      </div>
+                      <p class="resume-title">Drop your PDF resume here</p>
+                      <p class="resume-subtitle">or click to browse</p>
+                      <p class="resume-file-name" id="resume-file-name">No file selected</p>
+                    </div>
+                  </div>
+                  <p class="field-hint">
+                    PDF files only. We will read the text and use it in your report.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Optional skills / experiences text -->
+              <div class="field">
+                <label for="resume">
+                  If you do not have a PDF, write your skills and experiences here (optional)
+                </label><br>
                 <textarea
                   id="resume"
                   name="resume"
-                  placeholder="Paste your resume text or summarize your background so the plan reflects your experience."
-                ></textarea>
+                  placeholder="Share your key skills, projects, and experiences. We will use this if no resume text is available."
+                >{% if current_user and current_user.resume_text %}{{ current_user.resume_text }}{% endif %}</textarea>
               </div>
 
               <div class="btn-row">
@@ -344,7 +377,6 @@
             <p class="report-debug-note no-print">{{ report.debug_note }}</p>
           {% endif %}
 
-          <!-- Sections 1 6 kept as in your version -->
           {% set know = report.know_all_about_them or {} %}
           {% if know.mission_values or know.culture_snapshot or know.recent_projects_news or know.competitors_industry_trends %}
             <section class="report-section">
@@ -571,6 +603,69 @@
 
       if (document.getElementById('report-modal')) {
         openReportModal();
+      }
+
+      // Resume drag and drop box logic
+      const dropzone = document.getElementById('resume-dropzone');
+      const fileInput = document.getElementById('resume_file');
+      const fileNameEl = document.getElementById('resume-file-name');
+
+      if (dropzone && fileInput && fileNameEl) {
+        // Click on box opens file dialog
+        dropzone.addEventListener('click', function () {
+          fileInput.click();
+        });
+
+        // File selected via dialog
+        fileInput.addEventListener('change', function () {
+          const file = fileInput.files[0];
+          if (file) {
+            fileNameEl.textContent = file.name;
+            dropzone.classList.add('has-file');
+          } else {
+            fileNameEl.textContent = 'No file selected';
+            dropzone.classList.remove('has-file');
+          }
+        });
+
+        // Drag enter / over
+        ['dragenter', 'dragover'].forEach(function (eventName) {
+          dropzone.addEventListener(eventName, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.add('is-dragover');
+          });
+        });
+
+        // Drag leave / end / drop
+        ['dragleave', 'dragend', 'drop'].forEach(function (eventName) {
+          dropzone.addEventListener(eventName, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.remove('is-dragover');
+          });
+        });
+
+        // Handle drop
+        dropzone.addEventListener('drop', function (e) {
+          const files = e.dataTransfer.files;
+          if (!files || !files.length) return;
+
+          const file = files[0];
+          if (file.type !== 'application/pdf') {
+            fileNameEl.textContent = 'Please drop a PDF file.';
+            dropzone.classList.remove('has-file');
+            return;
+          }
+
+          // Attach file to hidden input so Flask can read it
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          fileInput.files = dataTransfer.files;
+
+          fileNameEl.textContent = file.name;
+          dropzone.classList.add('has-file');
+        });
       }
     });
   </script>
