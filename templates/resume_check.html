@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NextStep.AI - AI resume check</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/resume_check.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="landing-body">
+  {% include "navbar.html" %}
+  <main>
+    <section class="resume-page-section">
+      <div class="app-shell resume-shell">
+
+        <!-- Top banner -->
+        <div class="card resume-banner no-print">
+          <div class="resume-banner-main">
+            <h1>AI resume check</h1>
+            <p class="subtitle">
+              Upload your resume and let NextStep.AI rewrite bullets, find missing keywords, and show you how to look like the strongest version of yourself on paper.
+            </p>
+          </div>
+          <div class="resume-banner-steps">
+            <div class="resume-step">
+              <div class="step-circle">1</div>
+              <div class="step-info">
+                <h4>Drop your resume</h4>
+                <p>PDF only, required</p>
+              </div>
+            </div>
+            <div class="resume-step">
+              <div class="step-circle">2</div>
+              <div class="step-info">
+                <h4>Tell us the target</h4>
+                <p>Optional role like "Software Engineer"</p>
+              </div>
+            </div>
+            <div class="resume-step">
+              <div class="step-circle">3</div>
+              <div class="step-info">
+                <h4>Review the advice</h4>
+                <p>Bullets, structure, keywords</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- What you will see in the resume report -->
+        <section class="card resume-preview-section no-print" aria-labelledby="resume-preview-title">
+          <div class="resume-preview-head">
+            <div class="sparkle-orb" aria-hidden="true"></div>
+            <h2 id="resume-preview-title">What you will see in the review</h2>
+            <p class="subtitle">
+              A premium style resume review that shows you exactly what to fix and how.
+            </p>
+          </div>
+
+          <div class="resume-feature-grid">
+            <article class="feature-card">
+              <div class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+                  <path d="M5 4h8l4 4v12H5z" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M13 4v4h4" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+              </div>
+              <div class="feature-text">
+                <h3>Summary snapshot</h3>
+                <p>High level verdict on how strong your resume is for the target role.</p>
+              </div>
+            </article>
+
+            <article class="feature-card">
+              <div class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+                  <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M8 9h8M8 12h5M8 15h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="feature-text">
+                <h3>Section by section</h3>
+                <p>Structure, experience, education, and skills strengths and issues.</p>
+              </div>
+            </article>
+
+            <article class="feature-card">
+              <div class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+                  <path d="M5 7h14M5 12h14M5 17h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="feature-text">
+                <h3>Bullet rewrites</h3>
+                <p>Side by side examples of how to rewrite your bullets with impact.</p>
+              </div>
+            </article>
+
+            <article class="feature-card">
+              <div class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+                  <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M9 12.5l2 2 4-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="feature-text">
+                <h3>Structure and spacing</h3>
+                <p>Ordering suggestions and layout tips to make it easy to skim.</p>
+              </div>
+            </article>
+
+            <article class="feature-card">
+              <div class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+                  <path d="M5 5h7l7 7-7 7H5l7-7z" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+              </div>
+              <div class="feature-text">
+                <h3>Keyword gaps</h3>
+                <p>Missing keywords for your target role and how to add them naturally.</p>
+              </div>
+            </article>
+
+            <article class="feature-card">
+              <div class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+                  <path d="M6 18v-7l6-5 6 5v7" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M10 18v-4h4v4" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+              </div>
+              <div class="feature-text">
+                <h3>Clear next moves</h3>
+                <p>Concrete edits you can apply today to look more senior and focused.</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <div class="resume-layout">
+          <!-- Left: form -->
+          <section class="card resume-form-card no-print">
+            <h2 class="section-title">Upload your resume</h2>
+            <p class="subtitle">
+              The PDF is required so the AI can read your real bullets and structure. Target role is optional but helps the review go deeper.
+            </p>
+
+            {% if error %}
+              <p class="error">{{ error }}</p>
+            {% endif %}
+
+            {% if report and report.error %}
+              <p class="error">{{ report.error }}</p>
+            {% endif %}
+
+            <form method="POST" enctype="multipart/form-data" class="resume-form" id="resume-check-form">
+              <!-- Resume PDF (required) -->
+              <div class="field">
+                <label for="resume_file">Resume PDF <span class="required-dot">*</span></label><br>
+
+                <div class="resume-upload-wrapper">
+                  <div class="resume-dropzone" id="resume-dropzone">
+                    <input
+                      type="file"
+                      id="resume_file"
+                      name="resume_file"
+                      accept="application/pdf"
+                      class="resume-file-input"
+                      required
+                    >
+                    <div class="resume-dropzone-inner">
+                      <div class="resume-icon">
+                        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" aria-hidden="true">
+                          <path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="1.4" />
+                          <path d="M14 3v5h5" stroke="currentColor" stroke-width="1.4" />
+                          <path d="M9 13h6M9 16h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+                        </svg>
+                      </div>
+                      <p class="resume-title">Drop your PDF resume here</p>
+                      <p class="resume-subtitle">or click to browse</p>
+                      <p class="resume-file-name" id="resume-file-name">No file selected</p>
+                    </div>
+                  </div>
+                  <p class="field-hint">
+                    PDF files only. We will read the text and never store the file itself.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Target role (optional) -->
+              <div class="field">
+                <label for="target_role">Target role (optional)</label><br>
+                <input
+                  type="text"
+                  id="target_role"
+                  name="target_role"
+                  placeholder="Software Engineer, Product Manager, Data Analyst..."
+                >
+                <p class="field-hint">
+                  If you fill this, the AI will tune the review for that type of job.
+                </p>
+              </div>
+
+              <div class="btn-row">
+                <button type="submit" class="btn btn-primary">
+                  Generate resume feedback
+                </button>
+              </div>
+
+              <p class="resume-small-hint">
+                You can upload updated versions later and compare the feedback in your profile.
+              </p>
+            </form>
+          </section>
+
+          <!-- Right: status / open popup -->
+          <section class="card resume-report-card no-print">
+            {% if report %}
+              <div class="report-ready-panel">
+                <h2>Your resume review is ready</h2>
+                <p class="subtitle">
+                  Open the review to see rewritten bullets, structure advice, and keyword suggestions in a clean layout.
+                </p>
+
+                <div class="btn-row">
+                  <button type="button" class="btn btn-primary" id="open-resume-report-modal-btn">
+                    Open review
+                  </button>
+                  <button type="button" class="btn btn-outline" onclick="downloadResumeReportPDF()">
+                    Print or save as PDF
+                  </button>
+                </div>
+
+                <ul class="resume-report-key-points">
+                  <li>High level summary of your resume</li>
+                  <li>Section by section strengths and issues</li>
+                  <li>Bullet rewrites and keyword guidance</li>
+                </ul>
+              </div>
+            {% else %}
+              <div class="resume-empty-report">
+                <h2>Your resume review will appear here</h2>
+                <p class="subtitle">
+                  Upload your resume on the left. NextStep.AI will read it and build a premium feedback report tailored to your target role.
+                </p>
+              </div>
+            {% endif %}
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="landing-footer no-print">
+    <p>© {{ current_year or "2025" }} NextStep.AI. All rights reserved.</p>
+  </footer>
+
+  <!-- Resume report popup -->
+  {% if report %}
+    <div id="resume-report-modal" class="resume-report-modal-backdrop">
+      <div class="resume-report-modal-inner" id="resume-report-modal-inner">
+        <button
+          type="button"
+          class="resume-report-modal-close no-print"
+          id="close-resume-report-modal-btn"
+        >
+          Back to profile
+        </button>
+
+        <header class="resume-report-header">
+          <div class="report-logo-mark">
+            <div class="report-logo-text">NextStep.<span>AI</span></div>
+            <div class="report-logo-tagline">Resume feedback report</div>
+          </div>
+
+          <div class="resume-report-meta">
+            {% if report.target_role %}
+              <p class="resume-report-role">
+                Target role: <strong>{{ report.target_role }}</strong>
+              </p>
+            {% endif %}
+            <div class="resume-report-tags no-print">
+              <span class="resume-report-tag">AI generated</span>
+              <span class="resume-report-tag">Resume focused</span>
+              {% if report.debug_note or report.error %}
+                <span class="resume-report-tag resume-report-tag-warning">Fallback mode</span>
+              {% endif %}
+            </div>
+            <button type="button" class="btn btn-outline report-download-btn no-print" onclick="downloadResumeReportPDF()">
+              Print or save as PDF
+            </button>
+          </div>
+        </header>
+
+        <div class="resume-report-modal-body" id="resume-report-content">
+          {% if report.error %}
+            <p class="resume-report-debug-note no-print">{{ report.error }}</p>
+          {% endif %}
+
+          {% if report.summary %}
+            <section class="resume-report-section">
+              <h3 class="resume-report-heading">1. Overall summary</h3>
+              <p class="resume-report-paragraph">
+                {{ report.summary }}
+              </p>
+            </section>
+          {% endif %}
+
+          {% set sections = report.sections or {} %}
+          {% if sections.overall_structure or sections.experience or sections.education or sections.skills %}
+            <section class="resume-report-section">
+              <h3 class="resume-report-heading">2. Section by section review</h3>
+
+              {% if sections.overall_structure %}
+                <div class="resume-subsection">
+                  <h4 class="resume-report-subheading">Overall structure</h4>
+                  {% for item in sections.overall_structure.strengths or [] %}
+                    <p class="resume-report-paragraph">• {{ item }}</p>
+                  {% endfor %}
+                  {% for item in sections.overall_structure.issues or [] %}
+                    <p class="resume-report-paragraph warning">• {{ item }}</p>
+                  {% endfor %}
+                  {% for item in sections.overall_structure.recommendations or [] %}
+                    <p class="resume-report-paragraph tip">• {{ item }}</p>
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              {% if sections.experience %}
+                <div class="resume-subsection">
+                  <h4 class="resume-report-subheading">Experience</h4>
+                  {% for item in sections.experience.strengths or [] %}
+                    <p class="resume-report-paragraph">• {{ item }}</p>
+                  {% endfor %}
+                  {% for item in sections.experience.issues or [] %}
+                    <p class="resume-report-paragraph warning">• {{ item }}</p>
+                  {% endfor %}
+                  {% for item in sections.experience.recommendations or [] %}
+                    <p class="resume-report-paragraph tip">• {{ item }}</p>
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              {% if sections.education %}
+                <div class="resume-subsection">
+                  <h4 class="resume-report-subheading">Education</h4>
+                  {% for item in sections.education.strengths or [] %}
+                    <p class="resume-report-paragraph">• {{ item }}</p>
+                  {% endfor %}
+                  {% for item in sections.education.issues or [] %}
+                    <p class="resume-report-paragraph warning">• {{ item }}</p>
+                  {% endfor %}
+                  {% for item in sections.education.recommendations or [] %}
+                    <p class="resume-report-paragraph tip">• {{ item }}</p>
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              {% if sections.skills %}
+                <div class="resume-subsection">
+                  <h4 class="resume-report-subheading">Skills</h4>
+                  {% for item in sections.skills.strengths or [] %}
+                    <p class="resume-report-paragraph">• {{ item }}</p>
+                  {% endfor %}
+                  {% for item in sections.skills.issues or [] %}
+                    <p class="resume-report-paragraph warning">• {{ item }}</p>
+                  {% endfor %}
+                  {% for item in sections.skills.recommendations or [] %}
+                    <p class="resume-report-paragraph tip">• {{ item }}</p>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </section>
+          {% endif %}
+
+          {% set exp = report.experience_bullets or {} %}
+          {% if exp.rewrites or exp.title_suggestions or exp.missing_information %}
+            <section class="resume-report-section">
+              <h3 class="resume-report-heading">3. Experience bullets and titles</h3>
+
+              {% if exp.rewrites %}
+                <h4 class="resume-report-subheading">Bullet rewrites</h4>
+                {% for item in exp.rewrites %}
+                  <div class="resume-example-block">
+                    <p class="resume-example-label">Original</p>
+                    <p class="resume-example-text">{{ item.original }}</p>
+                    <p class="resume-example-label improved">Improved</p>
+                    <p class="resume-example-text">{{ item.improved }}</p>
+                    {% if item.why_it_is_better %}
+                      <p class="resume-example-why">{{ item.why_it_is_better }}</p>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              {% endif %}
+
+              {% if exp.title_suggestions %}
+                <h4 class="resume-report-subheading">Title suggestions</h4>
+                {% for item in exp.title_suggestions %}
+                  <p class="resume-report-paragraph">
+                    <strong>{{ item.original_title }}</strong> → {{ item.suggested_title }}
+                    {% if item.reason %} - {{ item.reason }}{% endif %}
+                  </p>
+                {% endfor %}
+              {% endif %}
+
+              {% if exp.missing_information %}
+                <h4 class="resume-report-subheading">Information to add</h4>
+                {% for item in exp.missing_information %}
+                  <p class="resume-report-paragraph tip">• {{ item }}</p>
+                {% endfor %}
+              {% endif %}
+            </section>
+          {% endif %}
+
+          {% set struct = report.structure or {} %}
+          {% set spacing = report.spacing_readability or {} %}
+          {% if struct.ordering or struct.sections_to_add_or_remove or spacing.scannability_score or spacing.tips %}
+            <section class="resume-report-section">
+              <h3 class="resume-report-heading">4. Structure and readability</h3>
+
+              {% if struct.ordering %}
+                <h4 class="resume-report-subheading">Recommended ordering</h4>
+                {% for item in struct.ordering %}
+                  <p class="resume-report-paragraph">• {{ item }}</p>
+                {% endfor %}
+              {% endif %}
+
+              {% if struct.sections_to_add_or_remove %}
+                <div class="resume-subsection">
+                  {% if struct.sections_to_add_or_remove.add %}
+                    <h4 class="resume-report-subheading">Sections to add</h4>
+                    {% for item in struct.sections_to_add_or_remove.add %}
+                      <p class="resume-report-paragraph tip">• {{ item }}</p>
+                    {% endfor %}
+                  {% endif %}
+                  {% if struct.sections_to_add_or_remove.remove %}
+                    <h4 class="resume-report-subheading">Sections to remove</h4>
+                    {% for item in struct.sections_to_add_or_remove.remove %}
+                      <p class="resume-report-paragraph warning">• {{ item }}</p>
+                    {% endfor %}
+                  {% endif %}
+                </div>
+              {% endif %}
+
+              {% if spacing.scannability_score or spacing.tips %}
+                <div class="resume-subsection">
+                  {% if spacing.scannability_score %}
+                    <p class="resume-report-paragraph">
+                      Scannability score:
+                      <strong>{{ spacing.scannability_score }}/10</strong>
+                    </p>
+                  {% endif %}
+                  {% if spacing.tips %}
+                    <h4 class="resume-report-subheading">Readability tips</h4>
+                    {% for item in spacing.tips %}
+                      <p class="resume-report-paragraph tip">• {{ item }}</p>
+                    {% endfor %}
+                  {% endif %}
+                </div>
+              {% endif %}
+            </section>
+          {% endif %}
+
+          {% set kw = report.keywords or {} %}
+          {% if kw.missing_keywords or kw.present_keywords_to_keep or kw.how_to_add_them %}
+            <section class="resume-report-section">
+              <h3 class="resume-report-heading">5. Keywords and positioning</h3>
+
+              {% if kw.target_role %}
+                <p class="resume-report-paragraph">
+                  This section is tuned for: <strong>{{ kw.target_role }}</strong>
+                </p>
+              {% endif %}
+
+              {% if kw.missing_keywords %}
+                <h4 class="resume-report-subheading">Missing keywords</h4>
+                {% for item in kw.missing_keywords %}
+                  <p class="resume-report-paragraph warning">• {{ item }}</p>
+                {% endfor %}
+              {% endif %}
+
+              {% if kw.present_keywords_to_keep %}
+                <h4 class="resume-report-subheading">Keywords to keep</h4>
+                {% for item in kw.present_keywords_to_keep %}
+                  <p class="resume-report-paragraph">• {{ item }}</p>
+                {% endfor %}
+              {% endif %}
+
+              {% if kw.how_to_add_them %}
+                <h4 class="resume-report-subheading">How to add them</h4>
+                {% for item in kw.how_to_add_them %}
+                  <p class="resume-report-paragraph tip">• {{ item }}</p>
+                {% endfor %}
+              {% endif %}
+            </section>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Loading overlay -->
+  <div id="resume-report-loading" class="resume-report-loading-overlay no-print">
+    <div class="resume-report-loading-inner">
+      <div class="resume-report-spinner"></div>
+      <p>NextStep.AI is reading your resume and crafting the review…</p>
+    </div>
+  </div>
+
+  <script>
+    function openResumeReportModal() {
+      const backdrop = document.getElementById('resume-report-modal');
+      if (!backdrop) return;
+      backdrop.classList.add('is-visible');
+      document.body.classList.add('resume-report-modal-open');
+    }
+
+    function closeResumeReportModal() {
+      window.location.href = "{{ url_for('profile') }}";
+    }
+
+    function downloadResumeReportPDF() {
+      const backdrop = document.getElementById('resume-report-modal');
+      if (backdrop && !backdrop.classList.contains('is-visible')) {
+        backdrop.classList.add('is-visible');
+      }
+      window.print();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const form = document.getElementById('resume-check-form');
+      const overlay = document.getElementById('resume-report-loading');
+      const openBtn = document.getElementById('open-resume-report-modal-btn');
+      const closeBtn = document.getElementById('close-resume-report-modal-btn');
+
+      if (form && overlay) {
+        form.addEventListener('submit', function () {
+          overlay.style.display = 'flex';
+        });
+      }
+      if (openBtn) openBtn.addEventListener('click', openResumeReportModal);
+      if (closeBtn) closeBtn.addEventListener('click', closeResumeReportModal);
+
+      if (document.getElementById('resume-report-modal')) {
+        openResumeReportModal();
+      }
+
+      const dropzone = document.getElementById('resume-dropzone');
+      const fileInput = document.getElementById('resume_file');
+      const fileNameEl = document.getElementById('resume-file-name');
+
+      if (dropzone && fileInput && fileNameEl) {
+        dropzone.addEventListener('click', function () {
+          fileInput.click();
+        });
+
+        fileInput.addEventListener('change', function () {
+          const file = fileInput.files[0];
+          if (file) {
+            fileNameEl.textContent = file.name;
+            dropzone.classList.add('has-file');
+          } else {
+            fileNameEl.textContent = 'No file selected';
+            dropzone.classList.remove('has-file');
+          }
+        });
+
+        ['dragenter', 'dragover'].forEach(function (eventName) {
+          dropzone.addEventListener(eventName, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.add('is-dragover');
+          });
+        });
+
+        ['dragleave', 'dragend', 'drop'].forEach(function (eventName) {
+          dropzone.addEventListener(eventName, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.remove('is-dragover');
+          });
+        });
+
+        dropzone.addEventListener('drop', function (e) {
+          const files = e.dataTransfer.files;
+          if (!files || !files.length) return;
+
+          const file = files[0];
+          if (file.type !== 'application/pdf') {
+            fileNameEl.textContent = 'Please drop a PDF file.';
+            dropzone.classList.remove('has-file');
+            return;
+          }
+
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          fileInput.files = dataTransfer.files;
+
+          fileNameEl.textContent = file.name;
+          dropzone.classList.add('has-file');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

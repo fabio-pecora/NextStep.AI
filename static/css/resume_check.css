@@ -1,0 +1,737 @@
+/* ===========================
+   Resume check overall layout
+   =========================== */
+
+.resume-page-section {
+  padding: 3.5rem 6% 4rem;
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.14), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(45, 212, 191, 0.16), transparent 55%),
+    #f5f7fb;
+}
+
+.resume-shell {
+  max-width: 1160px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+}
+
+/* Basic card shell (works with base.css card class if present) */
+
+.card {
+  border-radius: 1.25rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+  padding: 1.6rem 1.7rem 1.7rem;
+}
+
+/* ===========================
+   Top banner
+   =========================== */
+
+.resume-banner {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 1.6rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.resume-banner-main {
+  flex: 1.5;
+}
+
+.resume-banner h1 {
+  margin: 0 0 0.6rem;
+  font-size: 1.9rem;
+  letter-spacing: -0.03em;
+  color: #0f172a;
+}
+
+.resume-banner .subtitle {
+  margin: 0;
+  font-size: 0.98rem;
+  color: #4b5563;
+  max-width: 32rem;
+  line-height: 1.6;
+}
+
+.resume-banner::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.25), transparent 55%);
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: -2;
+}
+
+.resume-banner::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #ffffff, #f9fafb);
+  z-index: -1;
+}
+
+/* Steps strip on the right */
+
+.resume-banner-steps {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding-left: 1.2rem;
+  border-left: 1px solid rgba(148, 163, 184, 0.4);
+}
+
+.resume-step {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0f172a;
+  background: radial-gradient(circle at top, #bfdbfe, #60a5fa);
+  box-shadow: 0 0 0 4px rgba(191, 219, 254, 0.7);
+}
+
+.step-info h4 {
+  margin: 0 0 0.05rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.step-info p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+/* ===========================
+   Preview of what you will see
+   =========================== */
+
+.resume-preview-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.resume-preview-head {
+  position: relative;
+  margin-bottom: 1.1rem;
+}
+
+.resume-preview-head h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+  color: #0f172a;
+}
+
+.resume-preview-head .subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.sparkle-orb {
+  position: absolute;
+  top: -2.5rem;
+  right: -3rem;
+  width: 160px;
+  height: 160px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 20% 0, rgba(251, 191, 36, 0.5), transparent 60%),
+    radial-gradient(circle at 80% 100%, rgba(96, 165, 250, 0.55), transparent 60%);
+  opacity: 0.7;
+  filter: blur(1px);
+  pointer-events: none;
+}
+
+.resume-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.9rem;
+}
+
+.feature-card {
+  border-radius: 0.95rem;
+  padding: 0.8rem 0.85rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+}
+
+.feature-icon {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at top left, #dbeafe, #e5e7eb);
+  color: #1d4ed8;
+}
+
+.feature-text h3 {
+  margin: 0 0 0.1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.feature-text p {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #6b7280;
+}
+
+/* ===========================
+   Two column layout
+   =========================== */
+
+.resume-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr);
+  gap: 1.7rem;
+  align-items: flex-start;
+}
+
+.section-title {
+  margin: 0 0 0.45rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.resume-form-card .subtitle {
+  margin: 0 0 0.9rem;
+  font-size: 0.88rem;
+  color: #6b7280;
+}
+
+/* ===========================
+   Form elements
+   =========================== */
+
+.resume-form {
+  margin-top: 0.4rem;
+}
+
+.field {
+  margin-bottom: 1rem;
+}
+
+.field label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+.required-dot {
+  color: #ef4444;
+  margin-left: 0.15rem;
+}
+
+.field input[type="text"] {
+  width: 100%;
+  max-width: 100%;
+  margin-top: 0.3rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.55rem;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  font-size: 0.9rem;
+  color: #111827;
+}
+
+.field input[type="text"]:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.15);
+  background: #ffffff;
+}
+
+.field-hint {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* Upload box */
+
+.resume-upload-wrapper {
+  margin-top: 0.3rem;
+}
+
+.resume-dropzone {
+  position: relative;
+  border-radius: 0.85rem;
+  border: 1.5px dashed #cbd5e1;
+  background: #f9fafb;
+  padding: 0.9rem 0.9rem;
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.resume-dropzone-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.resume-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at top left, #dbeafe, #e0f2fe);
+  color: #1d4ed8;
+}
+
+.resume-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+.resume-subtitle {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+.resume-file-name {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #4b5563;
+  font-style: italic;
+}
+
+.resume-file-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.resume-dropzone.is-dragover {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.18);
+}
+
+.resume-dropzone.has-file {
+  border-style: solid;
+  border-color: #22c55e;
+  background: #ecfdf3;
+}
+
+/* Buttons row */
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.8rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.48rem 1.1rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: #f9fafb;
+  border-color: transparent;
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.35);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.03);
+}
+
+.btn-outline {
+  background: #ffffff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.btn-outline:hover {
+  background: #eff6ff;
+}
+
+.resume-small-hint {
+  margin: 0.7rem 0 0;
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+/* Errors */
+
+.error {
+  margin: 0.3rem 0 0.4rem;
+  font-size: 0.85rem;
+  color: #b91c1c;
+}
+
+/* ===========================
+   Right side: report status
+   =========================== */
+
+.resume-report-card .subtitle {
+  margin: 0.2rem 0 0.9rem;
+  font-size: 0.88rem;
+  color: #6b7280;
+}
+
+.report-ready-panel h2,
+.resume-empty-report h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.1rem;
+  color: #0f172a;
+}
+
+.resume-report-key-points {
+  margin: 0.9rem 0 0;
+  padding-left: 1.1rem;
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+
+.resume-report-key-points li {
+  margin-bottom: 0.25rem;
+}
+
+/* ===========================
+   Modal for inline report
+   =========================== */
+
+.resume-report-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.2rem;
+  z-index: 50;
+}
+
+.resume-report-modal-backdrop.is-visible {
+  display: flex;
+}
+
+.resume-report-modal-inner {
+  width: 100%;
+  max-width: 860px;
+  max-height: 100%;
+  border-radius: 1.25rem;
+  background: #f9fafb;
+  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.5);
+  overflow: hidden;
+  position: relative;
+}
+
+.resume-report-modal-close {
+  position: absolute;
+  top: 0.9rem;
+  left: 1rem;
+  font-size: 0.8rem;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(15, 23, 42, 0.8);
+  color: #e5e7eb;
+  cursor: pointer;
+}
+
+/* Report header */
+
+.resume-report-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.6rem 1.7rem 1.1rem;
+  background: #0b1120;
+  color: #e5e7eb;
+}
+
+.report-logo-mark {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.report-logo-text {
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  font-size: 1.05rem;
+}
+
+.report-logo-text span {
+  color: #38bdf8;
+}
+
+.report-logo-tagline {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.resume-report-meta {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: flex-end;
+}
+
+.resume-report-role {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.resume-report-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.resume-report-tag {
+  font-size: 0.78rem;
+  padding: 0.16rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.7);
+}
+
+.resume-report-tag-warning {
+  border-color: #f97316;
+  color: #fed7aa;
+}
+
+/* Body */
+
+.resume-report-modal-body {
+  padding: 1.3rem 1.7rem 1.6rem;
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+  background: #f9fafb;
+}
+
+.resume-report-section + .resume-report-section {
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.resume-report-heading {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.resume-report-subheading {
+  margin: 0.4rem 0 0.2rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.resume-report-paragraph {
+  margin: 0.18rem 0;
+  font-size: 0.86rem;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.resume-report-paragraph.warning {
+  color: #b45309;
+}
+
+.resume-report-paragraph.tip {
+  color: #166534;
+}
+
+/* Example bullets block */
+
+.resume-example-block {
+  border-radius: 0.85rem;
+  padding: 0.7rem 0.8rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  margin-top: 0.45rem;
+}
+
+.resume-example-label {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+}
+
+.resume-example-label.improved {
+  margin-top: 0.4rem;
+  color: #16a34a;
+}
+
+.resume-example-text {
+  margin: 0.12rem 0;
+  font-size: 0.86rem;
+  color: #111827;
+}
+
+.resume-example-why {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  color: #4b5563;
+}
+
+/* Debug note */
+
+.resume-report-debug-note {
+  margin: 0 0 0.4rem;
+  font-size: 0.8rem;
+  color: #b91c1c;
+}
+
+/* ===========================
+   Loading overlay
+   =========================== */
+
+.resume-report-loading-overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.6);
+  z-index: 40;
+}
+
+.resume-report-loading-inner {
+  border-radius: 1rem;
+  padding: 1rem 1.4rem;
+  background: #020617;
+  color: #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+  box-shadow: 0 24px 50px rgba(15, 23, 42, 0.8);
+}
+
+.resume-report-spinner {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 3px solid rgba(148, 163, 184, 0.4);
+  border-top-color: #38bdf8;
+  animation: resumeSpin 1s linear infinite;
+}
+
+.resume-report-loading-inner p {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+/* When modal open, lock scroll */
+
+.resume-report-modal-open {
+  overflow: hidden;
+}
+
+/* ===========================
+   Responsive tweaks
+   =========================== */
+
+@keyframes resumeSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 900px) {
+  .resume-banner {
+    flex-direction: column;
+  }
+
+  .resume-banner-steps {
+    border-left: none;
+    padding-left: 0;
+    border-top: 1px solid rgba(148, 163, 184, 0.35);
+    padding-top: 0.9rem;
+  }
+
+  .resume-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .resume-report-meta {
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+@media (max-width: 640px) {
+  .resume-page-section {
+    padding: 2.6rem 4% 3.4rem;
+  }
+
+  .card {
+    padding: 1.25rem 1.25rem 1.4rem;
+  }
+
+  .resume-report-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .resume-report-modal-close {
+    top: 0.7rem;
+    left: 0.75rem;
+  }
+
+  .resume-report-modal-body {
+    padding: 1.1rem 1.25rem 1.4rem;
+  }
+}

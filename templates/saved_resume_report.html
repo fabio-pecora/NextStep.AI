@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>
+    Resume review
+    {% if resume_report.target_role %} – {{ resume_report.target_role }}{% endif %}
+  </title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <!-- Reuse the same visual style as saved prep reports -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/saved_prep_report.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="prep-view-body">
+  {% include "navbar.html" %}
+
+  <main class="prep-view-main">
+    <div class="prep-view-header-row">
+      <div>
+        <h1 class="prep-title">
+          Resume review
+          {% if resume_report.target_role %}
+            <span class="muted"> · {{ resume_report.target_role }}</span>
+          {% endif %}
+        </h1>
+        <p class="prep-subtitle">
+          A focused resume feedback report with rewrites, structure advice, and keyword tips
+          tailored to your profile{% if resume_report.target_role %} and the role
+          <strong>{{ resume_report.target_role }}</strong>{% endif %}.
+          {% if resume_report.created_at %}
+            <span class="gen-date">Generated on {{ resume_report.created_at.strftime("%Y-%m-%d") }}</span>
+          {% endif %}
+        </p>
+      </div>
+
+      <div class="prep-view-actions">
+        <a class="btn btn-outline prep-back-link" href="{{ url_for('profile') }}">Back to profile</a>
+        <a
+          class="btn btn-primary"
+          href="{{ url_for('download_saved_resume_report_pdf', report_id=resume_report.id) }}"
+        >
+          Download as PDF
+        </a>
+      </div>
+    </div>
+
+    <!-- Main report card -->
+    <section class="report-card">
+      <header class="report-header">
+        <div class="report-logo-mark">
+          <div class="report-logo-text">NextStep.<span>AI</span></div>
+          <div class="report-logo-tagline">Resume review report</div>
+        </div>
+
+        {% set report = report or resume_report.report_json %}
+        <div class="report-meta">
+          <p class="report-job">
+            {% if resume_report.target_role %}
+              Target role: {{ resume_report.target_role }}
+            {% else %}
+              Resume review
+            {% endif %}
+          </p>
+          {% if report.candidate_name %}
+            <p class="report-candidate">Prepared for {{ report.candidate_name }}</p>
+          {% endif %}
+          <div class="report-tags">
+            <span class="report-tag">AI generated</span>
+            {% if resume_report.target_role %}
+              <span class="report-tag">Role aware</span>
+            {% endif %}
+            <span class="report-tag">Resume focused</span>
+            {% if report.debug_note %}
+              <span class="report-tag report-tag-warning">Fallback mode</span>
+            {% endif %}
+          </div>
+        </div>
+      </header>
+
+      <div class="report-body" id="report-content">
+        {% if report.debug_note %}
+          <p class="report-debug-note">{{ report.debug_note }}</p>
+        {% endif %}
+        {% if report.error %}
+          <p class="report-debug-note">Error: {{ report.error }}</p>
+        {% endif %}
+
+        {# Ensure sub-objects exist #}
+        {% set summary = report.summary or {} %}
+        {% set sections = report.sections or {} %}
+        {% set exp_block = report.experience_bullets or {} %}
+        {% set structure = report.structure or {} %}
+        {% set spacing = report.spacing_readability or {} %}
+        {% set keywords = report.keywords or {} %}
+
+        {# SECTION 1 - Summary #}
+        {% if summary %}
+          <section class="report-section">
+            <h3 class="report-heading">1. Summary at a glance</h3>
+
+            {% if summary.overall_impression %}
+              <h4 class="report-subheading">Overall impression</h4>
+              <p class="report-paragraph">{{ summary.overall_impression }}</p>
+            {% endif %}
+
+            {% if summary.what_stands_out %}
+              <h4 class="report-subheading">What stands out</h4>
+              {% for item in summary.what_stands_out %}
+                <p class="report-paragraph">• {{ item }}</p>
+              {% endfor %}
+            {% endif %}
+
+            {% if summary.biggest_risks %}
+              <h4 class="report-subheading">Biggest risks</h4>
+              {% for item in summary.biggest_risks %}
+                <p class="report-paragraph">• {{ item }}</p>
+              {% endfor %}
+            {% endif %}
+          </section>
+        {% endif %}
+
+        {# SECTION 2 - Sections and structure #}
+        {% if sections %}
+          <section class="report-section">
+            <h3 class="report-heading">2. Sections and structure</h3>
+
+            {% set overall = sections.overall_structure or {} %}
+            {% set exp = sections.experience or {} %}
+            {% set edu = sections.education or {} %}
+            {% set skills = sections.skills or {} %}
+
+            {% if overall.current_format or overall.high_level_feedback %}
+              <h4 class="report-subheading">Overall layout</h4>
+              {% if overall.current_format %}
+                <p class="report-paragraph">Current format: {{ overall.current_format }}</p>
+              {% endif %}
+              {% if overall.high_level_feedback %}
+                {% for item in overall.high_level_feedback %}
+                  <p class="report-paragraph">• {{ item }}</p>
+                {% endfor %}
+              {% endif %}
+            {% endif %}
+
+            {% if exp.what_is_working or exp.what_is_missing or exp.seniority_signal %}
+              <h4 class="report-subheading">Experience section</h4>
+              {% if exp.what_is_working %}
+                {% for item in exp.what_is_working %}
+                  <p class="report-paragraph">• {{ item }}</p>
+                {% endfor %}
+              {% endif %}
+              {% if exp.what_is_missing %}
+                {% for item in exp.what_is_missing %}
+                  <p class="report-paragraph">• {{ item }}</p>
+                {% endfor %}
+              {% endif %}
+              {% if exp.seniority_signal %}
+                <p class="report-paragraph">
+                  Seniority signal: {{ exp.seniority_signal }}
+                </p>
+              {% endif %}
+            {% endif %}
+
+            {% if edu.strengths or edu.gaps_or_clarity_issues %}
+              <h4 class="report-subheading">Education</h4>
+              {% if edu.strengths %}
+                {% for item in edu.strengths %}
+                  <p class="report-paragraph">• {{ item }}</p>
+                {% endfor %}
+              {% endif %}
+              {% if edu.gaps_or_clarity_issues %}
+                {% for item in edu.gaps_or_clarity_issues %}
+                  <p class="report-paragraph">• {{ item }}</p>
+                {% endfor %}
+              {% endif %}
+            {% endif %}
+
+            {% if skills.strengths or skills.issues or skills.recommendations %}
+              <h4 class="report-subheading">Skills</h4>
+              {% if skills.strengths %}
+                {% for item in skills.strengths %}
+                  <p class="report-paragraph">• {{ item }}</p>
+                {% endfor %}
+              {% endif %}
+              {% if skills.issues %}
+                {% for item in skills.issues %}
+                  <p class="report-paragraph">• {{ item }}</p>
+                {% endfor %}
+              {% endif %}
+              {% if skills.recommendations %}
+                {% for item in skills.recommendations %}
+                  <p class="report-paragraph">• {{ item }}</p>
+                {% endfor %}
+              {% endif %}
+            {% endif %}
+          </section>
+        {% endif %}
+
+        {# SECTION 3 - Experience bullet rewrites #}
+        {% if exp_block.rewrites or exp_block.title_suggestions or exp_block.missing_information %}
+          <section class="report-section">
+            <h3 class="report-heading">3. Experience bullet upgrades</h3>
+
+            {% if exp_block.rewrites %}
+              <h4 class="report-subheading">Rewritten bullets</h4>
+              {% for item in exp_block.rewrites %}
+                <div class="report-example-block">
+                  {% if item.original %}
+                    <p class="report-example-question">Original</p>
+                    <p class="report-example-answer">{{ item.original }}</p>
+                  {% endif %}
+                  {% if item.improved %}
+                    <p class="report-example-question">Improved</p>
+                    <p class="report-example-answer">{{ item.improved }}</p>
+                  {% endif %}
+                  {% if item.reason %}
+                    <p class="report-legend">
+                      Reason: {{ item.reason }}
+                    </p>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            {% endif %}
+
+            {% if exp_block.title_suggestions %}
+              <h4 class="report-subheading">Title suggestions</h4>
+              {% for ts in exp_block.title_suggestions %}
+                <p class="report-paragraph">
+                  <strong>{{ ts.original_title }}</strong>
+                  {% if ts.suggested_title %}
+                    → {{ ts.suggested_title }}
+                  {% endif %}
+                  {% if ts.reason %}
+                    – {{ ts.reason }}
+                  {% endif %}
+                </p>
+              {% endfor %}
+            {% endif %}
+
+            {% if exp_block.missing_information %}
+              <h4 class="report-subheading">Missing information</h4>
+              {% for item in exp_block.missing_information %}
+                <p class="report-paragraph">• {{ item }}</p>
+              {% endfor %}
+            {% endif %}
+          </section>
+        {% endif %}
+
+        {# SECTION 4 - Structure recommendations #}
+        {% if structure.ordering or structure.sections_to_add_or_remove %}
+          <section class="report-section">
+            <h3 class="report-heading">4. Structure recommendations</h3>
+
+            {% set ord = structure.ordering or {} %}
+            {% set sar = structure.sections_to_add_or_remove or {} %}
+
+            {% if ord.current or ord.suggested or ord.reason %}
+              <h4 class="report-subheading">Ordering</h4>
+              {% if ord.current %}
+                <p class="report-paragraph">
+                  Current: {{ ord.current }}
+                </p>
+              {% endif %}
+              {% if ord.suggested %}
+                <p class="report-paragraph">
+                  Suggested: {{ ord.suggested }}
+                </p>
+              {% endif %}
+              {% if ord.reason %}
+                <p class="report-paragraph">
+                  Why: {{ ord.reason }}
+                </p>
+              {% endif %}
+            {% endif %}
+
+            {% if sar.add or sar.remove_or_merge %}
+              <h4 class="report-subheading">Sections to add or simplify</h4>
+              {% if sar.add %}
+                <p class="report-paragraph"><strong>Add:</strong></p>
+                {% for item in sar.add %}
+                  <p class="report-paragraph">• {{ item }}</p>
+                {% endfor %}
+              {% endif %}
+              {% if sar.remove_or_merge %}
+                <p class="report-paragraph"><strong>Remove or merge:</strong></p>
+                {% for item in sar.remove_or_merge %}
+                  <p class="report-paragraph">• {{ item }}</p>
+                {% endfor %}
+              {% endif %}
+            {% endif %}
+          </section>
+        {% endif %}
+
+        {# SECTION 5 - Spacing and readability #}
+        {% if spacing.scannability_score or spacing.high_level_comment or spacing.tips %}
+          <section class="report-section">
+            <h3 class="report-heading">5. Spacing and readability</h3>
+
+            {% if spacing.scannability_score %}
+              <p class="report-paragraph">
+                Scannability score:
+                <strong>{{ spacing.scannability_score }}/10</strong>
+              </p>
+            {% endif %}
+            {% if spacing.high_level_comment %}
+              <p class="report-paragraph">
+                {{ spacing.high_level_comment }}
+              </p>
+            {% endif %}
+            {% if spacing.tips %}
+              <h4 class="report-subheading">Tips to improve readability</h4>
+              {% for tip in spacing.tips %}
+                <p class="report-paragraph">• {{ tip }}</p>
+              {% endfor %}
+            {% endif %}
+          </section>
+        {% endif %}
+
+        {# SECTION 6 - Keywords and target role #}
+        {% if keywords.missing_keywords or keywords.present_keywords_to_keep or keywords.how_to_add_them or keywords.target_role %}
+          <section class="report-section">
+            <h3 class="report-heading">6. Keywords and role alignment</h3>
+
+            {% if keywords.target_role %}
+              <p class="report-paragraph">
+                Target role: <strong>{{ keywords.target_role }}</strong>
+              </p>
+            {% endif %}
+
+            {% if keywords.missing_keywords %}
+              <h4 class="report-subheading">Keywords to add</h4>
+              {% for kw in keywords.missing_keywords %}
+                <p class="report-paragraph">• {{ kw }}</p>
+              {% endfor %}
+            {% endif %}
+
+            {% if keywords.present_keywords_to_keep %}
+              <h4 class="report-subheading">Keywords to keep</h4>
+              {% for kw in keywords.present_keywords_to_keep %}
+                <p class="report-paragraph">• {{ kw }}</p>
+              {% endfor %}
+            {% endif %}
+
+            {% if keywords.how_to_add_them %}
+              <h4 class="report-subheading">How to weave them in</h4>
+              {% for tip in keywords.how_to_add_them %}
+                <p class="report-paragraph">• {{ tip }}</p>
+              {% endfor %}
+            {% endif %}
+          </section>
+        {% endif %}
+      </div>
+    </section>
+  </main>
+
+  <footer class="landing-footer">
+    <p>© {{ current_year or "2025" }} NextStep.AI. All rights reserved.</p>
+  </footer>
+</body>
+</html>

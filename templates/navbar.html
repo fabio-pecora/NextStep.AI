@@ -7,22 +7,32 @@
        class="{% if request.endpoint == 'index' %}active{% endif %}">
       Home
     </a>
+
     <a href="{{ url_for('jobs') }}"
        class="{% if request.endpoint == 'jobs' %}active{% endif %}">
       Job Library
     </a>
+
     <a href="{{ url_for('custom_prep') }}"
        class="{% if request.endpoint == 'custom_prep' %}active{% endif %}">
       Custom AI Prep
     </a>
+
+    <a href="{{ url_for('resume_check') }}"
+       class="{% if request.endpoint == 'resume_check' %}active{% endif %}">
+      Resume Check
+    </a>
+
     <a href="{{ url_for('winners') }}"
        class="{% if request.endpoint == 'winners' %}active{% endif %}">
       Winners
     </a>
+
     <a href="{{ url_for('courses') }}"
        class="{% if request.endpoint == 'courses' %}active{% endif %}">
       Courses
     </a>
+
     <a href="{{ url_for('profile') }}"
        class="{% if request.endpoint == 'profile' %}active{% endif %}">
       Profile

@@ -20,7 +20,7 @@
           <h1 class="profile-title">Hi, {{ current_user.username }}</h1>
           <p class="profile-subtitle">
             This is where you can track your daily streak, review recent answers,
-            and keep an eye on your custom prep reports.
+            and keep an eye on your custom prep reports and resume reviews.
           </p>
           {% if current_user.email %}
             <p class="profile-email">Logged in as <strong>{{ current_user.email }}</strong></p>
@@ -34,6 +34,10 @@
             <div class="profile-stat">
               <span class="profile-stat-label">Prep reports</span>
               <span class="profile-stat-value">{{ prep_reports|length }}</span>
+            </div>
+            <div class="profile-stat">
+              <span class="profile-stat-label">Resume reviews</span>
+              <span class="profile-stat-value">{{ resume_reports|length }}</span>
             </div>
           </div>
         </div>
@@ -245,6 +249,66 @@
             <p class="profile-empty">
               No custom prep reports yet.
               Try the <a href="{{ url_for('custom_prep') }}">Custom AI Prep</a> page before your next interview.
+            </p>
+          {% endif %}
+        </section>
+
+        <!-- Resume review reports -->
+        <section class="profile-card profile-resume-card">
+          <header class="profile-card-header">
+            <div>
+              <h2>Resume reviews</h2>
+              <p class="profile-card-subtitle">
+                All the resume check reports you have generated with NextStep.AI.
+              </p>
+            </div>
+          </header>
+
+          {% if resume_reports %}
+            <ul class="profile-list reports-list">
+              {% for r in resume_reports %}
+                <li class="profile-list-item">
+                  <a
+                    href="{{ url_for('view_saved_resume_report', report_id=r.id) }}"
+                    class="profile-report-link"
+                  >
+                    <div class="profile-report-header">
+                      <div class="profile-report-title">
+                        {% if r.target_role %}
+                          {{ r.target_role }}
+                        {% else %}
+                          Resume review
+                        {% endif %}
+                        {% if r.target_company %}
+                          <span class="profile-report-company">· {{ r.target_company }}</span>
+                        {% endif %}
+                      </div>
+                      {% if r.created_at %}
+                        <span class="profile-report-date">
+                          {{ r.created_at.strftime("%Y-%m-%d") }}
+                        </span>
+                      {% endif %}
+                    </div>
+
+                    {# Safely show summary whether it is a string or an object #}
+                    {% if r.report_json and r.report_json.get("summary") %}
+                      <p class="profile-report-focus">
+                        Summary:
+                        {{ r.report_json["summary"] }}
+                      </p>
+                    {% endif %}
+
+                    <p class="profile-report-hint">
+                      Click to reopen this resume review and download it as a PDF.
+                    </p>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="profile-empty">
+              No resume reviews yet.
+              Try the <a href="{{ url_for('resume_check') }}">Resume check</a> page to get tailored improvements.
             </p>
           {% endif %}
         </section>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>
+    Resume review
+    {% if resume_report.target_role %} – {{ resume_report.target_role }}{% endif %}
+  </title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/saved_prep_report.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+</head>
+
+<body class="prep-view-body">
+  <!-- Top controls (hidden in print / pdf) -->
+  <div class="prep-view-main no-print">
+    <div class="prep-view-header-row">
+      <a class="prep-back-link" href="{{ url_for('profile') }}">← Back to profile</a>
+      <a
+        class="btn btn-primary"
+        href="{{ url_for('download_saved_resume_report_pdf', report_id=resume_report.id) }}"
+      >
+        Download as PDF
+      </a>
+    </div>
+  </div>
+
+  <!-- Only this wrapper is rendered to PDF -->
+  <main id="report-page" class="report-page">
+    <header class="report-topbar">
+      <div class="brand">NextStep.<span>AI</span></div>
+      <div class="meta">
+        <div class="title">
+          Resume review
+          {% if resume_report.target_role %}
+            for <strong>{{ resume_report.target_role }}</strong>
+          {% endif %}
+        </div>
+        {% if resume_report.created_at %}
+          <div class="stamp">Generated on {{ resume_report.created_at.date() }}</div>
+        {% endif %}
+      </div>
+    </header>
+
+    <section class="report-card">
+      {% set report = report or resume_report.report_json %}
+      <div class="report-badges">
+        <span class="tag">AI generated</span>
+        {% if resume_report.target_role %}<span class="tag">Role aware</span>{% endif %}
+        <span class="tag">Resume focused</span>
+        {% if report.debug_note %}
+          <span class="tag warning">Fallback mode</span>
+        {% endif %}
+      </div>
+
+      <div class="report-content" id="report-content">
+        {% if report.debug_note %}
+          <p class="debug-note">{{ report.debug_note }}</p>
+        {% endif %}
+        {% if report.error %}
+          <p class="debug-note">Error: {{ report.error }}</p>
+        {% endif %}
+
+        {# Pull sub-objects with safe defaults #}
+        {% set summary = report.summary or {} %}
+        {% set sections = report.sections or {} %}
+        {% set exp_block = report.experience_bullets or {} %}
+        {% set structure = report.structure or {} %}
+        {% set spacing = report.spacing_readability or {} %}
+        {% set keywords = report.keywords or {} %}
+
+        {# --- SECTION 1: Summary --- #}
+        {% if summary.overall_impression or summary.what_stands_out or summary.biggest_risks %}
+          <section class="block">
+            <h2>1. Summary at a glance</h2>
+
+            {% if summary.overall_impression %}
+              <h3>Overall impression</h3>
+              <p>{{ summary.overall_impression }}</p>
+            {% endif %}
+
+            {% if summary.what_stands_out %}
+              <h3>What stands out</h3>
+              <ul>
+                {% for item in summary.what_stands_out %}
+                  <li>{{ item }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            {% if summary.biggest_risks %}
+              <h3>Biggest risks</h3>
+              <ul>
+                {% for item in summary.biggest_risks %}
+                  <li>{{ item }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </section>
+        {% endif %}
+
+        {# --- SECTION 2: Sections and structure --- #}
+        {% if sections %}
+          {% set overall = sections.overall_structure or {} %}
+          {% set exp = sections.experience or {} %}
+          {% set edu = sections.education or {} %}
+          {% set skills = sections.skills or {} %}
+
+          {% if overall.current_format or overall.high_level_feedback or
+                exp.what_is_working or exp.what_is_missing or exp.seniority_signal or
+                edu.strengths or edu.gaps_or_clarity_issues or
+                skills.strengths or skills.issues or skills.recommendations %}
+            <section class="block">
+              <h2>2. Sections and structure</h2>
+
+              {% if overall.current_format or overall.high_level_feedback %}
+                <h3>Overall layout</h3>
+                {% if overall.current_format %}
+                  <p><strong>Current format:</strong> {{ overall.current_format }}</p>
+                {% endif %}
+                {% if overall.high_level_feedback %}
+                  <ul>
+                    {% for item in overall.high_level_feedback %}
+                      <li>{{ item }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              {% endif %}
+
+              {% if exp.what_is_working or exp.what_is_missing or exp.seniority_signal %}
+                <h3>Experience section</h3>
+                {% if exp.what_is_working %}
+                  <h4>What is working</h4>
+                  <ul>
+                    {% for item in exp.what_is_working %}
+                      <li>{{ item }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+                {% if exp.what_is_missing %}
+                  <h4>What is missing</h4>
+                  <ul>
+                    {% for item in exp.what_is_missing %}
+                      <li>{{ item }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+                {% if exp.seniority_signal %}
+                  <p><strong>Seniority signal:</strong> {{ exp.seniority_signal }}</p>
+                {% endif %}
+              {% endif %}
+
+              {% if edu.strengths or edu.gaps_or_clarity_issues %}
+                <h3>Education</h3>
+                {% if edu.strengths %}
+                  <h4>Strengths</h4>
+                  <ul>
+                    {% for item in edu.strengths %}
+                      <li>{{ item }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+                {% if edu.gaps_or_clarity_issues %}
+                  <h4>Gaps / clarity issues</h4>
+                  <ul>
+                    {% for item in edu.gaps_or_clarity_issues %}
+                      <li>{{ item }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              {% endif %}
+
+              {% if skills.strengths or skills.issues or skills.recommendations %}
+                <h3>Skills</h3>
+                {% if skills.strengths %}
+                  <h4>Strengths</h4>
+                  <ul>
+                    {% for item in skills.strengths %}
+                      <li>{{ item }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+                {% if skills.issues %}
+                  <h4>Issues</h4>
+                  <ul>
+                    {% for item in skills.issues %}
+                      <li>{{ item }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+                {% if skills.recommendations %}
+                  <h4>Recommendations</h4>
+                  <ul>
+                    {% for item in skills.recommendations %}
+                      <li>{{ item }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              {% endif %}
+            </section>
+          {% endif %}
+        {% endif %}
+
+        {# --- SECTION 3: Experience bullet upgrades --- #}
+        {% if exp_block.rewrites or exp_block.title_suggestions or exp_block.missing_information %}
+          <section class="block">
+            <h2>3. Experience bullet upgrades</h2>
+
+            {% if exp_block.rewrites %}
+              <h3>Rewritten bullets</h3>
+              {% for item in exp_block.rewrites %}
+                <div class="example">
+                  {% if item.original %}
+                    <p class="q"><strong>Original:</strong> {{ item.original }}</p>
+                  {% endif %}
+                  {% if item.improved %}
+                    <p class="a"><strong>Improved:</strong> {{ item.improved }}</p>
+                  {% endif %}
+                  {% if item.reason %}
+                    <p class="legend"><span>Why: {{ item.reason }}</span></p>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            {% endif %}
+
+            {% if exp_block.title_suggestions %}
+              <h3>Title suggestions</h3>
+              <ul>
+                {% for ts in exp_block.title_suggestions %}
+                  <li>
+                    <strong>{{ ts.original_title }}</strong>
+                    {% if ts.suggested_title %}
+                      → {{ ts.suggested_title }}
+                    {% endif %}
+                    {% if ts.reason %}
+                      – {{ ts.reason }}
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            {% if exp_block.missing_information %}
+              <h3>Missing information to add</h3>
+              <ul>
+                {% for item in exp_block.missing_information %}
+                  <li>{{ item }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </section>
+        {% endif %}
+
+        {# --- SECTION 4: Structure recommendations --- #}
+        {% set ord = structure.ordering or {} %}
+        {% set sar = structure.sections_to_add_or_remove or {} %}
+        {% if ord.current or ord.suggested or ord.reason or sar.add or sar.remove_or_merge %}
+          <section class="block">
+            <h2>4. Structure recommendations</h2>
+
+            {% if ord.current or ord.suggested or ord.reason %}
+              <h3>Ordering</h3>
+              {% if ord.current %}
+                <p><strong>Current:</strong> {{ ord.current }}</p>
+              {% endif %}
+              {% if ord.suggested %}
+                <p><strong>Suggested:</strong> {{ ord.suggested }}</p>
+              {% endif %}
+              {% if ord.reason %}
+                <p><strong>Why:</strong> {{ ord.reason }}</p>
+              {% endif %}
+            {% endif %}
+
+            {% if sar.add or sar.remove_or_merge %}
+              <h3>Sections to add or simplify</h3>
+              {% if sar.add %}
+                <h4>Add</h4>
+                <ul>
+                  {% for item in sar.add %}
+                    <li>{{ item }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+              {% if sar.remove_or_merge %}
+                <h4>Remove or merge</h4>
+                <ul>
+                  {% for item in sar.remove_or_merge %}
+                    <li>{{ item }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            {% endif %}
+          </section>
+        {% endif %}
+
+        {# --- SECTION 5: Spacing and readability --- #}
+        {% if spacing.scannability_score or spacing.high_level_comment or spacing.tips %}
+          <section class="block">
+            <h2>5. Spacing and readability</h2>
+
+            {% if spacing.scannability_score %}
+              <p>
+                <strong>Scannability score:</strong>
+                {{ spacing.scannability_score }}/10
+              </p>
+            {% endif %}
+
+            {% if spacing.high_level_comment %}
+              <p>{{ spacing.high_level_comment }}</p>
+            {% endif %}
+
+            {% if spacing.tips %}
+              <h3>Tips to improve readability</h3>
+              <ul>
+                {% for tip in spacing.tips %}
+                  <li>{{ tip }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </section>
+        {% endif %}
+
+        {# --- SECTION 6: Keywords and role alignment --- #}
+        {% if keywords.target_role or keywords.missing_keywords or
+              keywords.present_keywords_to_keep or keywords.how_to_add_them %}
+          <section class="block">
+            <h2>6. Keywords and role alignment</h2>
+
+            {% if keywords.target_role %}
+              <p>
+                <strong>Target role:</strong> {{ keywords.target_role }}
+              </p>
+            {% endif %}
+
+            {% if keywords.missing_keywords %}
+              <h3>Keywords to add</h3>
+              <ul>
+                {% for kw in keywords.missing_keywords %}
+                  <li>{{ kw }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            {% if keywords.present_keywords_to_keep %}
+              <h3>Keywords to keep</h3>
+              <ul>
+                {% for kw in keywords.present_keywords_to_keep %}
+                  <li>{{ kw }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            {% if keywords.how_to_add_them %}
+              <h3>How to weave them in</h3>
+              <ul>
+                {% for tip in keywords.how_to_add_them %}
+                  <li>{{ tip }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </section>
+        {% endif %}
+      </div>
+    </section>
+
+    <footer class="report-footer">
+      © {{ (current_year or 2025) }} NextStep.AI. All rights reserved.
+    </footer>
+  </main>
+</body>
+</html>

@@ -345,7 +345,7 @@
   align-items: flex-start;
   gap: 0.5rem;
   margin-bottom: 0.15rem;
-  flex-wrap: wrap;              /* prevents overlap */
+  flex-wrap: wrap;
 }
 
 .profile-list-meta {
@@ -435,7 +435,7 @@
 }
 
 /* ===========================
-   REPORTS CARD
+   REPORTS CARD (prep)
    =========================== */
 
 .reports-list {
@@ -448,7 +448,7 @@
   background: #f9fafb;
 }
 
-/* separate hover so reports do not pop as much as answers */
+/* Hover */
 .reports-list .profile-list-item:hover {
   background: #fefce8;
   border-color: #facc15;
@@ -593,4 +593,23 @@
 .profile-feedback-improvements {
   background: #fff7ed;
   border: 1px solid #fed7aa;
+}
+
+/* ============================================================
+   NEW: Resume Review Card for Profile Page (minimal, consistent)
+   ============================================================ */
+
+.profile-resume-card .profile-list-item:hover {
+  background: #eefdfc;
+  border-color: #5eead4;
+  box-shadow: 0 10px 24px rgba(45, 212, 191, 0.20);
+  transform: translateY(-1px);
+}
+
+.profile-resume-card .profile-report-title {
+  color: #0f766e;
+}
+
+.profile-resume-card .profile-report-hint {
+  color: #0d9488;
 }

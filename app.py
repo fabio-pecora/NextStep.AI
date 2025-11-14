@@ -19,6 +19,7 @@ from flask import (
     abort,
 )
 from werkzeug.utils import secure_filename
+    # noqa
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
@@ -33,6 +34,7 @@ from utils.evaluation import (
     gpt_evaluate_answer,
 )
 from utils.prep_generator import generate_prep_report
+from utils.resume_review_generator import generate_resume_report
 
 
 # ---------------------------------------------------------------------------
@@ -201,6 +203,23 @@ class PrepReport(db.Model):
     company_name = db.Column(db.String(255))
     job_description = db.Column(db.Text)
     resume_text = db.Column(db.Text)
+    report_json = db.Column(db.JSON, nullable=False)
+    created_at = db.Column(
+        db.DateTime, nullable=False, server_default=db.func.now()
+    )
+
+
+class ResumeReport(db.Model):
+    __tablename__ = "resume_reports"
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    user_id = db.Column(
+        db.BigInteger,
+        db.ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    resume_text = db.Column(db.Text)
+    target_role = db.Column(db.String(255))
     report_json = db.Column(db.JSON, nullable=False)
     created_at = db.Column(
         db.DateTime, nullable=False, server_default=db.func.now()
@@ -682,11 +701,19 @@ def profile():
         .all()
     )
 
+    recent_resume_reports = (
+        ResumeReport.query.filter_by(user_id=user.id)
+        .order_by(ResumeReport.created_at.desc())
+        .limit(10)
+        .all()
+    )
+
     return render_template(
         "profile.html",
         user=user,
         answers=recent_answers,
         prep_reports=recent_reports,
+        resume_reports=recent_resume_reports,
     )
 
 
@@ -1122,16 +1149,14 @@ def download_saved_prep_report_pdf(report_id: int):
 
     # 4) Options so CSS loads and page looks clean
     options = {
-        "enable-local-file-access": None,  # allow file:// access
+        "enable-local-file-access": None,
         "page-size": "Letter",
         "margin-top": "10mm",
         "margin-right": "10mm",
         "margin-bottom": "12mm",
         "margin-left": "10mm",
         "print-media-type": None,
-        "quiet": "",  # suppress wkhtmltopdf banner
-        # optional, helps long lines wrap more predictably:
-        # "disable-smart-shrinking": None,
+        "quiet": "",
     }
 
     pdf_bytes = pdfkit.from_string(
@@ -1174,6 +1199,172 @@ def download_saved_prep_report(report_id: int):
         f"attachment; filename=prep_report_{report_row.id}.json"
     )
     return response
+
+
+# ---------------------------------------------------------------------------
+# Resume check
+# ---------------------------------------------------------------------------
+
+
+@app.route("/resume_check", methods=["GET", "POST"])
+def resume_check():
+    """
+    Page where the user uploads a resume PDF and optionally a target role.
+    Backend calls GPT to generate a structured resume review report.
+    """
+    report = None
+    error = None
+
+    if request.method == "POST":
+        target_role = request.form.get("target_role", "").strip() or None
+        resume_file = request.files.get("resume_file")
+
+        resume_text = ""
+
+        if not resume_file or resume_file.filename == "":
+            error = "Please upload your resume as a PDF."
+        else:
+            filename = secure_filename(resume_file.filename)
+            if not filename.lower().endswith(".pdf"):
+                error = "Please upload a PDF file."
+            else:
+                temp_path = None
+                try:
+                    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+                        temp_path = tmp.name
+                        resume_file.save(temp_path)
+
+                    # Lazy import so app still starts even if PyPDF2 is not installed yet
+                    try:
+                        from PyPDF2 import PdfReader  # type: ignore
+
+                        reader = PdfReader(temp_path)
+                        pages_text = []
+                        for page in reader.pages:
+                            try:
+                                pages_text.append(page.extract_text() or "")
+                            except Exception:
+                                continue
+                        resume_text = "\n".join(pages_text).strip()
+                    except Exception as e:
+                        # If PDF parsing fails, still attempt report generation with empty text
+                        resume_text = ""
+                        if not error:
+                            error = f"Could not read the PDF text. The AI will still try based on limited information. ({str(e)})"
+                finally:
+                    if temp_path and os.path.exists(temp_path):
+                        try:
+                            os.remove(temp_path)
+                        except Exception:
+                            pass
+
+        if not error:
+            report = generate_resume_report(
+                resume_text=resume_text,
+                target_role=target_role,
+                use_gpt=True,
+            )
+
+            if report.get("error"):
+                error = report["error"]
+
+            current_user = get_current_user()
+            try:
+                row = ResumeReport(
+                    user_id=current_user.id if current_user else None,
+                    resume_text=resume_text,
+                    target_role=target_role,
+                    report_json=report,
+                )
+                db.session.add(row)
+                db.session.commit()
+                # pass id so template can show a link if you want later
+                report["saved_id"] = row.id
+            except Exception:
+                db.session.rollback()
+
+    return render_template(
+        "resume_check.html",
+        report=report,
+        error=error,
+    )
+
+
+@app.route("/resume_check/report/<int:report_id>", methods=["GET"])
+@login_required
+def view_saved_resume_report(report_id: int):
+    """
+    Full-page viewer for a previously generated resume report.
+    Used by the profile page cards.
+    """
+    user = get_current_user()
+    if not user:
+        return redirect(url_for("login", next=request.path))
+
+    resume_report = ResumeReport.query.filter_by(
+        id=report_id,
+        user_id=user.id,
+    ).first()
+
+    if not resume_report:
+        abort(404)
+
+    return render_template(
+        "saved_resume_report.html",
+        resume_report=resume_report,
+        report=resume_report.report_json,
+    )
+
+
+@app.route("/resume_check/report/<int:report_id>/pdf", methods=["GET"])
+@login_required
+def download_saved_resume_report_pdf(report_id: int):
+    """
+    Download a nicely formatted PDF for a saved resume report.
+    """
+    resume_report = ResumeReport.query.get_or_404(report_id)
+
+    html = render_template(
+        "saved_resume_report.html",
+        resume_report=resume_report,
+        report=resume_report.report_json,
+        for_pdf=True,
+    )
+
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    css_files = [
+        os.path.join(base_dir, "static", "css", "base.css"),
+        os.path.join(base_dir, "static", "css", "saved_resume_report.css"),
+    ]
+
+    config = pdfkit.configuration(
+        wkhtmltopdf=r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
+    )
+
+    options = {
+        "enable-local-file-access": None,
+        "page-size": "Letter",
+        "margin-top": "10mm",
+        "margin-right": "10mm",
+        "margin-bottom": "12mm",
+        "margin-left": "10mm",
+        "print-media-type": None,
+        "quiet": "",
+    }
+
+    pdf_bytes = pdfkit.from_string(
+        html, False, css=css_files, options=options, configuration=config
+    )
+
+    filename = f"resume_report_{report_id}.pdf"
+    return (
+        pdf_bytes,
+        200,
+        {
+            "Content-Type": "application/pdf",
+            "Content-Disposition": f'attachment; filename="{filename}"',
+        },
+    )
 
 
 # ---------------------------------------------------------------------------
