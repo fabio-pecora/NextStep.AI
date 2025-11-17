@@ -97,13 +97,7 @@
           {% if answers %}
             <ul class="profile-list answers-list">
               {% for ans in answers %}
-                <li
-                  class="profile-list-item{% if loop.index > 3 %} is-extra{% endif %}"
-                  {% if loop.index > 3 %}
-                    data-extra="answers"
-                    style="display:none;"
-                  {% endif %}
-                >
+                <li class="profile-list-item">
                   <div class="profile-list-top-row">
                     <div class="profile-list-meta">
                       <span class="profile-list-source">
@@ -145,8 +139,8 @@
                       </div>
                     {% endif %}
                   </div>
+
                   {% if ans.feedback_text %}
-                    {# Split into Strengths / Improvements like in result.html #}
                     {% set raw = ans.feedback_text or "" %}
                     {% set parts = raw.split("Improvements:") %}
                     {% set strengths_part = parts[0] %}
@@ -191,22 +185,10 @@
                         {{ ans.feedback_text }}
                       </p>
                     {% endif %}
-                  {% endif %}                
+                  {% endif %}
                 </li>
               {% endfor %}
             </ul>
-
-            {% if answers|length > 3 %}
-              <div class="profile-section-actions">
-                <button
-                  type="button"
-                  class="btn btn-outline small toggle-section-btn"
-                  data-target="answers"
-                >
-                  View all
-                </button>
-              </div>
-            {% endif %}
           {% else %}
             <p class="profile-empty">
               You do not have any answers saved yet.
@@ -229,13 +211,7 @@
           {% if prep_reports %}
             <ul class="profile-list reports-list">
               {% for r in prep_reports %}
-                <li
-                  class="profile-list-item{% if loop.index > 3 %} is-extra{% endif %}"
-                  {% if loop.index > 3 %}
-                    data-extra="prep"
-                    style="display:none;"
-                  {% endif %}
-                >
+                <li class="profile-list-item">
                   <a
                     href="{{ url_for('view_saved_prep_report', report_id=r.id) }}"
                     class="profile-report-link"
@@ -268,18 +244,6 @@
                 </li>
               {% endfor %}
             </ul>
-
-            {% if prep_reports|length > 3 %}
-              <div class="profile-section-actions">
-                <button
-                  type="button"
-                  class="btn btn-outline small toggle-section-btn"
-                  data-target="prep"
-                >
-                  View all
-                </button>
-              </div>
-            {% endif %}
           {% else %}
             <p class="profile-empty">
               No custom prep reports yet.
@@ -302,13 +266,7 @@
           {% if resume_reports %}
             <ul class="profile-list reports-list">
               {% for r in resume_reports %}
-                <li
-                  class="profile-list-item{% if loop.index > 3 %} is-extra{% endif %}"
-                  {% if loop.index > 3 %}
-                    data-extra="resume"
-                    style="display:none;"
-                  {% endif %}
-                >
+                <li class="profile-list-item">
                   <a
                     href="{{ url_for('view_saved_resume_report', report_id=r.id) }}"
                     class="profile-report-link"
@@ -345,18 +303,6 @@
                 </li>
               {% endfor %}
             </ul>
-
-            {% if resume_reports|length > 3 %}
-              <div class="profile-section-actions">
-                <button
-                  type="button"
-                  class="btn btn-outline small toggle-section-btn"
-                  data-target="resume"
-                >
-                  View all
-                </button>
-              </div>
-            {% endif %}
           {% else %}
             <p class="profile-empty">
               No resume reviews yet.
@@ -371,27 +317,5 @@
   <footer class="landing-footer">
     <p>© {{ current_year or "2025" }} NextStep.AI. All rights reserved.</p>
   </footer>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      var buttons = document.querySelectorAll('.toggle-section-btn');
-
-      buttons.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          var target = btn.getAttribute('data-target');
-          var extras = document.querySelectorAll('[data-extra="' + target + '"]');
-          if (!extras.length) return;
-
-          var currentlyHidden = extras[0].style.display === 'none' || extras[0].style.display === '';
-
-          extras.forEach(function (item) {
-            item.style.display = currentlyHidden ? 'block' : 'none';
-          });
-
-          btn.textContent = currentlyHidden ? 'Show less' : 'View all';
-        });
-      });
-    });
-  </script>
 </body>
 </html>

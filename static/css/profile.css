@@ -7,7 +7,7 @@
 }
 
 /* ===========================
-   HERO SECTION (unchanged)
+   HERO SECTION
    =========================== */
 
 .profile-hero {
@@ -238,12 +238,11 @@
   background: #f9fafb;
 }
 
-/* Make the shell a bit wider on this page only */
 .profile-body .app-shell {
   max-width: 1240px;
 }
 
-/* Three equal columns in one row, well distributed */
+/* Three equal cards */
 .profile-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -251,16 +250,39 @@
   align-items: stretch;
 }
 
-/* Shared card style, stretched to equal height */
+/* Shared card style, premium feel */
 .profile-card {
-  border-radius: 1.2rem;
-  background: #ffffff;
+  position: relative;
+  border-radius: 1.25rem;
+  background: radial-gradient(circle at top left, #f9fafb 0, #ffffff 40%, #f9fafb 100%);
   border: 1px solid #e2e8f0;
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.07);
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
   padding: 1.5rem 1.7rem 1.7rem;
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+/* Colored top accent */
+.profile-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 4px;
+  border-radius: 1.25rem 1.25rem 0 0;
+  background: #6366f1;
+}
+
+/* Different accent per card */
+.profile-reports-card::before {
+  background: linear-gradient(to right, #f97316, #facc15);
+}
+
+.profile-resume-card::before {
+  background: linear-gradient(to right, #10b981, #22c55e);
 }
 
 /* Card headers */
@@ -270,18 +292,28 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin: 0 0 1rem;
+  padding-top: 0.25rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.75rem;
 }
 
 .profile-card-header h2 {
   margin: 0 0 0.25rem;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
 }
 
 .profile-card-subtitle {
   margin: 0;
   font-size: 0.9rem;
   color: #6b7280;
+}
+
+/* Make lists fill card height */
+.profile-card .answers-list,
+.profile-card .reports-list {
+  margin-top: 0.2rem;
 }
 
 /* ===========================
@@ -291,7 +323,7 @@
 .answers-list {
   position: relative;
   margin: 0;
-  padding: 0 0 0 1.4rem; /* space for timeline line */
+  padding: 0 0 0 1.4rem;
   list-style: none;
 }
 
@@ -307,7 +339,7 @@
   opacity: 0.9;
 }
 
-/* Each answer item */
+/* Each item */
 .profile-list-item {
   position: relative;
   border-radius: 1rem;
@@ -515,6 +547,22 @@
   outline-offset: 2px;
 }
 
+/* Resume card specific hover accent */
+.profile-resume-card .profile-list-item:hover {
+  background: #eefdfc;
+  border-color: #5eead4;
+  box-shadow: 0 10px 24px rgba(45, 212, 191, 0.2);
+  transform: translateY(-1px);
+}
+
+.profile-resume-card .profile-report-title {
+  color: #0f766e;
+}
+
+.profile-resume-card .profile-report-hint {
+  color: #0d9488;
+}
+
 /* ===========================
    Responsive tweaks
    =========================== */
@@ -602,21 +650,4 @@
 .profile-feedback-improvements {
   background: #fff7ed;
   border: 1px solid #fed7aa;
-}
-
-/* Resume review hover accents */
-
-.profile-resume-card .profile-list-item:hover {
-  background: #eefdfc;
-  border-color: #5eead4;
-  box-shadow: 0 10px 24px rgba(45, 212, 191, 0.2);
-  transform: translateY(-1px);
-}
-
-.profile-resume-card .profile-report-title {
-  color: #0f766e;
-}
-
-.profile-resume-card .profile-report-hint {
-  color: #0d9488;
 }
