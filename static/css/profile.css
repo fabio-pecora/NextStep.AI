@@ -230,7 +230,7 @@
 }
 
 /* ===========================
-   BODY GRID SECTION (redone)
+   BODY GRID SECTION
    =========================== */
 
 .profile-body {
@@ -238,20 +238,29 @@
   background: #f9fafb;
 }
 
-.profile-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
-  gap: 2rem;
-  align-items: flex-start;
+/* Make the shell a bit wider on this page only */
+.profile-body .app-shell {
+  max-width: 1240px;
 }
 
-/* Shared card style */
+/* Three equal columns in one row, well distributed */
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+  align-items: stretch;
+}
+
+/* Shared card style, stretched to equal height */
 .profile-card {
   border-radius: 1.2rem;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.07);
   padding: 1.5rem 1.7rem 1.7rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Card headers */
@@ -338,7 +347,7 @@
   transform: translateY(-1px);
 }
 
-/* Top row: source/date + final score */
+/* Top row: source/date and final score */
 .profile-list-top-row {
   display: flex;
   justify-content: space-between;
@@ -380,7 +389,7 @@
   font-weight: 500;
 }
 
-/* Question / answer text */
+/* Question and answer text */
 
 .profile-list-question {
   font-size: 0.9rem;
@@ -435,7 +444,7 @@
 }
 
 /* ===========================
-   REPORTS CARD (prep)
+   REPORTS CARDS
    =========================== */
 
 .reports-list {
@@ -551,7 +560,7 @@
 }
 
 /* ===========================
-   Per-answer feedback panels
+   Per answer feedback panels
    =========================== */
 
 .profile-feedback-grid {
@@ -595,14 +604,12 @@
   border: 1px solid #fed7aa;
 }
 
-/* ============================================================
-   NEW: Resume Review Card for Profile Page (minimal, consistent)
-   ============================================================ */
+/* Resume review hover accents */
 
 .profile-resume-card .profile-list-item:hover {
   background: #eefdfc;
   border-color: #5eead4;
-  box-shadow: 0 10px 24px rgba(45, 212, 191, 0.20);
+  box-shadow: 0 10px 24px rgba(45, 212, 191, 0.2);
   transform: translateY(-1px);
 }
 
