@@ -83,7 +83,7 @@
   overflow: hidden;
   border-radius: 1.9rem;
   padding: 1.2rem;
-  background: radial-gradient(circle at top left, #1d4ed8 0, #020617 45%);
+  background: black;
   box-shadow: 0 26px 60px rgba(15, 23, 42, 0.28);
 }
 
@@ -103,7 +103,7 @@
   height: 180px;
   top: -40px;
   right: -30px;
-  background: rgba(56, 189, 248, 0.7);
+  background: rgba(0, 0, 0, 0.7);
 }
 
 .hero-gallery::after {
