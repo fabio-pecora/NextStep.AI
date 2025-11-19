@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NextStep.AI - Mock Interview</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/mock_interview.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="landing-body">
+  {% include "navbar.html" %}
+
+  <main class="mock-main">
+    <div class="mock-shell">
+
+      <!-- LEFT: AI INTERVIEWER -->
+      <section class="panel ai-panel">
+        <header class="panel-header">
+          <div class="name-badge">
+            <span class="status-dot status-online"></span>
+            <span class="name-label">AI Interviewer</span>
+          </div>
+          <span class="role-label">Behavioral Coach</span>
+        </header>
+
+        <div class="avatar-zone">
+          <div class="avatar-glow">
+            <div class="avatar-ring">
+              <img id="ai-avatar"
+                   class="avatar-img"
+                   src="{{ url_for('static', filename='img/avatar_closed.png') }}"
+                   alt="AI Interviewer">
+            </div>
+          </div>
+        </div>
+
+        <div class="ai-speech">
+          <p id="ai-text">
+            Press "Start interview" to begin your live mock interview.
+          </p>
+        </div>
+
+        <div class="ai-controls">
+          <button id="start-interview-btn" class="primary-btn">
+            Start interview
+          </button>
+          <button id="repeat-question-btn" class="ghost-btn" disabled>
+            Repeat question
+          </button>
+        </div>
+
+        <audio id="ai-audio"></audio>
+      </section>
+
+      <!-- RIGHT: CANDIDATE -->
+      <section class="panel user-panel"
+               data-username="{{ current_user.username if current_user else 'Candidate' }}">
+        <header class="panel-header">
+          <div class="name-badge">
+            <span class="status-dot" id="camera-status-dot"></span>
+            <span class="name-label" id="candidate-name">
+              {{ current_user.username if current_user else "Candidate" }}
+            </span>
+          </div>
+          <span class="role-label">You</span>
+        </header>
+
+        <div class="user-video-zone">
+          <video id="user-video" class="user-video" autoplay muted playsinline></video>
+
+          <div id="user-placeholder" class="user-placeholder">
+            <div class="user-initials">
+              {{ (current_user.username[0]|upper) if current_user and current_user.username else "Y" }}
+            </div>
+            <p class="user-placeholder-text">
+              Camera is off or blocked.
+            </p>
+            <p class="user-placeholder-sub">
+              You can still practice. Your answers will be recorded by audio.
+            </p>
+          </div>
+        </div>
+
+        <div class="answer-controls">
+          <p class="answer-label">Your answer</p>
+          <div class="answer-buttons">
+            <button id="start-record-btn" class="primary-btn">
+              Start recording answer
+            </button>
+            <button id="stop-record-btn" class="danger-btn" disabled>
+              Stop
+            </button>
+          </div>
+          <div class="recording-status" id="recording-status">
+            <span class="recording-dot" id="recording-dot"></span>
+            <span id="recording-text">Not recording</span>
+          </div>
+        </div>
+
+        <div class="answer-log">
+          <p class="answer-log-title">Last answer summary (placeholder)</p>
+          <p class="answer-log-body" id="answer-log-body">
+            When you finish recording, your audio will be sent to the backend for transcription and feedback.
+          </p>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/mock_interview.js') }}"></script>
+</body>
+</html>

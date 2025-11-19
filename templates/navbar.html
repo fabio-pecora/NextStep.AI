@@ -37,7 +37,10 @@
        class="{% if request.endpoint == 'profile' %}active{% endif %}">
       Profile
     </a>
-
+    <a href="{{ url_for('mock_interview') }}"
+       class="{% if request.endpoint == 'mock_interview' %}active{% endif %}">
+      Mock Interview
+    </a>
     {% if current_user %}
       <span style="margin-left:1rem; font-size:0.9rem; color:#64748b;">
         Hi, {{ current_user.username }}

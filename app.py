@@ -1401,6 +1401,11 @@ def courses():
     """
     return render_template("courses.html")
 
+@app.route("/mock_interview")
+@login_required
+def mock_interview():
+    return render_template("mock_interview.html")
+
 
 # ---------------------------------------------------------------------------
 # Entrypoint
