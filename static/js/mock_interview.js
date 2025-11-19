@@ -17,7 +17,7 @@ const recordingDot = document.getElementById("recording-dot");
 const recordingText = document.getElementById("recording-text");
 const answerLogBody = document.getElementById("answer-log-body");
 
-// Expression sources from data attributes
+// Expression sources from data attributes on the <img>
 const expressions = {
   neutral: avatar.dataset.neutralSrc,
   blink: avatar.dataset.blinkSrc,
@@ -60,8 +60,13 @@ function showExpression(key) {
 function setBaseExpression(mode) {
   baseExpression = mode;
   if (!isTalking && !isBlinking) {
-    showExpression(mode === "listen" ? "listen" :
-                   mode === "think" ? "think" : "neutral");
+    if (mode === "listen") {
+      showExpression("listen");
+    } else if (mode === "think") {
+      showExpression("think");
+    } else {
+      showExpression("neutral");
+    }
   }
 }
 
@@ -93,7 +98,7 @@ function stopMouthAnimation() {
   }
 }
 
-// Bind to audio events (when you plug real TTS, this will sync)
+// Bind to audio events (real TTS controls the mouth)
 aiAudio.addEventListener("play", () => {
   setBaseExpression("neutral");
   startMouthAnimation();
@@ -106,7 +111,7 @@ aiAudio.addEventListener("pause", stopMouthAnimation);
 // ---------------------------
 
 function scheduleBlink() {
-  const delay = 2500 + Math.random() * 4000; // 2.5–6.5s
+  const delay = 2500 + Math.random() * 4000; // 2.5 to 6.5 seconds
   blinkTimeout = setTimeout(doBlink, delay);
 }
 
@@ -180,21 +185,37 @@ repeatQuestionBtn.addEventListener("click", async () => {
 });
 
 async function playAIQuestion(text) {
-  // Show thinking face briefly before speaking
-  setBaseExpression("think");
   aiText.innerText = text;
 
-  // When you have real TTS, replace this with:
-  // 1. call backend to get audio URL
-  // 2. set aiAudio.src = url and aiAudio.play()
-  // For now we just simulate talking with mouth animation.
-  setTimeout(() => {
+  // Show "thinking" face while we fetch the audio
+  setBaseExpression("think");
+
+  try {
+    const response = await fetch("/api/tts_question", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ text })
+    });
+
+    if (!response.ok) {
+      console.error("TTS error", await response.text());
+      setBaseExpression("neutral");
+      return;
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+
+    // Real audio, events above will control the mouth
+    aiAudio.src = url;
     setBaseExpression("neutral");
-    startMouthAnimation();
-    setTimeout(() => {
-      stopMouthAnimation();
-    }, 1800);
-  }, 400);
+    aiAudio.play();
+  } catch (err) {
+    console.error("TTS request failed", err);
+    setBaseExpression("neutral");
+  }
 }
 
 // ---------------------------
@@ -251,11 +272,11 @@ function stopRecording() {
 }
 
 function handleRecordedAnswer(blob) {
-  // Here you will send 'blob' to your Flask backend and then to Whisper.
-  // Example (later):
+  // Later: send 'blob' to Flask backend and then to Whisper.
+  // Example:
   // const formData = new FormData();
   // formData.append("audio", blob, "answer.webm");
-  // fetch("/api/submit_answer_audio", { method: "POST", body: formData });
+  // await fetch("/api/submit_answer_audio", { method: "POST", body: formData });
 
   console.log("Recorded answer blob:", blob);
 

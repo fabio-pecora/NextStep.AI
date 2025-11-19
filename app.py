@@ -4,6 +4,7 @@ import tempfile
 import random
 from datetime import datetime, date, time, timedelta
 import pdfkit
+import io
 
 from flask import (
     Flask,
@@ -13,6 +14,7 @@ from flask import (
     session,
     redirect,
     url_for,
+    send_file,
     flash,
     abort,
     make_response,
@@ -35,6 +37,7 @@ from utils.evaluation import (
 )
 from utils.prep_generator import generate_prep_report
 from utils.resume_review_generator import generate_resume_report
+from openai import OpenAI
 
 
 # ---------------------------------------------------------------------------
@@ -68,6 +71,8 @@ db = SQLAlchemy(
         "poolclass": NullPool,
     },
 )
+
+client = OpenAI()  # uses OPENAI_API_KEY from your environment
 
 
 # ---------------------------------------------------------------------------
@@ -1405,6 +1410,40 @@ def courses():
 @login_required
 def mock_interview():
     return render_template("mock_interview.html")
+
+
+@app.route("/api/tts_question", methods=["POST"])
+@login_required
+def tts_question():
+    data = request.get_json() or {}
+    text = data.get("text", "").strip()
+
+    if not text:
+        return jsonify({"error": "No text provided"}), 400
+
+    try:
+        # Use OpenAI Text to Speech with streaming response
+        with client.audio.speech.with_streaming_response.create(
+            model="gpt-4o-mini-tts",  # or "tts-1"
+            voice="alloy",
+            input=text,
+        ) as response:
+            audio_buffer = io.BytesIO()
+            for chunk in response.iter_bytes():
+                audio_buffer.write(chunk)
+            audio_buffer.seek(0)
+
+        return send_file(
+            audio_buffer,
+            mimetype="audio/mpeg",
+            as_attachment=False,
+            download_name="question.mp3",
+        )
+
+    except Exception as e:
+        print("TTS error in /api/tts_question:", e)
+        return jsonify({"error": "TTS failed"}), 500
+
 
 
 # ---------------------------------------------------------------------------
