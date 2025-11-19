@@ -29,10 +29,19 @@
         <div class="avatar-zone">
           <div class="avatar-glow">
             <div class="avatar-ring">
-              <img id="ai-avatar"
-                   class="avatar-img"
-                   src="{{ url_for('static', filename='img/avatar_closed.png') }}"
-                   alt="AI Interviewer">
+              <img
+                id="ai-avatar"
+                class="avatar-img"
+                src="{{ url_for('static', filename='img/avatar/avatar_neutral.png') }}"
+                data-neutral-src="{{ url_for('static', filename='img/avatar/avatar_neutral.png') }}"
+                data-blink-src="{{ url_for('static', filename='img/avatar/avatar_blink.png') }}"
+                data-mouth-closed-src="{{ url_for('static', filename='img/avatar/avatar_mouth_closed.png') }}"
+                data-mouth-half-src="{{ url_for('static', filename='img/avatar/avatar_mouth_half.png') }}"
+                data-mouth-open-src="{{ url_for('static', filename='img/avatar/avatar_mouth_open.png') }}"
+                data-listen-src="{{ url_for('static', filename='img/avatar/avatar_listen.png') }}"
+                data-think-src="{{ url_for('static', filename='img/avatar/avatar_think.png') }}"
+                alt="AI Interviewer"
+              />
             </div>
           </div>
         </div>
