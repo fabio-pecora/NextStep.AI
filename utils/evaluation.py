@@ -1,13 +1,17 @@
+import os
 import math
+import json
 from typing import Dict
 
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
+from openai import OpenAI
 
-# Global singletons for models so they load only once
+# Global singletons for models and OpenAI client
 _sentence_model = None
 _sentiment_pipeline = None
+client = OpenAI()  # uses OPENAI_API_KEY from your environment
 
 # System prompt for GPT based evaluation
 SYSTEM_PROMPT = """
@@ -16,23 +20,23 @@ Your job is to evaluate a candidate's answer to a behavioral interview question.
 
 You MUST:
 - Use the STAR framework as the gold standard (Situation, Task, Action, Result).
-- Be conservative with scores. A typical decent answer should be in the 55–70 range.
+- Be conservative with scores. A typical decent answer should be in the 55-70 range.
 - Only give scores above 80 for truly excellent answers that are structured, concise,
   specific, and clearly demonstrate impact.
 
-Scoring rules (0–100):
+Scoring rules (0-100):
 
 Relevance:
-- 90–100: Directly answers the question, stays tightly on topic, clear STAR structure. Only give a gradae here when the answer seems perfect to you, make it so difficult to get these grades.
-- 75–89: Mostly on topic but missing some elements or mild wandering.
-- 50–74: Partially answers, missing important parts of the question or STAR.
-- 0–49: Largely off topic or fails to answer.
+- 90-100: Directly answers the question, stays tightly on topic, clear STAR structure. Only give a grade here when the answer seems perfect to you, make it so difficult to get these grades.
+- 75-89: Mostly on topic but missing some elements or mild wandering.
+- 50-74: Partially answers, missing important parts of the question or STAR.
+- 0-49: Largely off topic or fails to answer.
 
-Confidence (communication & delivery quality):
-- 90–100: Very clear, confident, structured, minimal filler, strong ownership. Only give a gradae here when the answer seems perfect to you, make it so difficult to get these grades.
-- 75–89: Clear overall but something is missing, maybe there are filler, hesitations, or weak structure.
-- 50–74: Understandable but rambling, vague, or weak structure.
-- 0–49: Very unclear, disorganized, or very low ownership.
+Confidence (communication and delivery quality):
+- 90-100: Very clear, confident, structured, minimal filler, strong ownership. Only give a grade here when the answer seems perfect to you, make it so difficult to get these grades.
+- 75-89: Clear overall but something is missing, maybe there are filler, hesitations, or weak structure.
+- 50-74: Understandable but rambling, vague, or weak structure.
+- 0-49: Very unclear, disorganized, or very low ownership.
 
 Final score:
 - Roughly an average of relevance and confidence, but penalize heavily if:
@@ -214,16 +218,24 @@ def evaluate_answer(question: str, ideal_answer: str, user_answer: str) -> Dict:
     }
 
 
-def transcribe_audio_whisper(audio_path: str) -> str:
+def transcribe_audio_whisper(file_path: str) -> str:
     """
-    Transcribe an audio file using the open source Whisper model.
-    """
-    import whisper
+    Transcribe an audio file using OpenAI's transcription API.
 
-    model = whisper.load_model("base")
-    result = model.transcribe(audio_path, language="en")
-    text = result.get("text", "").strip()
-    return text
+    file_path - absolute or relative path to an audio file on disk.
+    Returns the raw transcript text.
+    """
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"Audio file does not exist: {file_path}")
+
+    with open(file_path, "rb") as f:
+        # gpt-4o-mini-transcribe or whisper-1 both work
+        resp = client.audio.transcriptions.create(
+            model="gpt-4o-mini-transcribe",
+            file=f,
+        )
+
+    return resp.text
 
 
 def gpt_evaluate_answer(
@@ -235,11 +247,6 @@ def gpt_evaluate_answer(
     """
     Use OpenAI GPT to evaluate the answer.
     """
-    from openai import OpenAI
-    import json
-
-    client = OpenAI()
-
     user_prompt = (
         "Analyze the following interview answer and return a JSON object with fields: "
         "relevance_score (0-100), confidence_score (0-100), final_score (0-100), "

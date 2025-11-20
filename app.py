@@ -875,15 +875,22 @@ def job_answer():
 
 @app.route("/job_audio", methods=["POST"])
 def job_audio():
+    """
+    Receive audio for a job specific question, transcribe and evaluate with GPT,
+    then return the SAME feedback page (result.html) as text answers.
+
+    The route returns JSON with an `html` field that contains the fully rendered
+    result page. The frontend will replace the current page with this HTML.
+    """
     job_id = request.form.get("job_id")
     question_id = request.form.get("question_id")
 
     if "audio" not in request.files:
-        return jsonify({"error": "No audio file received."}), 400
+        return jsonify({"error": "No audio file received"}), 400
 
     audio_file = request.files["audio"]
     if audio_file.filename == "":
-        return jsonify({"error": "Empty audio filename."}), 400
+        return jsonify({"error": "Empty audio filename"}), 400
 
     if not question_id:
         return jsonify({"error": "Missing question ID."}), 400
@@ -896,39 +903,54 @@ def job_audio():
     temp_path = None
 
     try:
-        with tempfile.NamedTemporaryFile(
-            delete=False, suffix=os.path.splitext(filename)[1]
-        ) as tmp:
+        # Save uploaded blob to a temp file (same pattern as /audio)
+        suffix = os.path.splitext(filename)[1] or ".webm"
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
             temp_path = tmp.name
-            audio_file.save(temp_path)
+        audio_file.save(temp_path)
 
+        # 1) Transcribe
         transcript_text = transcribe_audio_whisper(temp_path)
 
+        # 2) Evaluate with GPT
         eval_result = gpt_evaluate_answer(
             question=question.question_text,
             ideal_answer=question.ideal_answer or "",
             user_answer=transcript_text,
         )
 
+        # Add transcript so result.html can show it if you want
         eval_result["transcript"] = transcript_text
 
+        # 3) Save in DB (best-effort)
         current_user = get_current_user()
-        save_answer_to_db(
-            source="job",
-            question_type="job_specific",
-            question_text=question.question_text,
-            user_answer_text=transcript_text,
-            eval_result=eval_result,
-            transcript=transcript_text,
-            user_id=current_user.id if current_user else None,
-            job_id=int(job_id) if job_id else None,
-            job_question_id=question.id,
-        )
+        try:
+            save_answer_to_db(
+                source="job",
+                question_type="job_specific",
+                question_text=question.question_text,
+                user_answer_text=transcript_text,
+                eval_result=eval_result,
+                transcript=transcript_text,
+                user_id=current_user.id if current_user else None,
+                job_id=int(job_id) if job_id else None,
+                job_question_id=question.id,
+            )
+        except Exception as e2:
+            print("Error saving job voice answer:", e2)
+            db.session.rollback()
 
-        return jsonify(eval_result), 200
+        # 4) Render the SAME feedback page used by text answers
+        html = render_template("result.html", result=eval_result)
+
+        # Return it as JSON; frontend will swap the page with this HTML
+        return jsonify({"html": html}), 200
 
     except Exception as e:
-        return jsonify({"error": f"Error processing audio: {str(e)}"}), 500
+        print("Error processing job audio:", e)
+        return jsonify(
+            {"error": f"Error processing audio: {str(e)}"}
+        ), 500
 
     finally:
         if temp_path and os.path.exists(temp_path):
@@ -936,7 +958,6 @@ def job_audio():
                 os.remove(temp_path)
             except Exception:
                 pass
-
 
 # ---------------------------------------------------------------------------
 # Jobs library
