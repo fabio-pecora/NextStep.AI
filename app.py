@@ -18,17 +18,13 @@ from flask import (
     flash,
     abort,
     make_response,
-    abort,
 )
 from werkzeug.utils import secure_filename
-    # noqa
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.pool import NullPool
-
-import pdfkit 
 
 from utils.evaluation import (
     evaluate_answer,
@@ -46,13 +42,7 @@ from openai import OpenAI
 
 app = Flask(__name__)
 
-# Secret key for sessions (needed to track used questions)
-# In production, set FLASK_SECRET_KEY in your environment.
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "change-this-in-production")
-
-# Supabase Session Pooler connection string.
-# Prefer putting DATABASE_URL in your environment; otherwise it falls back
-# to the literal URI below.
 
 SUPABASE_URL = os.environ.get(
     "DATABASE_URL",
@@ -72,7 +62,8 @@ db = SQLAlchemy(
     },
 )
 
-client = OpenAI()  # uses OPENAI_API_KEY from your environment
+# OpenAI client (uses OPENAI_API_KEY env var)
+client = OpenAI()
 
 
 # ---------------------------------------------------------------------------
@@ -362,7 +353,7 @@ class Winner(db.Model):
 
 
 # ---------------------------------------------------------------------------
-# JSON data paths (still used for job library etc.)
+# JSON data paths
 # ---------------------------------------------------------------------------
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -379,7 +370,6 @@ WINNERS_PATH = os.path.join(BASE_DIR, "data", "winners.json")
 
 
 def get_current_user():
-    """Return the logged in user object or None."""
     user_id = session.get("user_id")
     if not user_id:
         return None
@@ -387,8 +377,6 @@ def get_current_user():
 
 
 def login_required(view_func):
-    """Decorator to protect routes that require authentication."""
-
     @wraps(view_func)
     def wrapped(*args, **kwargs):
         if not session.get("user_id"):
@@ -401,7 +389,6 @@ def login_required(view_func):
 
 @app.context_processor
 def inject_globals():
-    """Make current_user and current_year available in all templates."""
     return {
         "current_user": get_current_user(),
         "current_year": datetime.utcnow().year,
@@ -435,25 +422,17 @@ def load_winners():
 
 
 def get_today_daily_question():
-    """
-    Fetch today's daily question from the daily_questions table
-    using active_for_date = today.
-    """
     today = date.today()
     return DailyQuestion.query.filter_by(active_for_date=today).first()
 
 
 def update_streak_for_user(user: User):
-    """
-    Update the user's streak when they answer today's daily question
-    before 20:00 (8 pm). Uses streak_history and users.streak_count/longest_streak.
-    """
     if not user:
         return
 
     now = datetime.now()
     today = now.date()
-    cutoff = time(20, 0)  # 8 pm
+    cutoff = time(20, 0)
 
     if now.time() >= cutoff:
         return
@@ -493,10 +472,6 @@ def update_streak_for_user(user: User):
 
 
 def get_next_question():
-    """
-    Return a random question from questions.json, avoiding recent repeats
-    within this browser session. (Still used for generic practice/audio.)
-    """
     questions = load_questions()
     if not questions:
         return None
@@ -528,9 +503,6 @@ def save_answer_to_db(
     job_question_id: int = None,
     daily_question_id: int = None,
 ) -> None:
-    """
-    Best-effort helper to store an evaluated answer in the answers table.
-    """
     try:
         scores = eval_result.get("scores") or {}
 
@@ -580,16 +552,12 @@ def save_answer_to_db(
 
 
 # ---------------------------------------------------------------------------
-# Auth routes (register / login / logout)
+# Auth routes
 # ---------------------------------------------------------------------------
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    """
-    Simple registration with email, username, password, optional profile image,
-    and opt out checkbox.
-    """
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
         username = request.form.get("username", "").strip()
@@ -647,9 +615,6 @@ def register():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    """
-    Login with email OR username plus password.
-    """
     if request.method == "POST":
         identifier = request.form.get("identifier", "").strip().lower()
         password = request.form.get("password", "")
@@ -673,7 +638,6 @@ def login():
 
 @app.route("/logout")
 def logout():
-    """Log the user out by clearing the session."""
     session.pop("user_id", None)
     flash("You have been logged out.", "success")
     return redirect(url_for("index"))
@@ -687,9 +651,6 @@ def logout():
 @app.route("/profile")
 @login_required
 def profile():
-    """
-    Show profile info plus recent answers and recent prep reports.
-    """
     user = get_current_user()
 
     recent_answers = (
@@ -729,19 +690,12 @@ def profile():
 
 @app.route("/", methods=["GET"])
 def index():
-    """
-    Home page showing today's daily question from the database.
-    """
     daily_question = get_today_daily_question()
     return render_template("index.html", question=daily_question)
 
 
 @app.route("/next_question", methods=["POST"])
 def next_question():
-    """
-    Endpoint used by a 'Change question' button for generic practice (if used).
-    Returns a new random question from questions.json as JSON.
-    """
     question = get_next_question()
     if question is None:
         return jsonify({"error": "No questions available."}), 400
@@ -756,10 +710,6 @@ def next_question():
 
 @app.route("/answer", methods=["POST"])
 def answer():
-    """
-    Receive a text answer for today's daily question, evaluate it with GPT,
-    store it in the DB as a 'daily' answer, and update the user's streak.
-    """
     user_answer = request.form.get("answer", "").strip()
     question_id = request.form.get("question_id")
 
@@ -808,10 +758,6 @@ def answer():
 
 @app.route("/audio", methods=["POST"])
 def audio():
-    """
-    Receive audio, transcribe with Whisper, evaluate with GPT, return JSON.
-    Generic practice using questions.json.
-    """
     question_id = request.form.get("question_id")
 
     if "audio" not in request.files:
@@ -882,10 +828,6 @@ def audio():
 
 @app.route("/job_answer", methods=["POST"])
 def job_answer():
-    """
-    Receive a text answer for a job specific question, evaluate it with GPT,
-    and show feedback. Questions are loaded from the database, not JSON.
-    """
     user_answer = request.form.get("answer", "").strip()
     job_id = request.form.get("job_id")
     question_id = request.form.get("question_id")
@@ -933,10 +875,6 @@ def job_answer():
 
 @app.route("/job_audio", methods=["POST"])
 def job_audio():
-    """
-    Receive audio for a job specific question, transcribe and evaluate with GPT,
-    return JSON. Uses DB-backed JobSpecificQuestion.
-    """
     job_id = request.form.get("job_id")
     question_id = request.form.get("question_id")
 
@@ -1007,18 +945,12 @@ def job_audio():
 
 @app.route("/jobs", methods=["GET"])
 def jobs():
-    """
-    Show a list of jobs from the database so the user can browse role-specific questions.
-    """
     jobs_list = Job.query.order_by(Job.title.asc()).all()
     return render_template("jobs.html", jobs=jobs_list)
 
 
 @app.route("/jobs/<int:job_id>", methods=["GET"])
 def job_detail(job_id: int):
-    """
-    Show questions for a specific job from the database.
-    """
     job = Job.query.get(job_id)
     if not job:
         return render_template("job_detail.html", job=None, questions=[])
@@ -1050,10 +982,6 @@ def job_detail(job_id: int):
 
 @app.route("/custom_prep", methods=["GET", "POST"])
 def custom_prep():
-    """
-    Page where the user enters job title, company, job description, and resume.
-    Backend calls GPT to generate a tailored prep report.
-    """
     report = None
     error = None
 
@@ -1102,10 +1030,6 @@ def custom_prep():
 @app.route("/custom_prep/report/<int:report_id>", methods=["GET"])
 @login_required
 def view_saved_prep_report(report_id: int):
-    """
-    Full-page viewer for a previously generated prep report.
-    Used by the profile page cards.
-    """
     user = get_current_user()
     if not user:
         return redirect(url_for("login", next=request.path))
@@ -1125,34 +1049,28 @@ def view_saved_prep_report(report_id: int):
     )
 
 
-# --- PDF download for a saved prep report (ONLY the report area) ---
 @app.route("/custom_prep/report/<int:report_id>/pdf", methods=["GET"])
 @login_required
 def download_saved_prep_report_pdf(report_id: int):
     prep_report = PrepReport.query.get_or_404(report_id)
 
-    # 1) Render the same HTML used on the screen
     html = render_template(
         "saved_prep_report.html",
         prep_report=prep_report,
         report=prep_report.report_json,
-        for_pdf=True,   # small hint flag if you want any tiny print tweaks in the template
+        for_pdf=True,
     )
 
-    # 2) Absolute paths to your CSS on disk
     base_dir = os.path.dirname(os.path.abspath(__file__))
     css_files = [
         os.path.join(base_dir, "static", "css", "base.css"),
         os.path.join(base_dir, "static", "css", "saved_prep_report.css"),
     ]
 
-    # 3) wkhtmltopdf path (adjust if your install path differs)
-    import pdfkit
     config = pdfkit.configuration(
         wkhtmltopdf=r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
     )
 
-    # 4) Options so CSS loads and page looks clean
     options = {
         "enable-local-file-access": None,
         "page-size": "Letter",
@@ -1182,9 +1100,6 @@ def download_saved_prep_report_pdf(report_id: int):
 @app.route("/custom_prep/report/<int:report_id>/download", methods=["GET"])
 @login_required
 def download_saved_prep_report(report_id: int):
-    """
-    Download the raw JSON of a saved prep report for the current user.
-    """
     user = get_current_user()
     if not user:
         return redirect(url_for("login", next=request.path))
@@ -1213,10 +1128,6 @@ def download_saved_prep_report(report_id: int):
 
 @app.route("/resume_check", methods=["GET", "POST"])
 def resume_check():
-    """
-    Page where the user uploads a resume PDF and optionally a target role.
-    Backend calls GPT to generate a structured resume review report.
-    """
     report = None
     error = None
 
@@ -1239,7 +1150,6 @@ def resume_check():
                         temp_path = tmp.name
                         resume_file.save(temp_path)
 
-                    # Lazy import so app still starts even if PyPDF2 is not installed yet
                     try:
                         from PyPDF2 import PdfReader  # type: ignore
 
@@ -1252,10 +1162,12 @@ def resume_check():
                                 continue
                         resume_text = "\n".join(pages_text).strip()
                     except Exception as e:
-                        # If PDF parsing fails, still attempt report generation with empty text
                         resume_text = ""
                         if not error:
-                            error = f"Could not read the PDF text. The AI will still try based on limited information. ({str(e)})"
+                            error = (
+                                "Could not read the PDF text. The AI will still try "
+                                f"based on limited information. ({str(e)})"
+                            )
                 finally:
                     if temp_path and os.path.exists(temp_path):
                         try:
@@ -1283,7 +1195,6 @@ def resume_check():
                 )
                 db.session.add(row)
                 db.session.commit()
-                # pass id so template can show a link if you want later
                 report["saved_id"] = row.id
             except Exception:
                 db.session.rollback()
@@ -1298,10 +1209,6 @@ def resume_check():
 @app.route("/resume_check/report/<int:report_id>", methods=["GET"])
 @login_required
 def view_saved_resume_report(report_id: int):
-    """
-    Full-page viewer for a previously generated resume report.
-    Used by the profile page cards.
-    """
     user = get_current_user()
     if not user:
         return redirect(url_for("login", next=request.path))
@@ -1324,9 +1231,6 @@ def view_saved_resume_report(report_id: int):
 @app.route("/resume_check/report/<int:report_id>/pdf", methods=["GET"])
 @login_required
 def download_saved_resume_report_pdf(report_id: int):
-    """
-    Download a nicely formatted PDF for a saved resume report.
-    """
     resume_report = ResumeReport.query.get_or_404(report_id)
 
     html = render_template(
@@ -1379,10 +1283,6 @@ def download_saved_resume_report_pdf(report_id: int):
 
 @app.route("/winners", methods=["GET"])
 def winners():
-    """
-    Show the last 20 winning answers for the daily question.
-    Still using winners.json for now.
-    """
     winners_data = load_winners()
 
     try:
@@ -1401,15 +1301,23 @@ def winners():
 
 @app.route("/courses", methods=["GET"])
 def courses():
-    """
-    Display the Courses page (static for now).
-    """
     return render_template("courses.html")
+
+
+# ---------------------------------------------------------------------------
+# Mock Interview - UI
+# ---------------------------------------------------------------------------
+
 
 @app.route("/mock_interview")
 @login_required
 def mock_interview():
     return render_template("mock_interview.html")
+
+
+# ---------------------------------------------------------------------------
+# TTS endpoint for AI questions
+# ---------------------------------------------------------------------------
 
 
 @app.route("/api/tts_question", methods=["POST"])
@@ -1422,9 +1330,9 @@ def tts_question():
         return jsonify({"error": "No text provided"}), 400
 
     try:
-        # Use OpenAI Text to Speech with streaming response
+        # stream TTS audio and buffer it into memory
         with client.audio.speech.with_streaming_response.create(
-            model="gpt-4o-mini-tts",  # or "tts-1"
+            model="gpt-4o-mini-tts",
             voice="alloy",
             input=text,
         ) as response:
@@ -1445,11 +1353,94 @@ def tts_question():
         return jsonify({"error": "TTS failed"}), 500
 
 
+# ---------------------------------------------------------------------------
+# Mock interview - candidate audio answer
+# ---------------------------------------------------------------------------
+
+
+@app.route("/api/mock_interview_answer", methods=["POST"])
+@login_required
+def mock_interview_answer():
+    """
+    Receive an audio answer from the mock interview page,
+    transcribe with OpenAI STT, evaluate it, save it, and return JSON.
+    """
+    if "audio" not in request.files:
+        return jsonify({"error": "No audio file received"}), 400
+
+    audio_file = request.files["audio"]
+    if audio_file.filename == "":
+        return jsonify({"error": "Empty audio filename"}), 400
+
+    question_text = request.form.get("question", "").strip() or "Mock interview question"
+
+    temp_path = None
+
+    try:
+        # Save to a temporary .webm file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp:
+            temp_path = tmp.name
+        audio_file.save(temp_path)
+
+        try:
+            file_size = os.path.getsize(temp_path)
+        except OSError:
+            file_size = 0
+        print("Mock interview audio saved to:", temp_path, "size:", file_size)
+
+        # Transcribe with OpenAI STT
+        with open(temp_path, "rb") as f:
+            stt_resp = client.audio.transcriptions.create(
+                model="gpt-4o-mini-transcribe",  # you can also use "whisper-1"
+                file=f,
+            )
+        transcript_text = stt_resp.text
+
+        # Evaluate answer
+        eval_result = gpt_evaluate_answer(
+            question=question_text,
+            ideal_answer="",
+            user_answer=transcript_text,
+        )
+
+        # Save to DB
+        current_user = get_current_user()
+        try:
+            save_answer_to_db(
+                source="mock",
+                question_type="mock_interview",
+                question_text=question_text,
+                user_answer_text=transcript_text,
+                eval_result=eval_result,
+                transcript=transcript_text,
+                user_id=current_user.id if current_user else None,
+            )
+        except Exception as e2:
+            print("Error saving mock interview answer:", e2)
+            db.session.rollback()
+
+        return jsonify(
+            {
+                "transcript": transcript_text,
+                "evaluation": eval_result,
+            }
+        ), 200
+
+    except Exception as e:
+        print("Error processing mock interview audio:", e)
+        return jsonify({"error": f"Error processing mock interview audio: {str(e)}"}), 500
+
+    finally:
+        if temp_path and os.path.exists(temp_path):
+            try:
+                os.remove(temp_path)
+            except Exception:
+                pass
+
 
 # ---------------------------------------------------------------------------
 # Entrypoint
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    # debug=False so Flask does not spawn extra processes that open extra DB connections
     app.run(host="0.0.0.0", port=5000, debug=False)

@@ -92,7 +92,6 @@ function stopMouthAnimation() {
   mouthTimer = null;
   isTalking = false;
 
-  // Return to base expression when done talking
   if (!isBlinking) {
     setBaseExpression(baseExpression);
   }
@@ -117,7 +116,6 @@ function scheduleBlink() {
 
 function doBlink() {
   if (isTalking) {
-    // Try again later if currently talking
     scheduleBlink();
     return;
   }
@@ -127,13 +125,11 @@ function doBlink() {
 
   setTimeout(() => {
     isBlinking = false;
-    // Restore base expression
     setBaseExpression(baseExpression);
     scheduleBlink();
-  }, 140); // blink duration
+  }, 140);
 }
 
-// Start blinking loop
 scheduleBlink();
 
 // ---------------------------
@@ -187,7 +183,6 @@ repeatQuestionBtn.addEventListener("click", async () => {
 async function playAIQuestion(text) {
   aiText.innerText = text;
 
-  // Show "thinking" face while we fetch the audio
   setBaseExpression("think");
 
   try {
@@ -208,7 +203,6 @@ async function playAIQuestion(text) {
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
 
-    // Real audio, events above will control the mouth
     aiAudio.src = url;
     setBaseExpression("neutral");
     aiAudio.play();
@@ -245,7 +239,6 @@ async function startRecording() {
     mediaRecorder.start();
     isRecording = true;
 
-    // UI + avatar state
     startRecordBtn.disabled = true;
     stopRecordBtn.disabled = false;
 
@@ -271,26 +264,56 @@ function stopRecording() {
   recordingText.innerText = "Processing answer...";
 }
 
-function handleRecordedAnswer(blob) {
-  // Later: send 'blob' to Flask backend and then to Whisper.
-  // Example:
-  // const formData = new FormData();
-  // formData.append("audio", blob, "answer.webm");
-  // await fetch("/api/submit_answer_audio", { method: "POST", body: formData });
-
-  console.log("Recorded answer blob:", blob);
-
-  answerLogBody.innerText =
-    "Audio answer recorded (" +
-    blob.size +
-    " bytes). This is where the transcription and feedback will appear.";
-
-  // Show thinking expression for a moment, then back to neutral
+async function handleRecordedAnswer(blob) {
+  answerLogBody.innerText = "Transcribing your answer...";
+  recordingText.innerText = "Processing answer...";
   setBaseExpression("think");
-  setTimeout(() => {
-    setBaseExpression("neutral");
+
+  try {
+    const formData = new FormData();
+    formData.append("audio", blob, "answer.webm");
+    formData.append("question", aiText.innerText || "");
+
+    const response = await fetch("/api/mock_interview_answer", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || data.error) {
+      console.error("Mock interview transcription error:", data.error || data);
+      answerLogBody.innerText =
+        "There was an error transcribing your answer. Please try again.";
+      recordingText.innerText = "Not recording";
+      setBaseExpression("neutral");
+      return;
+    }
+
+    const transcript = data.transcript || "(no transcript)";
+    const evalResult = data.evaluation || {};
+    const feedbackText =
+      evalResult.feedback_text ||
+      evalResult.feedback ||
+      "";
+
+    answerLogBody.innerHTML =
+      "<strong>Transcript:</strong><br>" +
+      transcript.replace(/\n/g, "<br>") +
+      (feedbackText
+        ? "<br><br><strong>Feedback:</strong><br>" +
+          feedbackText.replace(/\n/g, "<br>")
+        : "");
+
     recordingText.innerText = "Not recording";
-  }, 1200);
+    setBaseExpression("neutral");
+  } catch (err) {
+    console.error("Error sending mock interview audio:", err);
+    answerLogBody.innerText =
+      "There was an error sending your answer. Please try again.";
+    recordingText.innerText = "Not recording";
+    setBaseExpression("neutral");
+  }
 }
 
 // Hook up buttons for recording
