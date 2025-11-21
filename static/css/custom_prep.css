@@ -1,8 +1,128 @@
 /* ============ CUSTOM AI PREP PAGE ============ */
 
+/* Page specific theme variables */
+:root {
+  --cp-section-bg: var(--bg);
+  --cp-card-shadow: rgba(0, 0, 0, 0.06);
+
+  --cp-feature-border: var(--border-soft);
+  --cp-feature-card-bg: linear-gradient(
+      180deg,
+      rgba(219, 234, 254, 0.35),
+      rgba(219, 234, 254, 0) 40%
+    )
+    padding-box,
+    linear-gradient(
+      135deg,
+      rgba(37, 99, 235, 0.15),
+      rgba(59, 130, 246, 0.05)
+    )
+    border-box;
+  --cp-feature-hover-shadow: rgba(15, 23, 42, 0.08);
+
+  --cp-feature-icon-bg: linear-gradient(135deg, #eef2ff, #e0f2fe);
+
+  --cp-dropzone-bg: radial-gradient(
+      circle at top left,
+      rgba(59, 130, 246, 0.1),
+      transparent 55%
+    )
+    #f9fafb;
+  --cp-dropzone-dashed: var(--border-soft);
+  --cp-dropzone-hover-bg: radial-gradient(
+      circle at top left,
+      rgba(37, 99, 235, 0.18),
+      transparent 60%
+    )
+    #eff6ff;
+  --cp-dropzone-has-file-bg: radial-gradient(
+      circle at top left,
+      rgba(34, 197, 94, 0.2),
+      transparent 65%
+    )
+    #ecfdf3;
+
+  --cp-report-header-bg: linear-gradient(135deg, #eef2ff, #e0f2fe);
+  --cp-report-body-bg: #f9fafb;
+  --cp-report-section-bg: #ffffff;
+  --cp-report-example-bg: var(--primary-soft);
+
+  --cp-modal-close-bg: #ffffff;
+  --cp-modal-close-text: #111827;
+
+  --cp-loading-overlay-bg: rgba(255, 255, 255, 0.8);
+}
+
+/* Dark mode overrides, aligned with home page */
+html[data-theme="dark"] {
+  /* Deep purple base with soft logo colored glows, similar to index page */
+  --cp-section-bg:
+    radial-gradient(circle at top left, rgba(255, 43, 136, 0.22), transparent 60%),
+    radial-gradient(circle at bottom right, rgba(22, 242, 255, 0.22), transparent 60%),
+    #050014;
+
+  --cp-card-shadow: rgba(0, 0, 0, 0.8);
+
+  /* Feature tiles: same kind of subtle gradient as home cards */
+  --cp-feature-border: #26234b;
+  --cp-feature-card-bg: linear-gradient(
+      180deg,
+      rgba(56, 189, 248, 0.12),
+      #050014 55%
+    )
+    padding-box,
+    linear-gradient(
+      135deg,
+      rgba(22, 242, 255, 0.35),
+      rgba(255, 43, 136, 0.16)
+    )
+    border-box;
+  --cp-feature-hover-shadow: rgba(22, 242, 255, 0.28);
+
+  --cp-feature-icon-bg: linear-gradient(135deg, #0b0220, #0ea5e9);
+
+  /* Dropzone, same family as jobs and home hero */
+  --cp-dropzone-bg: radial-gradient(
+      circle at top left,
+      rgba(59, 130, 246, 0.26),
+      transparent 55%
+    )
+    #050014;
+  --cp-dropzone-dashed: #26234b;
+  --cp-dropzone-hover-bg: radial-gradient(
+      circle at top left,
+      rgba(37, 99, 235, 0.5),
+      transparent 60%
+    )
+    #0b0220;
+  --cp-dropzone-has-file-bg: radial-gradient(
+      circle at top left,
+      rgba(0, 255, 136, 0.35),
+      transparent 65%
+    )
+    #022c22;
+
+  /* Report modal surfaces */
+  --cp-report-header-bg: linear-gradient(
+    135deg,
+    rgba(22, 242, 255, 0.14),
+    #050014
+  );
+  --cp-report-body-bg: #050014;
+  --cp-report-section-bg: #0b0220;
+  --cp-report-example-bg: rgba(22, 242, 255, 0.14);
+
+  --cp-modal-close-bg: #0b0220;
+  --cp-modal-close-text: #e5e7eb;
+
+  --cp-loading-overlay-bg: rgba(5, 0, 20, 0.9);
+}
+
+/* Page container */
+
 .custom-page-section {
   padding: 2.5rem 1rem 4rem;
-  background: var(--bg);
+  background: var(--cp-section-bg);
 }
 
 .custom-shell {
@@ -13,9 +133,16 @@
 .card {
   background: var(--card-bg);
   border-radius: 1rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 12px var(--cp-card-shadow);
   padding: 1.5rem 2rem;
   margin-bottom: 2rem;
+}
+
+/* Dark cards: match jobs and job detail vibe */
+html[data-theme="dark"] .card {
+  background: #0b0220;
+  border: 1px solid #26234b;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85);
 }
 
 /* ===== Banner section ===== */
@@ -97,15 +224,25 @@
   width: 180px;
   height: 180px;
   border-radius: 999px;
-  background: radial-gradient(closest-side, rgba(37,99,235,0.18), rgba(219,234,254,0.0));
+  background: radial-gradient(
+    closest-side,
+    rgba(37, 99, 235, 0.18),
+    rgba(219, 234, 254, 0)
+  );
   filter: blur(1px);
   animation: floaty 7s ease-in-out infinite;
 }
 
 @keyframes floaty {
-  0% { transform: translateY(0px) }
-  50% { transform: translateY(8px) }
-  100% { transform: translateY(0px) }
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 .report-feature-grid {
@@ -122,22 +259,22 @@
   gap: 0.75rem;
   align-items: start;
   padding: 0.9rem 0.95rem;
-  border: 1px solid var(--border-soft);
+  border: 1px solid var(--cp-feature-border);
   border-radius: 0.9rem;
-  background:
-    linear-gradient(180deg, rgba(219,234,254,0.35), rgba(219,234,254,0) 40%) padding-box,
-    linear-gradient(135deg, rgba(37,99,235,0.15), rgba(59,130,246,0.05)) border-box;
+  background: var(--cp-feature-card-bg);
   transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
 }
 
 .feature-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
-  border-color: rgba(37,99,235,0.35);
+  box-shadow: 0 10px 20px var(--cp-feature-hover-shadow);
+  border-color: rgba(37, 99, 235, 0.7);
 }
 
 @media (min-width: 860px) {
-  .feature-card { grid-column: span 4; }
+  .feature-card {
+    grid-column: span 4;
+  }
 }
 
 .feature-icon {
@@ -147,9 +284,15 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+  background: var(--cp-feature-icon-bg);
   color: var(--primary);
-  box-shadow: inset 0 0 0 1px rgba(37,99,235,0.12);
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.12);
+}
+
+/* Dark icons: slightly more neon but still clean */
+html[data-theme="dark"] .feature-icon {
+  color: #16f2ff;
+  box-shadow: 0 0 18px rgba(22, 242, 255, 0.3);
 }
 
 .feature-text h3 {
@@ -177,7 +320,7 @@
 
 .custom-report-card {
   flex: 2 1 600px;
-  background: white;
+  background: var(--card-bg);
   min-height: 220px;
 }
 
@@ -202,6 +345,8 @@
   padding: 0.6rem 0.8rem;
   font-family: inherit;
   font-size: 0.95rem;
+  background: var(--card-bg);
+  color: var(--text-main);
 }
 
 .custom-form textarea {
@@ -213,6 +358,19 @@
 .custom-form textarea:focus {
   border-color: var(--primary);
   outline: none;
+}
+
+/* Dark inputs: clearer separation from cards */
+html[data-theme="dark"] .custom-form input,
+html[data-theme="dark"] .custom-form textarea {
+  background: #050014;
+  border-color: #26234b;
+}
+
+html[data-theme="dark"] .custom-form input:focus,
+html[data-theme="dark"] .custom-form textarea:focus {
+  border-color: #16f2ff;
+  box-shadow: 0 0 0 1px rgba(22, 242, 255, 0.45);
 }
 
 .custom-small-hint {
@@ -229,11 +387,12 @@
 .resume-dropzone {
   position: relative;
   border-radius: 12px;
-  border: 1px dashed var(--border-soft);
-  background: radial-gradient(circle at top left, rgba(59,130,246,0.10), transparent 55%) #f9fafb;
+  border: 1px dashed var(--cp-dropzone-dashed);
+  background: var(--cp-dropzone-bg);
   padding: 1rem;
   cursor: pointer;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease, background 0.18s ease;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease,
+    background 0.18s ease;
 }
 
 .resume-dropzone-inner {
@@ -260,8 +419,15 @@
   justify-content: center;
   background: linear-gradient(135deg, #e0f2fe, #eef2ff);
   color: var(--primary);
-  box-shadow: 0 6px 18px rgba(15,23,42,0.12);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
   margin-bottom: 0.25rem;
+}
+
+/* Dark resume icon */
+html[data-theme="dark"] .resume-icon {
+  background: linear-gradient(135deg, #0b1120, #1d4ed8);
+  color: #16f2ff;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.9);
 }
 
 .resume-title {
@@ -286,20 +452,22 @@
 
 .resume-dropzone:hover {
   border-color: var(--primary);
-  box-shadow: 0 10px 24px rgba(15,23,42,0.10);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
   transform: translateY(-1px);
 }
 
 .resume-dropzone.is-dragover {
   border-color: var(--primary);
-  box-shadow: 0 0 0 1px rgba(37,99,235,0.35), 0 14px 32px rgba(37,99,235,0.25);
-  background: radial-gradient(circle at top left, rgba(37,99,235,0.18), transparent 60%) #eff6ff;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.35),
+    0 14px 32px rgba(37, 99, 235, 0.25);
+  background: var(--cp-dropzone-hover-bg);
 }
 
 .resume-dropzone.has-file {
-  border-color: rgba(34,197,94,0.9);
-  box-shadow: 0 0 0 1px rgba(34,197,94,0.8), 0 12px 26px rgba(22,163,74,0.3);
-  background: radial-gradient(circle at top left, rgba(34,197,94,0.20), transparent 65%) #ecfdf3;
+  border-color: rgba(34, 197, 94, 0.9);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.8),
+    0 12px 26px rgba(22, 163, 74, 0.3);
+  background: var(--cp-dropzone-has-file-bg);
 }
 
 .resume-dropzone.has-file .resume-icon {
@@ -384,6 +552,13 @@
   overflow: hidden;
 }
 
+/* Dark modal: same surface style as cards */
+html[data-theme="dark"] .report-modal-inner {
+  background: #0b0220;
+  border: 1px solid #26234b;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.9);
+}
+
 /* Header strip */
 .report-header {
   display: flex;
@@ -393,7 +568,7 @@
   gap: 1rem;
   padding: 1.2rem 1.75rem 1rem;
   border-bottom: 1px solid var(--border-soft);
-  background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+  background: var(--cp-report-header-bg);
 }
 
 .report-logo-text {
@@ -403,7 +578,7 @@
 }
 
 .report-logo-text span {
-  color: #111827;
+  color: var(--text-main);
 }
 
 .report-logo-tagline {
@@ -455,14 +630,14 @@
 .report-modal-body {
   padding: 1.4rem 1.75rem 1.5rem;
   overflow-y: auto;
-  background: #f9fafb;
+  background: var(--cp-report-body-bg);
 }
 
 /* Each big section */
 
 .report-section {
   margin-bottom: 1.3rem;
-  background: #ffffff;
+  background: var(--cp-report-section-bg);
   border-radius: 0.9rem;
   padding: 1.05rem 1.1rem 1.15rem;
   border: 1px solid var(--border-soft);
@@ -491,7 +666,7 @@
 /* Example blocks */
 
 .report-example-block {
-  background: var(--primary-soft);
+  background: var(--cp-report-example-bg);
   border-radius: 0.75rem;
   padding: 0.8rem 0.9rem;
   margin: 0.6rem 0;
@@ -522,16 +697,22 @@
   border-radius: 999px;
   border: 1px solid var(--border-soft);
   padding: 0.25rem 0.9rem;
-  background: #ffffff;
+  background: var(--cp-modal-close-bg);
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
-  color: #111827;
+  color: var(--cp-modal-close-text);
 }
 
 .report-modal-close:hover {
   background: #eef2ff;
   border-color: #a5b4fc;
+}
+
+/* Dark hover for close */
+html[data-theme="dark"] .report-modal-close:hover {
+  background: #050014;
+  border-color: #16f2ff;
 }
 
 /* When popup is open, prevent page scroll */
@@ -543,11 +724,15 @@ body.report-modal-open {
 .report-loading-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--cp-loading-overlay-bg);
   display: none;
   align-items: center;
   justify-content: center;
   z-index: 9999;
+}
+
+.report-loading-overlay.is-visible {
+  display: flex;
 }
 
 .report-loading-inner {
@@ -565,15 +750,26 @@ body.report-modal-open {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ===== Print: ONLY print the report modal ===== */
 @media print {
-  .no-print { display: none !important; }
-  body { background: #ffffff; }
-  body * { visibility: hidden; }
-  #report-modal, #report-modal * { visibility: visible; }
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #ffffff;
+  }
+  body * {
+    visibility: hidden;
+  }
+  #report-modal,
+  #report-modal * {
+    visibility: visible;
+  }
   #report-modal {
     position: static !important;
     inset: auto !important;
@@ -587,5 +783,7 @@ body.report-modal-open {
     width: 100% !important;
     max-height: none !important;
   }
-  .report-modal-body { overflow: visible !important; }
+  .report-modal-body {
+    overflow: visible !important;
+  }
 }

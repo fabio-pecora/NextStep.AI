@@ -37,12 +37,14 @@
        class="{% if request.endpoint == 'profile' %}active{% endif %}">
       Profile
     </a>
+
     <a href="{{ url_for('mock_interview') }}"
        class="{% if request.endpoint == 'mock_interview' %}active{% endif %}">
       Mock Interview
     </a>
+
     {% if current_user %}
-      <span style="margin-left:1rem; font-size:0.9rem; color:#64748b;">
+      <span style="margin-left:1rem; font-size:0.9rem; color:var(--text-muted);">
         Hi, {{ current_user.username }}
       </span>
       <a href="{{ url_for('logout') }}">Logout</a>
@@ -56,5 +58,13 @@
         Sign up
       </a>
     {% endif %}
+
+    <!-- Theme toggle button -->
+    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark mode">
+      🌙
+    </button>
   </nav>
 </header>
+
+<!-- Load the theme script on every page that includes the navbar -->
+<script src="{{ url_for('static', filename='script.js') }}"></script>

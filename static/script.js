@@ -279,3 +279,55 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+
+(function () {
+  const root = document.documentElement;
+  const THEME_KEY = "theme";
+
+  function applyTheme(theme) {
+    if (theme === "dark") {
+      root.setAttribute("data-theme", "dark");
+    } else {
+      root.removeAttribute("data-theme"); // light is default
+    }
+  }
+
+  function initTheme() {
+    const savedTheme = localStorage.getItem(THEME_KEY);
+
+    if (savedTheme === "dark") {
+      applyTheme("dark");
+    } else {
+      applyTheme("light");
+    }
+
+    const toggleBtn = document.getElementById("theme-toggle");
+    if (!toggleBtn) {
+      console.warn("Theme toggle button not found");
+      return;
+    }
+
+    // Set initial icon
+    if (root.getAttribute("data-theme") === "dark") {
+      toggleBtn.textContent = "☀️";
+    } else {
+      toggleBtn.textContent = "🌙";
+    }
+
+    toggleBtn.addEventListener("click", () => {
+      const isDark = root.getAttribute("data-theme") === "dark";
+      const newTheme = isDark ? "light" : "dark";
+
+      applyTheme(newTheme);
+      localStorage.setItem(THEME_KEY, newTheme);
+      toggleBtn.textContent = newTheme === "dark" ? "☀️" : "🌙";
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initTheme);
+  } else {
+    initTheme();
+  }
+})();

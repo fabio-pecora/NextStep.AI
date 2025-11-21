@@ -1,36 +1,132 @@
-/* ===========================
-   Core variables & reset
-   =========================== */
-
+/* ----------------------------------------------------
+   LIGHT DEFAULTS FOR JOB DETAIL PAGE
+   ---------------------------------------------------- */
 :root {
-  --bg: #f5f7fb;
-  --card-bg: #ffffff;
-  --primary: #2563eb;
-  --primary-soft: #dbeafe;
-  --text-main: #111827;
-  --text-muted: #6b7280;
-  --border-soft: #e5e7eb;
+  /* Match section background style from jobs.css in light mode */
+  --jobs-section-bg: #f9fbfd;
+
+  --jd-question-top-bg: #f9fafb;
+  --jd-question-index-bg: #e5edff;
+  --jd-question-index-text: #1e293b;
+
+  --jd-meta-pill-bg: #e5f0ff;
+  --jd-meta-pill-text: #1e293b;
+  --jd-meta-pill-soft-border: #cbd5f5;
+
+  --jd-question-block-bg: #ffffff;
+  --jd-question-block-border: #e2e8f0;
+
+  --jd-chip-tag-bg: #e0f2fe;
+  --jd-chip-tag-text: #0f172a;
+
+  --jd-guidance-btn-bg: #eff6ff;
+  --jd-guidance-btn-text: #2563eb;
+
+  --jd-guidance-panel-bg: #f9fafb;
+
+  --jd-qa-bg: #f9fafb;
+  --jd-qa-border: #e5e7eb;
+
+  --jd-textarea-bg: #ffffff;
+  --jd-textarea-border: #e5e7eb;
+
+  --jd-feedback-bg: #eff6ff;
+  --jd-feedback-border: #2563eb;
+
+  --jd-score-bg: #eff6ff;
+  --jd-score-border: #2563eb;
 }
+
+/* ----------------------------------------------------
+   DARK MODE – NEON LOGO STYLE, MATCHING jobs.css
+   ---------------------------------------------------- */
+html[data-theme="dark"] {
+  /* section background same vibe as jobs.css */
+  --jobs-section-bg:
+    radial-gradient(circle at 0% 100%, rgba(255, 43, 136, 0.22), transparent 70%),
+    radial-gradient(circle at 100% 0%, rgba(22, 242, 255, 0.22), transparent 65%),
+    #050014;
+
+  /* top strip of each question, soft neon glow */
+  --jd-question-top-bg:
+    radial-gradient(circle at 0% 0%, rgba(255, 43, 136, 0.28), transparent 60%),
+    radial-gradient(circle at 100% 0%, rgba(22, 242, 255, 0.25), transparent 60%),
+    #050014;
+
+  /* index pill */
+  --jd-question-index-bg: rgba(22, 242, 255, 0.25);
+  --jd-question-index-text: #f9fafb;
+
+  /* header meta pills */
+  --jd-meta-pill-bg: rgba(14, 8, 40, 0.9);
+  --jd-meta-pill-text: #cbd5f5;
+  --jd-meta-pill-soft-border: rgba(255, 255, 255, 0.18);
+
+  /* main block */
+  --jd-question-block-bg:
+    radial-gradient(circle at 0% 100%, rgba(255, 43, 136, 0.22), transparent 75%),
+    rgba(14, 8, 40, 0.95);
+  --jd-question-block-border: rgba(255, 255, 255, 0.14);
+
+  /* tag chips */
+  --jd-chip-tag-bg: rgba(22, 242, 255, 0.18);
+  --jd-chip-tag-text: #f9fafb;
+
+  /* guidance button */
+  --jd-guidance-btn-bg:
+    linear-gradient(135deg, #050014, #120826);
+  --jd-guidance-btn-text: #16f2ff;
+
+  /* guidance panel */
+  --jd-guidance-panel-bg:
+    radial-gradient(circle at center, rgba(22, 242, 255, 0.16), transparent 60%),
+    #050014;
+
+  /* QA blocks, similar to cards in jobs.css */
+  --jd-qa-bg:
+    radial-gradient(circle at 100% 0%, rgba(22, 242, 255, 0.18), transparent 60%),
+    rgba(5, 0, 20, 0.95);
+  --jd-qa-border: rgba(255, 255, 255, 0.16);
+
+  /* textarea */
+  --jd-textarea-bg: rgba(14, 8, 40, 0.96);
+  --jd-textarea-border: rgba(22, 242, 255, 0.4);
+
+  /* feedback */
+  --jd-feedback-bg:
+    linear-gradient(145deg, #1e1035, #050014 65%);
+  --jd-feedback-border: #16f2ff;
+
+  /* score pills */
+  --jd-score-bg: transparent;
+  --jd-score-border: #16f2ff;
+}
+
+/* ----------------------------------------------------
+   RESET
+   ---------------------------------------------------- */
 
 * {
   box-sizing: border-box;
 }
 
-/* Basic typography container */
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text-main);
 }
 
-/* Landing layout wrapper for this page */
 .landing-body {
   margin: 0;
-  background: #f9fbfd;
+  background: var(--landing-bg, #f9fbfd);
   font-family: 'Inter', sans-serif;
-  color: #1e293b;
+  color: var(--landing-text, #1e293b);
 }
 
-/* Generic shell and card */
+/* ----------------------------------------------------
+   GENERIC SHELL
+   ---------------------------------------------------- */
 
 .app-shell {
   max-width: 1100px;
@@ -58,17 +154,17 @@ h1 {
   font-size: 0.95rem;
 }
 
-/* ===========================
-   Header & nav
-   =========================== */
+/* ----------------------------------------------------
+   HEADER + NAV
+   ---------------------------------------------------- */
 
 .landing-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1.2rem 6%;
-  background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
+  background: var(--landing-header-bg, #ffffff);
+  border-bottom: 1px solid var(--landing-header-border, #e2e8f0);
   position: sticky;
   top: 0;
   z-index: 50;
@@ -86,37 +182,38 @@ h1 {
 .landing-header nav a {
   margin-left: 1.4rem;
   text-decoration: none;
-  color: #334155;
+  color: var(--nav-link-muted, #334155);
   font-weight: 500;
 }
 
 .landing-header nav a:hover {
-  color: #2563eb;
+  color: var(--primary);
 }
 
 .landing-header nav a.active {
-  color: #2563eb;
+  color: var(--primary);
 }
 
-/* ===========================
-   Footer
-   =========================== */
+/* ----------------------------------------------------
+   FOOTER
+   ---------------------------------------------------- */
 
 .landing-footer {
   text-align: center;
   padding: 2rem;
   font-size: 0.9rem;
-  color: #64748b;
-  background: #f9fbfd;
-  border-top: 1px solid #e2e8f0;
+  color: var(--footer-text, #64748b);
+  background: var(--footer-bg, #f9fbfd);
+  border-top: 1px solid var(--footer-border, #e2e8f0);
 }
 
-/* ===========================
-   Job detail page
-   =========================== */
+/* ----------------------------------------------------
+   JOB DETAIL PAGE
+   ---------------------------------------------------- */
 
 .job-detail-section {
   padding: 2.5rem 1rem 3rem;
+  background: var(--jobs-section-bg);
 }
 
 .job-detail-shell {
@@ -126,9 +223,12 @@ h1 {
 
 .job-detail-card {
   padding: 1.75rem 1.75rem 2rem;
+  background: var(--card-bg);
 }
 
-/* Header area */
+/* ----------------------------------------------------
+   HEADER INFO
+   ---------------------------------------------------- */
 
 .job-detail-header {
   margin-bottom: 1.5rem;
@@ -156,6 +256,7 @@ h1 {
 .job-detail-title {
   font-size: 1.4rem;
   margin: 0 0 0.4rem;
+  color: var(--text-main);
 }
 
 .job-detail-meta {
@@ -169,18 +270,18 @@ h1 {
   font-size: 0.78rem;
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
-  background: #f3f4f6;
-  color: var(--text-muted);
+  background: var(--jd-meta-pill-bg);
+  color: var(--jd-meta-pill-text);
 }
 
 .meta-pill-soft {
   background: transparent;
-  border: 1px solid var(--border-soft);
+  border: 1px solid var(--jd-meta-pill-soft-border);
 }
 
-/* ===========================
-   Questions list & blocks
-   =========================== */
+/* ----------------------------------------------------
+   QUESTION BLOCKS
+   ---------------------------------------------------- */
 
 .job-questions-list {
   margin-top: 1.5rem;
@@ -191,13 +292,18 @@ h1 {
 
 .question-block {
   border-radius: 1rem;
-  border: 1px solid var(--border-soft);
-  background: #ffffff;
+  border: 1px solid var(--jd-question-block-border);
+  background: var(--jd-question-block-bg);
   overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.16);
+}
+
+.question-block:hover {
+  transform: translateY(-2px);
 }
 
 /* Top strip */
-
 .question-top {
   display: flex;
   flex-wrap: wrap;
@@ -205,8 +311,8 @@ h1 {
   align-items: flex-start;
   justify-content: space-between;
   padding: 0.9rem 1rem;
-  background: linear-gradient(135deg, #eff6ff, #eef2ff);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.02);
+  background: var(--jd-question-top-bg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .question-top-main {
@@ -221,8 +327,8 @@ h1 {
   text-align: center;
   padding: 0.2rem 0.55rem;
   border-radius: 999px;
-  background: #dbeafe;
-  color: #1f2933;
+  background: var(--jd-question-index-bg);
+  color: var(--jd-question-index-text);
   font-weight: 600;
 }
 
@@ -230,6 +336,7 @@ h1 {
   font-size: 0.98rem;
   margin: 0;
   line-height: 1.5;
+  color: var(--text-main);
 }
 
 .question-top-right {
@@ -240,7 +347,6 @@ h1 {
 }
 
 /* Tag pill */
-
 .chip {
   display: inline-flex;
   align-items: center;
@@ -250,70 +356,65 @@ h1 {
 }
 
 .chip-tag {
-  background: #e0f2fe;
-  color: #0f172a;
+  background: var(--jd-chip-tag-bg);
+  color: var(--jd-chip-tag-text);
 }
 
-/* ===========================
-   Guidance button + panel
-   =========================== */
+/* ----------------------------------------------------
+   GUIDANCE BUTTON & PANEL
+   ---------------------------------------------------- */
 
-/* glowing “Guidance and tips” button */
 .guidance-btn {
   font-size: 0.78rem;
   border-radius: 999px;
-  border: 1px solid rgba(37, 99, 235, 0.2);
+  border: 1px solid rgba(22, 242, 255, 0.25);
   padding: 0.25rem 0.9rem;
-  background: linear-gradient(135deg, #ffffff, #f3f6ff);
-  color: #1e40af;
+  background: var(--jd-guidance-btn-bg);
+  color: var(--jd-guidance-btn-text);
   cursor: pointer;
-  list-style: none;
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  box-shadow:
-    0 0 8px rgba(59, 130, 246, 0.25),
-    inset 0 0 3px rgba(37, 99, 235, 0.12);
+  list-style: none;
   transition: all 0.25s ease;
+  box-shadow:
+    0 0 10px rgba(22, 242, 255, 0.15),
+    inset 0 0 4px rgba(22, 242, 255, 0.12);
 }
 
-/* hover & open state */
 .guidance-btn:hover,
 .guidance-details[open] .guidance-btn {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  color: #ffffff;
-  border-color: transparent;
+  background: linear-gradient(135deg, #16f2ff, #00d9ff);
+  color: #050014;
+  transform: translateY(-2px);
   box-shadow:
-    0 0 12px rgba(37, 99, 235, 0.55),
-    0 0 20px rgba(37, 99, 235, 0.3);
-  transform: translateY(-1px);
+    0 0 16px rgba(22, 242, 255, 0.55),
+    0 0 30px rgba(22, 242, 255, 0.35);
 }
 
-/* icon changing when open */
 .guidance-btn::before {
   content: "💡";
   font-size: 0.9rem;
-  line-height: 1;
 }
 
 .guidance-details[open] .guidance-btn::before {
   content: "✦";
 }
 
-/* guidance panel */
+/* Panel */
 .guidance-panel {
-  background: #f9fafb;
+  background: var(--jd-guidance-panel-bg);
   border-radius: 0.75rem;
   padding: 0.6rem 0.8rem;
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
   margin-top: 0.6rem;
   font-size: 0.86rem;
   color: var(--text-muted);
+  box-shadow: 0 8px 25px rgba(22, 242, 255, 0.15);
 }
 
-/* ===========================
-   Answer area (text + voice)
-   =========================== */
+/* ----------------------------------------------------
+   ANSWER AREA
+   ---------------------------------------------------- */
 
 .question-body {
   padding: 0.9rem 1rem 1rem;
@@ -324,9 +425,9 @@ h1 {
 
 .qa-card {
   border-radius: 0.85rem;
-  background: #f9fafb;
+  background: var(--jd-qa-bg);
   padding: 0.8rem 0.9rem 0.9rem;
-  border: 1px solid rgba(148, 163, 184, 0.25);
+  border: 1px solid var(--jd-qa-border);
 }
 
 .qa-card-header {
@@ -339,6 +440,7 @@ h1 {
 .qa-title {
   font-size: 0.9rem;
   font-weight: 600;
+  color: var(--text-main);
 }
 
 .qa-hint {
@@ -347,21 +449,22 @@ h1 {
 }
 
 /* Textarea */
-
 .practice-textarea {
   width: 100%;
   min-height: 120px;
   border-radius: 0.6rem;
-  border: 1px solid var(--border-soft);
+  border: 1px solid var(--jd-textarea-border);
   padding: 0.65rem 0.7rem;
   font-size: 0.9rem;
   resize: vertical;
+  background: var(--jd-textarea-bg);
+  color: var(--text-main);
   font-family: inherit;
 }
 
-/* ===========================
-   Buttons
-   =========================== */
+/* ----------------------------------------------------
+   BUTTONS
+   ---------------------------------------------------- */
 
 .btn {
   display: inline-flex;
@@ -374,15 +477,11 @@ h1 {
   font-size: 0.95rem;
 }
 
-.btn-pill {
-  border-radius: 999px;
-}
-
 .btn-primary {
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  border-color: transparent;
   color: #ffffff;
   font-weight: 600;
+  border: none;
   box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
 }
 
@@ -392,8 +491,8 @@ h1 {
 
 .btn-outline {
   border: 1px solid rgba(148, 163, 184, 0.9);
-  background: #ffffff;
-  color: #111827;
+  background: var(--card-bg);
+  color: var(--text-main);
 }
 
 .btn-outline:hover {
@@ -406,7 +505,9 @@ h1 {
   gap: 0.6rem;
 }
 
-/* Voice section */
+/* ----------------------------------------------------
+   VOICE SECTION
+   ---------------------------------------------------- */
 
 .voice-btn-row {
   margin-top: 0.2rem;
@@ -418,22 +519,23 @@ h1 {
   color: var(--text-muted);
 }
 
-/* ===========================
-   Feedback card
-   =========================== */
+/* ----------------------------------------------------
+   FEEDBACK SECTION
+   ---------------------------------------------------- */
 
 .feedback-card {
-  display: none; /* shown by JS after feedback arrives */
+  display: none;
   margin-top: 0.75rem;
   padding: 0.7rem 0.8rem;
   border-radius: 0.75rem;
-  border: 1px dashed var(--border-soft);
-  background: #f3f4ff;
+  border: 1px dashed var(--jd-feedback-border);
+  background: var(--jd-feedback-bg);
 }
 
 .feedback-title {
   font-size: 0.9rem;
   margin: 0 0 0.4rem;
+  color: var(--text-main);
 }
 
 .transcript {
@@ -442,8 +544,7 @@ h1 {
   margin-bottom: 0.4rem;
 }
 
-/* scores row */
-
+/* Scores */
 .scores {
   display: flex;
   flex-wrap: wrap;
@@ -460,8 +561,8 @@ h1 {
   padding: 0.05rem 0.4rem;
   border-radius: 999px;
   font-size: 0.76rem;
-  background: #ffffff;
-  border: 1px solid rgba(148, 163, 184, 0.6);
+  background: var(--jd-score-bg);
+  border: 1px solid var(--jd-score-border);
 }
 
 .job-feedback-text {
@@ -470,9 +571,9 @@ h1 {
   margin: 0;
 }
 
-/* ===========================
-   Responsive tweaks
-   =========================== */
+/* ----------------------------------------------------
+   RESPONSIVE
+   ---------------------------------------------------- */
 
 @media (min-width: 800px) {
   .job-detail-card {

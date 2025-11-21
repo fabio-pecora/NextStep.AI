@@ -3,6 +3,7 @@
    =========================== */
 
 :root {
+  /* LIGHT THEME TOKENS (original) */
   --bg: #f5f7fb;
   --card-bg: #ffffff;
   --primary: #2563eb;
@@ -10,7 +11,153 @@
   --text-main: #111827;
   --text-muted: #6b7280;
   --border-soft: #e5e7eb;
+
+  /* Brand / dark palette (from logo) - used only in dark mode selectors */
+  --ns-bg-deep: #050016;
+  --ns-bg-soft: #08041f;
+  --ns-surface: #0e0828;
+  --ns-surface-soft: #140b32;
+  --ns-border-subtle: rgba(255, 255, 255, 0.08);
+  --ns-border-strong: rgba(255, 255, 255, 0.18);
+
+  --ns-text-main: #f9fafb;
+  --ns-text-sub: #cbd5f5;
+  --ns-text-muted: #94a3b8;
+
+  --ns-pink: #ff2b88;
+  --ns-orange: #ff8a3c;
+  --ns-yellow: #ffd447;
+  --ns-green: #00ff88;
+  --ns-cyan: #16f2ff;
+  --ns-teal: #1ad3e5;
+
+  --ns-gradient-main: linear-gradient(
+    135deg,
+    #ff2b88,
+    #ff8a3c,
+    #ffd447,
+    #00ff88,
+    #16f2ff
+  );
 }
+
+/* ===========================
+   DARK MODE - NEON STYLING
+   (does not change light tokens)
+   =========================== */
+
+/* Body background in dark */
+html[data-theme="dark"] body {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 43, 136, 0.45), transparent 55%),
+    radial-gradient(circle at 100% 100%, rgba(22, 242, 255, 0.45), transparent 55%),
+    radial-gradient(circle at 100% 0%, rgba(0, 255, 136, 0.25), transparent 65%),
+    var(--ns-bg-deep);
+  color: var(--ns-text-main);
+}
+
+/* Landing pages in dark */
+html[data-theme="dark"] .landing-body {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 43, 136, 0.45), transparent 55%),
+    radial-gradient(circle at 100% 100%, rgba(22, 242, 255, 0.45), transparent 55%),
+    radial-gradient(circle at 100% 0%, rgba(0, 255, 136, 0.25), transparent 65%),
+    var(--ns-bg-deep);
+  color: var(--ns-text-main);
+}
+
+/* Header / footer surfaces in dark */
+html[data-theme="dark"] .landing-header {
+  background: rgba(5, 0, 22, 0.96);
+  border-bottom-color: var(--ns-border-subtle);
+  backdrop-filter: blur(18px);
+}
+
+html[data-theme="dark"] .landing-footer {
+  background: rgba(5, 0, 22, 0.96);
+  border-top-color: var(--ns-border-subtle);
+  color: var(--ns-text-muted);
+}
+
+/* Nav links in dark */
+html[data-theme="dark"] .landing-header nav a {
+  color: var(--ns-text-sub);
+}
+
+html[data-theme="dark"] .landing-header nav a.active {
+  color: var(--ns-cyan);
+}
+
+/* Brand / logo in dark */
+html[data-theme="dark"] .brand {
+  color: var(--ns-text-main);
+}
+
+html[data-theme="dark"] .brand span {
+  background: var(--ns-gradient-main);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Cards in dark */
+html[data-theme="dark"] .card {
+  background:
+    radial-gradient(circle at top left, rgba(255, 43, 136, 0.22), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(22, 242, 255, 0.16), transparent 60%),
+    var(--ns-surface);
+  border-color: var(--ns-border-subtle);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+/* Buttons in dark */
+html[data-theme="dark"] .btn-primary {
+  background-image: var(--ns-gradient-main);
+  color: #050016;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
+}
+
+html[data-theme="dark"] .btn-primary:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+html[data-theme="dark"] .btn-outline {
+  background: rgba(14, 8, 40, 0.9);
+  color: var(--ns-text-sub);
+  border-color: var(--ns-border-strong);
+}
+
+html[data-theme="dark"] .btn-outline:hover {
+  background: radial-gradient(circle at top left, rgba(255, 43, 136, 0.28), transparent 60%);
+  border-color: var(--ns-cyan);
+}
+
+/* Theme toggle in dark */
+html[data-theme="dark"] .theme-toggle {
+  color: var(--ns-text-sub);
+}
+
+html[data-theme="dark"] .theme-toggle:hover {
+  background: rgba(22, 242, 255, 0.14);
+}
+
+/* Score pill in dark */
+html[data-theme="dark"] .score-pill {
+  background: rgba(0, 255, 136, 0.12);
+  color: #00ff88;
+}
+
+/* Nav underline in dark */
+html[data-theme="dark"] nav a::after {
+  background-color: var(--ns-cyan);
+}
+
+/* ===========================
+   Reset
+   =========================== */
 
 * {
   box-sizing: border-box;
@@ -20,7 +167,7 @@
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: var(--bg);
+  background: var(--bg);  /* LIGHT: same as original */
   color: var(--text-main);
 }
 
@@ -33,7 +180,7 @@ body {
 }
 
 .card {
-  background: var(--card-bg);
+  background: var(--card-bg);  /* LIGHT: pure white */
   border-radius: 1rem;
   padding: 1.3rem 1.5rem;
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
@@ -74,7 +221,7 @@ h2 {
 
 .landing-body {
   margin: 0;
-  background: #f9fbfd;
+  background: #f9fbfd;  /* LIGHT BACKGROUND */
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #1e293b;
 }
@@ -113,8 +260,9 @@ h2 {
   color: #2563eb;
 }
 
-
-/* Buttons */
+/* ===========================
+   Buttons
+   =========================== */
 
 .btn {
   display: inline-flex;
@@ -125,6 +273,7 @@ h2 {
   border: none;
   cursor: pointer;
   font-size: 0.95rem;
+  transition: background 0.2s ease, transform 0.12s ease, box-shadow 0.2s ease;
 }
 
 .btn-primary {
@@ -151,6 +300,23 @@ h2 {
   margin-top: 0.8rem;
   display: flex;
   gap: 0.6rem;
+}
+
+/* Dark mode toggle button (moon icon in navbar) */
+
+.theme-toggle {
+  margin-left: 1.5rem;
+  cursor: pointer;
+  font-size: 1.25rem;
+  border-radius: 50%;
+  padding: 0.35rem;
+  transition: background 0.25s ease, transform 0.15s ease;
+  color: var(--text-main);
+}
+
+.theme-toggle:hover {
+  background: var(--primary-soft);
+  transform: translateY(-1px);
 }
 
 /* Score pill (used in several pages) */
@@ -181,19 +347,21 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Logo + nav underline */
+
 .logo a {
-  text-decoration: none;   /* removes underline */
-  color: #4c1d95;          /* dark purple like in your screenshot */
+  text-decoration: none;
+  color: #4c1d95;
   font-weight: 700;
   font-size: 1.3rem;
 }
 
 .logo a span {
-  color: #2563eb;          /* blue accent for “AI” */
+  color: #2563eb;
 }
 
 nav a {
-  color: #374151; /* gray-700 */
+  color: #374151;
   text-decoration: none;
   margin: 0 0.75rem;
   font-weight: 500;
@@ -208,7 +376,7 @@ nav a::after {
   height: 2px;
   bottom: -4px;
   left: 0;
-  background-color: #2563eb; /* same blue accent */
+  background-color: #2563eb;
   transition: width 0.3s ease;
 }
 

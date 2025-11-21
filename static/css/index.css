@@ -1,3 +1,91 @@
+/* THEME VARIABLES FOR INDEX PAGE */
+
+:root {
+  --hero-bg: linear-gradient(180deg, #f0f7ff 0%, #ffffff 80%);
+  --hero-heading: #0f172a;
+  --hero-text: #475569;
+  --hero-pill-bg: #e0edff;
+  --hero-pill-text: #1d4ed8;
+  --hero-bullet-text: #475569;
+  --hero-bullet-check: #16a34a;
+
+  --mission-bg: #ffffff;
+  --mission-title-gradient: linear-gradient(135deg, #000000, #3c4146);
+  --mission-subtext: #334155;
+  --mission-pill-bg: #ffffff;
+  --mission-pill-border: #e2e8f0;
+  --mission-pill-heading: #1e293b;
+  --mission-pill-text: #475569;
+
+  --features-bg: #f9fbfd;
+  --feature-title: #0f172a;
+  --feature-text: #475569;
+
+  --daily-hero-bg-overlay: radial-gradient(circle at top, #e0f2fe 0, #f9fafb 40%, #f1f5f9 100%);
+  --daily-header-text: #475569;
+  --daily-question-bg: #f1f5f9;
+  --daily-question-border: #e2e8f0;
+  --daily-form-border: #e2e8f0;
+  --daily-hint: #64748b;
+  --no-question-link: #2563eb;
+
+  --btn-blue-bg: #2563eb;
+  --btn-blue-hover-bg: #1d4ed8;
+  --btn-blue-shadow: rgba(37, 99, 235, 0.4);
+  --btn-blue-hover-shadow: rgba(37, 99, 235, 0.6);
+}
+
+/* Dark theme tuned to the neon logo look */
+html[data-theme="dark"] {
+  /* Hero section - deep violet with logo glows */
+  --hero-bg:
+    radial-gradient(circle at 0% 0%, rgba(255, 43, 136, 0.36), transparent 55%),
+    radial-gradient(circle at 100% 0%, rgba(22, 242, 255, 0.3), transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(0, 255, 136, 0.22), transparent 60%),
+    #050016;
+  --hero-heading: #f9fafb;
+  --hero-text: #cbd5f5;
+  --hero-pill-bg: rgba(22, 242, 255, 0.16);
+  --hero-pill-text: #16f2ff;
+  --hero-bullet-text: #cbd5f5;
+  --hero-bullet-check: #4ade80;
+
+  /* Mission section - soft neon panels on dark */
+  --mission-bg: #050016;
+  --mission-title-gradient: linear-gradient(135deg, #ff2b88, #ff8a3c, #ffd447, #16f2ff);
+  --mission-subtext: #cbd5f5;
+  --mission-pill-bg: #0b0220;
+  --mission-pill-border: rgba(148, 163, 184, 0.6);
+  --mission-pill-heading: #f9fafb;
+  --mission-pill-text: #cbd5f5;
+
+  /* Features section */
+  --features-bg:
+    radial-gradient(circle at 0% 100%, rgba(255, 43, 136, 0.24), transparent 60%),
+    #050016;
+  --feature-title: #f9fafb;
+  --feature-text: #cbd5f5;
+
+  /* Daily question block - more "AI core" feeling */
+  --daily-hero-bg-overlay:
+    radial-gradient(circle at 0% 0%, rgba(255, 43, 136, 0.3), transparent 55%),
+    radial-gradient(circle at 100% 100%, rgba(22, 242, 255, 0.32), transparent 60%),
+    radial-gradient(circle at 50% 120%, rgba(255, 212, 71, 0.22), transparent 65%),
+    #050016;
+  --daily-header-text: #cbd5f5;
+  --daily-question-bg: #050016;
+  --daily-question-border: rgba(148, 163, 184, 0.6);
+  --daily-form-border: rgba(148, 163, 184, 0.6);
+  --daily-hint: #9ca3af;
+  --no-question-link: #16f2ff;
+
+  /* Primary CTA color maps to logo cyan */
+  --btn-blue-bg: #16f2ff;
+  --btn-blue-hover-bg: #06b6d4;
+  --btn-blue-shadow: rgba(22, 242, 255, 0.55);
+  --btn-blue-hover-shadow: rgba(22, 242, 255, 0.85);
+}
+
 /* HERO */
 
 .hero {
@@ -6,7 +94,7 @@
   justify-content: space-between;
   padding: 4rem 6%;
   gap: 2rem;
-  background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 80%);
+  background: var(--hero-bg);
 }
 
 .hero-text {
@@ -18,8 +106,8 @@
   align-items: center;
   padding: 0.25rem 0.7rem;
   border-radius: 999px;
-  background: #e0edff;
-  color: #1d4ed8;
+  background: var(--hero-pill-bg);
+  color: var(--hero-pill-text);
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -30,12 +118,12 @@
 .hero-text h1 {
   font-size: 2.4rem;
   line-height: 1.2;
-  color: #0f172a;
+  color: var(--hero-heading);
   margin-bottom: 0.6rem;
 }
 
 .hero-text p {
-  color: #475569;
+  color: var(--hero-text);
   max-width: 34rem;
   margin-bottom: 1.2rem;
 }
@@ -44,7 +132,7 @@
   list-style: none;
   padding: 0;
   margin: 0 0 1rem;
-  color: #475569;
+  color: var(--hero-bullet-text);
   font-size: 0.9rem;
 }
 
@@ -58,7 +146,7 @@
 .hero-bullets li::before {
   content: "✔";
   font-size: 0.8rem;
-  color: #16a34a;
+  color: var(--hero-bullet-check);
 }
 
 .hero-buttons {
@@ -66,7 +154,7 @@
   gap: 1rem;
 }
 
-/* hero illustration & gallery */
+/* hero illustration and gallery */
 
 .hero-illustration {
   flex: 1;
@@ -83,8 +171,8 @@
   overflow: hidden;
   border-radius: 1.9rem;
   padding: 1.2rem;
-  background: black;
-  box-shadow: 0 26px 60px rgba(15, 23, 42, 0.28);
+  background: #050014;
+  box-shadow: 0 26px 60px rgba(15, 23, 42, 0.45);
 }
 
 .hero-gallery::before,
@@ -103,7 +191,7 @@
   height: 180px;
   top: -40px;
   right: -30px;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(255, 0, 204, 0.6);
 }
 
 .hero-gallery::after {
@@ -111,7 +199,7 @@
   height: 160px;
   bottom: -40px;
   left: -20px;
-  background: rgba(129, 140, 248, 0.7);
+  background: rgba(34, 211, 238, 0.7);
 }
 
 .hero-gallery-track {
@@ -147,7 +235,7 @@
 .mission {
   text-align: center;
   padding: 5rem 6%;
-  background: #ffffff;
+  background: var(--mission-bg);
   position: relative;
   overflow: hidden;
 }
@@ -159,7 +247,7 @@
   left: -150px;
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle at center, rgba(59,130,246,0.15), transparent 70%);
+  background: radial-gradient(circle at center, rgba(59,130,246,0.25), transparent 70%);
   z-index: 0;
   filter: blur(60px);
 }
@@ -171,9 +259,18 @@
   right: -150px;
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle at center, rgba(37,99,235,0.12), transparent 70%);
+  background: radial-gradient(circle at center, rgba(248,113,113,0.2), transparent 70%);
   z-index: 0;
   filter: blur(70px);
+}
+
+/* Dark only - make mission glows match logo colors */
+html[data-theme="dark"] .mission::before {
+  background: radial-gradient(circle at center, rgba(255, 43, 136, 0.4), transparent 72%);
+}
+
+html[data-theme="dark"] .mission::after {
+  background: radial-gradient(circle at center, rgba(22, 242, 255, 0.35), transparent 72%);
 }
 
 .mission-inner {
@@ -187,7 +284,7 @@
   font-size: 2.3rem;
   font-weight: 700;
   letter-spacing: -0.5px;
-  background: linear-gradient(135deg, #000000, #3c4146);
+  background: var(--mission-title-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 1.2rem;
@@ -196,7 +293,7 @@
 .mission-subtext {
   max-width: 640px;
   margin: 0 auto 2.5rem;
-  color: #334155;
+  color: var(--mission-subtext);
   line-height: 1.7;
   font-size: 1.05rem;
 }
@@ -210,20 +307,20 @@
 
 .mission-pill {
   position: relative;
-  background: #ffffff;
+  background: var(--mission-pill-bg);
   border-radius: 1.2rem;
   padding: 1.3rem 1.4rem;
   display: flex;
   align-items: flex-start;
   gap: 0.9rem;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+  border: 1px solid var(--mission-pill-border);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.45);
   transition: all 0.3s ease;
 }
 
 .mission-pill:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(59,130,246,0.18);
+  box-shadow: 0 20px 40px rgba(34,211,238,0.4);
 }
 
 .mission-pill-glow::before {
@@ -232,7 +329,7 @@
   inset: 0;
   border-radius: 1.2rem;
   padding: 1px;
-  background: linear-gradient(135deg, rgba(59,130,246,0.35), rgba(147,197,253,0.15));
+  background: linear-gradient(135deg, rgba(34,211,238,0.6), rgba(251,146,60,0.4));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -242,7 +339,7 @@
 .mission-pill-icon {
   font-size: 1.6rem;
   line-height: 1;
-  color: #2563eb;
+  color: #22d3ee;
   flex-shrink: 0;
   margin-top: 0.15rem;
 }
@@ -251,26 +348,27 @@
   margin: 0 0 0.3rem;
   font-size: 1rem;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--mission-pill-heading);
 }
 
 .mission-pill p {
   margin: 0;
   font-size: 0.9rem;
-  color: #475569;
+  color: var(--mission-pill-text);
 }
 
 /* FEATURES */
 
 .features {
   padding: 4rem 6%;
-  background: #f9fbfd;
+  background: var(--features-bg);
   text-align: center;
 }
 
 .features h2 {
   margin-bottom: 2rem;
   font-size: 1.6rem;
+  color: var(--feature-title);
 }
 
 .feature-grid {
@@ -295,22 +393,22 @@
 
 .feature-card:hover img {
   transform: scale(1.1);
-  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.4));
+  filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.6));
 }
 
 .feature-card h3 {
   font-size: 1.1rem;
   margin-bottom: 0.4rem;
-  color: #0f172a;
+  color: var(--feature-title);
 }
 
 .feature-card p {
   font-size: 0.95rem;
-  color: #475569;
+  color: var(--feature-text);
   line-height: 1.5;
 }
 
-/* DAILY QUESTION – hero streak section */
+/* DAILY QUESTION - hero streak section */
 
 .daily-hero {
   position: relative;
@@ -332,7 +430,7 @@
     #f97316,
     #38bdf8
   );
-  opacity: 0.32;
+  opacity: 0.38;
   filter: blur(80px);
   z-index: -2;
   animation: dailyGlowSpin 24s linear infinite;
@@ -342,8 +440,21 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at top, #e0f2fe 0, #f9fafb 40%, #f1f5f9 100%);
+  background: var(--daily-hero-bg-overlay);
   z-index: -1;
+}
+
+/* Dark only - tweak conic glow colors closer to logo */
+html[data-theme="dark"] .daily-hero::before {
+  background: conic-gradient(
+    from 180deg,
+    #ff2b88,
+    #ff8a3c,
+    #ffd447,
+    #00ff88,
+    #16f2ff,
+    #ff2b88
+  );
 }
 
 .daily-hero-inner {
@@ -361,17 +472,22 @@
 
 .daily-header-copy p {
   margin-top: 0.4rem;
-  color: #475569;
+  color: var(--daily-header-text);
 }
 
 .daily-streak-card {
   min-width: 210px;
   padding: 0.9rem 1rem;
   border-radius: 1.1rem;
-  background: rgba(15, 23, 42, 0.85);
+  background: rgba(5, 0, 20, 0.9);
   color: #e5e7eb;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.45);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.7);
   border: 1px solid rgba(148, 163, 184, 0.7);
+}
+
+/* Slightly brighter in dark mode */
+html[data-theme="dark"] .daily-streak-card {
+  border-color: rgba(22, 242, 255, 0.7);
 }
 
 .daily-streak-label {
@@ -395,17 +511,17 @@
 }
 
 .daily-question-card {
-  background: #f1f5f9;
+  background: var(--daily-question-bg);
   border-radius: 1rem;
   padding: 1rem 1.2rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--daily-question-border);
 }
 
 /* dark glowing question card */
 
 .daily-question-glow {
   position: relative;
-  background: #020617;
+  background: #050014;
   color: #e5e7eb;
   border-radius: 1.1rem;
   padding: 1.1rem 1.25rem;
@@ -428,12 +544,25 @@
   z-index: -2;
 }
 
+/* Dark only - match logo gradient */
+html[data-theme="dark"] .daily-question-glow::before {
+  background: conic-gradient(
+    from 0deg,
+    #ff2b88,
+    #ff8a3c,
+    #ffd447,
+    #00ff88,
+    #16f2ff,
+    #ff2b88
+  );
+}
+
 .daily-question-glow::after {
   content: "";
   position: absolute;
   inset: 2px;
   border-radius: inherit;
-  background: radial-gradient(circle at top, #0f172a 0, #020617 45%);
+  background: radial-gradient(circle at top, #1e1035 0, #050014 45%);
   z-index: -1;
 }
 
@@ -456,7 +585,7 @@
   min-height: 120px;
   padding: 0.8rem;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--daily-form-border);
   font-family: inherit;
   font-size: 0.95rem;
   margin-bottom: 0.8rem;
@@ -465,11 +594,11 @@
 .daily-hint {
   margin: 0.4rem 0 0.4rem;
   font-size: 0.82rem;
-  color: #64748b;
+  color: var(--daily-hint);
 }
 
 .no-question a {
-  color: #2563eb;
+  color: var(--no-question-link);
   text-decoration: none;
 }
 
@@ -581,22 +710,22 @@
   100% { left: 120%; opacity: 0; }
 }
 
-/* Blue “Start practicing” button */
+/* Blue "Start practicing" button */
 
 .btn-blue {
-  background: #2563eb;
+  background: var(--btn-blue-bg);
   color: #fff !important;
   font-weight: 600;
   border: none;
   padding: 0.9rem 2rem;
   border-radius: 50px;
-  box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 6px 15px var(--btn-blue-shadow);
   transition: all 0.25s ease;
 }
 
 .btn-blue:hover {
-  background: #1d4ed8;
-  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.6);
+  background: var(--btn-blue-hover-bg);
+  box-shadow: 0 10px 25px var(--btn-blue-hover-shadow);
 }
 
 /* Responsive tweaks */
