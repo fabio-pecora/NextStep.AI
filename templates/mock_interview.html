@@ -26,6 +26,33 @@
           <span class="role-label">Behavioral Coach</span>
         </header>
 
+        <!-- Interview setup -->
+        <div class="mock-config">
+          <div class="mock-config-row">
+            <div class="mock-config-field">
+              <label for="mock-role-input" class="mock-config-label">Position / role</label>
+              <input
+                id="mock-role-input"
+                type="text"
+                class="mock-config-input"
+                placeholder="Software Engineer, Product Manager..."
+              >
+            </div>
+            <div class="mock-config-field">
+              <label for="mock-company-input" class="mock-config-label">Company (optional)</label>
+              <input
+                id="mock-company-input"
+                type="text"
+                class="mock-config-input"
+                placeholder="Amazon, Google, Meta..."
+              >
+            </div>
+          </div>
+          <p class="mock-config-hint">
+            Fabio will tailor the interview to this role and company for a 10 question session.
+          </p>
+        </div>
+
         <div class="avatar-zone">
           <div class="avatar-glow">
             <div class="avatar-ring">
@@ -48,13 +75,13 @@
 
         <div class="ai-speech">
           <p id="ai-text">
-            Press "Start interview" to begin your live mock interview.
+            Tell Fabio what role you are preparing for and press "Start interview" to begin your live mock interview.
           </p>
         </div>
 
         <div class="ai-controls">
           <button id="start-interview-btn" class="primary-btn">
-            Start interview
+            Start tailored mock interview
           </button>
           <button id="repeat-question-btn" class="ghost-btn" disabled>
             Repeat question
@@ -88,31 +115,71 @@
               Camera is off or blocked.
             </p>
             <p class="user-placeholder-sub">
-              You can still practice. Your answers will be recorded by audio.
+              You can still practice. Your answers will be recorded by audio or text.
             </p>
           </div>
         </div>
 
         <div class="answer-controls">
-          <p class="answer-label">Your answer</p>
-          <div class="answer-buttons">
-            <button id="start-record-btn" class="primary-btn">
-              Start recording answer
+          <div class="answer-mode-toggle">
+            <button
+              class="answer-mode-btn answer-mode-btn-active"
+              data-mode="voice"
+              type="button"
+            >
+              Voice answer
             </button>
-            <button id="stop-record-btn" class="danger-btn" disabled>
-              Stop
+            <button
+              class="answer-mode-btn"
+              data-mode="text"
+              type="button"
+            >
+              Type answer
             </button>
           </div>
-          <div class="recording-status" id="recording-status">
-            <span class="recording-dot" id="recording-dot"></span>
-            <span id="recording-text">Not recording</span>
+
+          <p class="answer-label">Your answer</p>
+
+          <!-- Voice controls -->
+          <div id="voice-answer-controls">
+            <div class="answer-buttons">
+              <button id="start-record-btn" class="primary-btn">
+                Start recording answer
+              </button>
+              <button id="stop-record-btn" class="danger-btn" disabled>
+                Stop
+              </button>
+            </div>
+            <div class="recording-status" id="recording-status">
+              <span class="recording-dot" id="recording-dot"></span>
+              <span id="recording-text">Not recording</span>
+            </div>
+          </div>
+
+          <!-- Text controls -->
+          <div id="text-answer-controls" class="hidden">
+            <textarea
+              id="text-answer-input"
+              class="text-answer-input"
+              rows="4"
+              placeholder="Type your answer here if you prefer not to record your voice..."
+            ></textarea>
+            <div class="answer-buttons" style="margin-top: 0.5rem;">
+              <button id="submit-text-answer-btn" class="primary-btn" type="button">
+                Submit text answer
+              </button>
+            </div>
+            <div class="recording-status">
+              <span class="recording-dot"></span>
+              <span id="text-answer-status">Ready for your typed answer</span>
+            </div>
           </div>
         </div>
 
         <div class="answer-log">
-          <p class="answer-log-title">Last answer summary (placeholder)</p>
+          <p class="answer-log-title">Live feedback report</p>
           <p class="answer-log-body" id="answer-log-body">
-            When you finish recording, your audio will be sent to the backend for transcription and feedback.
+            As you answer, your transcript and feedback for each question will appear here in real time.
           </p>
         </div>
 

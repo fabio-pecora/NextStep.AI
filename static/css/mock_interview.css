@@ -73,6 +73,62 @@
   overflow: hidden;
 }
 
+/* Interview setup */
+
+.mock-config {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem 0.85rem;
+  border-radius: 0.9rem;
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.mock-config-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+}
+
+.mock-config-field {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.mock-config-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #cbd5f5;
+  margin-bottom: 0.25rem;
+}
+
+.mock-config-input {
+  width: 100%;
+  padding: 0.45rem 0.7rem;
+  border-radius: 0.7rem;
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  background: rgba(15, 23, 42, 0.9);
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.mock-config-input::placeholder {
+  color: #64748b;
+}
+
+.mock-config-input:focus {
+  border-color: rgba(129, 140, 248, 0.9);
+  box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.65);
+}
+
+.mock-config-hint {
+  margin-top: 0.45rem;
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+/* Avatar zone */
+
 .avatar-zone {
   display: flex;
   justify-content: center;
@@ -214,6 +270,36 @@
   box-shadow: none;
 }
 
+/* Answer mode toggle */
+
+.answer-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  margin-bottom: 0.7rem;
+}
+
+.answer-mode-btn {
+  border: none;
+  background: transparent;
+  color: #cbd5f5;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease;
+}
+
+.answer-mode-btn-active {
+  background: linear-gradient(135deg, #6366f1, #22d3ee);
+  color: #0f172a;
+  transform: translateY(-0.5px);
+}
+
 /* User panel */
 
 .user-panel {
@@ -309,12 +395,38 @@
   animation: pulseRecord 1.2s ease-out infinite;
 }
 
+/* Text answer input */
+
+.text-answer-input {
+  width: 100%;
+  resize: vertical;
+  min-height: 120px;
+  border-radius: 0.7rem;
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  background: rgba(15, 23, 42, 0.9);
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  padding: 0.55rem 0.7rem;
+  outline: none;
+}
+
+.text-answer-input::placeholder {
+  color: #64748b;
+}
+
+.text-answer-input:focus {
+  border-color: rgba(129, 140, 248, 0.9);
+  box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.65);
+}
+
 /* Answer log */
 
 .answer-log {
   margin-top: auto;
   padding-top: 0.75rem;
   border-top: 1px solid rgba(30, 41, 59, 0.9);
+  max-height: 260px;
+  overflow-y: auto;
 }
 
 .answer-log-title {
@@ -327,6 +439,12 @@
   font-size: 0.82rem;
   color: #94a3b8;
   line-height: 1.5;
+}
+
+/* Helpers */
+
+.hidden {
+  display: none;
 }
 
 /* Animations */
@@ -364,5 +482,9 @@
 
   .panel {
     min-height: auto;
+  }
+
+  .mock-config-row {
+    flex-direction: column;
   }
 }

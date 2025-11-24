@@ -1378,13 +1378,41 @@ def tts_question():
 # Mock interview - candidate audio answer
 # ---------------------------------------------------------------------------
 
+@app.route("/api/mock_interview_start", methods=["POST"])
+@login_required
+def mock_interview_start():
+    data = request.get_json() or {}
+    job_title = data.get("job_title", "").strip()
+    company = data.get("company", "").strip()
+
+    session["mock_job_title"] = job_title
+    session["mock_company"] = company
+    session["mock_question_count"] = 0
+    session["mock_history"] = []
+
+    intro, question = generate_mock_interview_question(
+        job_title=job_title,
+        company=company,
+        history=[]
+    )
+
+    # First question counts as question 1
+    session["mock_question_count"] = 1
+
+    return jsonify({
+        "intro": intro,
+        "question": question,
+        "question_number": 1,
+        "total_questions": 10
+    })
 
 @app.route("/api/mock_interview_answer", methods=["POST"])
 @login_required
 def mock_interview_answer():
     """
     Receive an audio answer from the mock interview page,
-    transcribe with OpenAI STT, evaluate it, save it, and return JSON.
+    transcribe with OpenAI STT, evaluate it, save it, update
+    the mock interview history in the session, and return JSON.
     """
     if "audio" not in request.files:
         return jsonify({"error": "No audio file received"}), 400
@@ -1393,6 +1421,7 @@ def mock_interview_answer():
     if audio_file.filename == "":
         return jsonify({"error": "Empty audio filename"}), 400
 
+    # Question text sent from the frontend
     question_text = request.form.get("question", "").strip() or "Mock interview question"
 
     temp_path = None
@@ -1424,6 +1453,20 @@ def mock_interview_answer():
             user_answer=transcript_text,
         )
 
+        # Update mock interview history in the session
+        try:
+            history = session.get("mock_history", [])
+            history.append(
+                {
+                    "question": question_text,
+                    "answer": transcript_text,
+                    "evaluation": eval_result,
+                }
+            )
+            session["mock_history"] = history
+        except Exception as e_hist:
+            print("Could not update mock interview history:", e_hist)
+
         # Save to DB
         current_user = get_current_user()
         try:
@@ -1440,16 +1483,26 @@ def mock_interview_answer():
             print("Error saving mock interview answer:", e2)
             db.session.rollback()
 
-        return jsonify(
-            {
-                "transcript": transcript_text,
-                "evaluation": eval_result,
-            }
-        ), 200
+        return (
+            jsonify(
+                {
+                    "transcript": transcript_text,
+                    "evaluation": eval_result,
+                }
+            ),
+            200,
+        )
 
     except Exception as e:
         print("Error processing mock interview audio:", e)
-        return jsonify({"error": f"Error processing mock interview audio: {str(e)}"}), 500
+        return (
+            jsonify(
+                {
+                    "error": f"Error processing mock interview audio: {str(e)}"
+                }
+            ),
+            500,
+        )
 
     finally:
         if temp_path and os.path.exists(temp_path):
@@ -1457,6 +1510,178 @@ def mock_interview_answer():
                 os.remove(temp_path)
             except Exception:
                 pass
+
+
+@app.route("/api/mock_interview_next_question", methods=["POST"])
+@login_required
+def mock_interview_next_question():
+    job_title = session.get("mock_job_title", "")
+    company = session.get("mock_company", "")
+    history = session.get("mock_history", [])
+    count = session.get("mock_question_count", 0)
+
+    total_questions = 10
+
+    if count >= total_questions:
+        return jsonify({"done": True, "message": "Interview complete."})
+
+    intro, question = generate_mock_interview_question(
+        job_title=job_title,
+        company=company,
+        history=history
+    )
+
+    count += 1
+    session["mock_question_count"] = count
+
+    return jsonify({
+        "intro": intro,
+        "question": question,
+        "question_number": count,
+        "total_questions": total_questions
+    })
+
+def generate_mock_interview_question(job_title: str, company: str, history: list):
+    role = job_title or "software engineer"
+    org = company or "a top tech company"
+    system_prompt = (
+    f"You are Fabio, a friendly but rigorous behavioral interviewer. "
+    f"You work at {org} and you are interviewing for a {role} position. "
+    "You ask realistic behavioral and role specific questions, one at a time. "
+    "Keep questions concise but specific, just like a real interview. "
+    "Do not number the questions and do not add explanations. "
+    "When asked, you must respond in JSON with two fields: "
+    "{\"intro\": \"...\", \"question\": \"...\"}. "
+    "The intro is a short sentence where you speak as Fabio "
+    "(for example: 'Hi, I am Fabio, I work at Amazon on the Alexa team...'). "
+    "The 'question' is the actual interview question."
+)
+
+
+    messages = [{"role": "system", "content": system_prompt}]
+
+    # Optionally give context from history
+    if history:
+        brief_history = []
+        # You can trim if needed to avoid token bloat
+        for idx, item in enumerate(history[-5:], start=1):
+            q = item.get("question", "")
+            a = item.get("answer", "")
+            feedback = item.get("evaluation", {}).get("feedback_text", "")
+            brief_history.append(
+                f"Q{idx}: {q}\nCandidate answer: {a}\nYour feedback: {feedback}"
+            )
+
+        messages.append({
+            "role": "user",
+            "content": (
+                "Here is the previous part of the interview:\n\n"
+                + "\n\n".join(brief_history)
+            )
+        })
+
+        messages.append({
+            "role": "user",
+            "content": "Now continue the interview and respond in JSON with fields intro and question for the next question only."
+        })
+    else:
+        messages.append({
+            "role": "user",
+            "content": (
+                "Start the interview. Introduce yourself as Fabio and ask the first "
+                "good interview question. Respond in JSON with fields intro and question."
+            )
+        })
+
+    resp = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=messages,
+        temperature=0.7,
+    )
+
+    content = resp.choices[0].message.content.strip()
+
+    # Try to parse JSON answer
+    try:
+        data = json.loads(content)
+        intro = data.get("intro", "").strip()
+        question = data.get("question", "").strip()
+    except Exception:
+        # Fallback if the model did not return JSON
+        intro = f"Hi, I am Fabio, I work at {org}, and I am excited to interview you for the {role} role today."
+        question = content
+
+    if not intro:
+        intro = f"Hi, I am Fabio, I work at {org}, and I am excited to interview you for the {role} role today."
+
+    return intro, question
+
+@app.route("/api/mock_interview_answer_text", methods=["POST"])
+@login_required
+def mock_interview_answer_text():
+    """
+    Receive a typed answer from the mock interview page,
+    evaluate it, save it, update the mock interview history,
+    and return JSON in the same shape as the audio route.
+    """
+    data = request.get_json() or {}
+    answer_text = (data.get("answer_text") or "").strip()
+    question_text = (data.get("question") or "").strip() or "Mock interview question"
+
+    if not answer_text:
+        return jsonify({"error": "No answer text provided"}), 400
+
+    try:
+        # Evaluate answer with the same helper as voice
+        eval_result = gpt_evaluate_answer(
+            question=question_text,
+            ideal_answer="",
+            user_answer=answer_text,
+        )
+
+        # Update mock interview history in the session
+        try:
+            history = session.get("mock_history", [])
+            history.append(
+                {
+                    "question": question_text,
+                    "answer": answer_text,
+                    "evaluation": eval_result,
+                }
+            )
+            session["mock_history"] = history
+        except Exception as e_hist:
+            print("Could not update mock interview history (text):", e_hist)
+
+        # Save to DB - transcript is None so is_voice stays False
+        current_user = get_current_user()
+        try:
+            save_answer_to_db(
+                source="mock",
+                question_type="mock_interview",
+                question_text=question_text,
+                user_answer_text=answer_text,
+                eval_result=eval_result,
+                transcript=None,
+                user_id=current_user.id if current_user else None,
+            )
+        except Exception as e2:
+            print("Error saving mock interview text answer:", e2)
+            db.session.rollback()
+
+        # For the frontend, we still return "transcript" for a unified interface
+        return jsonify(
+            {
+                "transcript": answer_text,
+                "evaluation": eval_result,
+            }
+        ), 200
+
+    except Exception as e:
+        print("Error processing mock interview text answer:", e)
+        return jsonify(
+            {"error": f"Error processing mock interview text answer: {str(e)}"}
+        ), 500
 
 
 # ---------------------------------------------------------------------------
