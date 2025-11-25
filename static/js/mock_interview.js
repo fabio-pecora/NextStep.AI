@@ -33,6 +33,7 @@ const answerModeButtons = document.querySelectorAll(".answer-mode-btn");
 
 let answerMode = "voice"; // "voice" or "text"
 
+
 // Expression sources from data attributes on the <img>
 const expressions = {
   neutral: avatar.dataset.neutralSrc,
