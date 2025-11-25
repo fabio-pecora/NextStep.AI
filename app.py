@@ -1411,8 +1411,9 @@ def mock_interview_start():
 def mock_interview_answer():
     """
     Receive an audio answer from the mock interview page,
-    transcribe with OpenAI STT, evaluate it, save it, update
-    the mock interview history in the session, and return JSON.
+    transcribe with OpenAI STT, evaluate it, update mock
+    interview history, optionally generate the next question,
+    and return everything in one JSON response.
     """
     if "audio" not in request.files:
         return jsonify({"error": "No audio file received"}), 400
@@ -1438,36 +1439,58 @@ def mock_interview_answer():
             file_size = 0
         print("Mock interview audio saved to:", temp_path, "size:", file_size)
 
-        # Transcribe with OpenAI STT
+        # 1) Transcribe with OpenAI STT
         with open(temp_path, "rb") as f:
             stt_resp = client.audio.transcriptions.create(
-                model="gpt-4o-mini-transcribe",  # you can also use "whisper-1"
+                model="gpt-4o-mini-transcribe",  # or "whisper-1"
                 file=f,
             )
         transcript_text = stt_resp.text
 
-        # Evaluate answer
+        # 2) Evaluate answer
         eval_result = gpt_evaluate_answer(
             question=question_text,
             ideal_answer="",
             user_answer=transcript_text,
         )
 
-        # Update mock interview history in the session
-        try:
-            history = session.get("mock_history", [])
-            history.append(
-                {
-                    "question": question_text,
-                    "answer": transcript_text,
-                    "evaluation": eval_result,
-                }
-            )
-            session["mock_history"] = history
-        except Exception as e_hist:
-            print("Could not update mock interview history:", e_hist)
+        # 3) Update mock interview history in the session
+        history = session.get("mock_history", [])
+        history.append(
+            {
+                "question": question_text,
+                "answer": transcript_text,
+                "evaluation": eval_result,
+            }
+        )
+        session["mock_history"] = history
 
-        # Save to DB
+        # 4) Update count and (optionally) generate next question
+        total_questions = 10
+        current_count = session.get("mock_question_count", 1)  # already 1 after start
+        job_title = session.get("mock_job_title", "")
+        company = session.get("mock_company", "")
+
+        next_intro = None
+        next_question = None
+        done = False
+        next_number = current_count
+
+        if current_count >= total_questions:
+            done = True
+        else:
+            # We are about to ask the next question
+            next_number = current_count + 1
+            session["mock_question_count"] = next_number
+
+            # Generate next question using updated history
+            next_intro, next_question = generate_mock_interview_question(
+                job_title=job_title,
+                company=company,
+                history=history,
+            )
+
+        # 5) Save to DB (best effort)
         current_user = get_current_user()
         try:
             save_answer_to_db(
@@ -1483,26 +1506,24 @@ def mock_interview_answer():
             print("Error saving mock interview answer:", e2)
             db.session.rollback()
 
-        return (
-            jsonify(
-                {
-                    "transcript": transcript_text,
-                    "evaluation": eval_result,
-                }
-            ),
-            200,
-        )
+        # 6) Return everything, including next question (if any)
+        return jsonify(
+            {
+                "transcript": transcript_text,
+                "evaluation": eval_result,
+                "done": done,
+                "next_intro": next_intro or "",
+                "next_question": next_question or "",
+                "question_number": next_number,
+                "total_questions": total_questions,
+            }
+        ), 200
 
     except Exception as e:
         print("Error processing mock interview audio:", e)
-        return (
-            jsonify(
-                {
-                    "error": f"Error processing mock interview audio: {str(e)}"
-                }
-            ),
-            500,
-        )
+        return jsonify(
+            {"error": f"Error processing mock interview audio: {str(e)}"}
+        ), 500
 
     finally:
         if temp_path and os.path.exists(temp_path):
@@ -1510,6 +1531,7 @@ def mock_interview_answer():
                 os.remove(temp_path)
             except Exception:
                 pass
+
 
 
 @app.route("/api/mock_interview_next_question", methods=["POST"])
@@ -1540,22 +1562,88 @@ def mock_interview_next_question():
         "question_number": count,
         "total_questions": total_questions
     })
-
 def generate_mock_interview_question(job_title: str, company: str, history: list):
     role = job_title or "software engineer"
     org = company or "a top tech company"
+
+    # If there is NO history, Fabio introduces himself.
+    # If there IS history, Fabio must NOT introduce himself again
+    # and should set "intro" to an empty string.
     system_prompt = (
-    f"You are Fabio, a friendly but rigorous behavioral interviewer. "
-    f"You work at {org} and you are interviewing for a {role} position. "
-    "You ask realistic behavioral and role specific questions, one at a time. "
-    "Keep questions concise but specific, just like a real interview. "
-    "Do not number the questions and do not add explanations. "
-    "When asked, you must respond in JSON with two fields: "
-    "{\"intro\": \"...\", \"question\": \"...\"}. "
-    "The intro is a short sentence where you speak as Fabio "
-    "(for example: 'Hi, I am Fabio, I work at Amazon on the Alexa team...'). "
-    "The 'question' is the actual interview question."
-)
+        f"You are Fabio, a friendly but rigorous behavioral interviewer. "
+        f"You work at {org} and you are interviewing for a {role} position. "
+        "You ask realistic behavioral and role specific questions, one at a time. "
+        "Keep questions concise but specific, just like a real interview. "
+        "Do not number the questions and do not add explanations. "
+        "When asked, you must respond in JSON with two fields: "
+        "{\"intro\": \"...\", \"question\": \"...\"}. "
+        "For the very first question of the interview, the 'intro' should be a short sentence "
+        "where you speak as Fabio (for example: 'Hi, I am Fabio, I work at Amazon on the Alexa team...'). "
+        "For all FOLLOW-UP questions after the first one, the 'intro' field MUST be an empty string "
+        "(\"intro\": \"\") and you should not introduce yourself again. "
+        "The 'question' is the actual interview question."
+    )
+
+    messages = [{"role": "system", "content": system_prompt}]
+
+    # If we have previous Q&A, give the model a short summary
+    if history:
+        brief_history = []
+        for idx, item in enumerate(history[-5:], start=1):
+            q = item.get("question", "")
+            a = item.get("answer", "")
+            feedback = item.get("evaluation", {}).get("feedback_text", "")
+            brief_history.append(
+                f"Q{idx}: {q}\nCandidate answer: {a}\nYour feedback: {feedback}"
+            )
+
+        messages.append({
+            "role": "user",
+            "content": (
+                "Here is the previous part of the interview:\n\n"
+                + "\n\n".join(brief_history)
+            )
+        })
+
+        messages.append({
+            "role": "user",
+            "content": (
+                "Now continue the interview and respond in JSON with fields "
+                "\"intro\" and \"question\" for the next question only. "
+                "REMEMBER: since this is a follow-up question, set \"intro\" to an empty string."
+            )
+        })
+    else:
+        messages.append({
+            "role": "user",
+            "content": (
+                "Start the interview. Introduce yourself as Fabio and ask the first "
+                "good interview question. Respond in JSON with fields \"intro\" and \"question\"."
+            )
+        })
+
+    resp = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=messages,
+        temperature=0.7,
+    )
+
+    content = resp.choices[0].message.content.strip()
+
+    try:
+        data = json.loads(content)
+        intro = (data.get("intro") or "").strip()
+        question = (data.get("question") or "").strip()
+    except Exception:
+        intro = f"Hi, I am Fabio, I work at {org}, and I am excited to interview you for the {role} role today."
+        question = content.strip()
+
+    # Fallback only for the first question (no history)
+    if not intro and not history:
+        intro = f"Hi, I am Fabio, I work at {org}, and I am excited to interview you for the {role} role today."
+
+    return intro, question
+
 
 
     messages = [{"role": "system", "content": system_prompt}]
@@ -1621,8 +1709,8 @@ def generate_mock_interview_question(job_title: str, company: str, history: list
 def mock_interview_answer_text():
     """
     Receive a typed answer from the mock interview page,
-    evaluate it, save it, update the mock interview history,
-    and return JSON in the same shape as the audio route.
+    evaluate it, update mock interview history, optionally
+    generate the next question, and return everything in one JSON.
     """
     data = request.get_json() or {}
     answer_text = (data.get("answer_text") or "").strip()
@@ -1632,28 +1720,48 @@ def mock_interview_answer_text():
         return jsonify({"error": "No answer text provided"}), 400
 
     try:
-        # Evaluate answer with the same helper as voice
+        # 1) Evaluate answer
         eval_result = gpt_evaluate_answer(
             question=question_text,
             ideal_answer="",
             user_answer=answer_text,
         )
 
-        # Update mock interview history in the session
-        try:
-            history = session.get("mock_history", [])
-            history.append(
-                {
-                    "question": question_text,
-                    "answer": answer_text,
-                    "evaluation": eval_result,
-                }
-            )
-            session["mock_history"] = history
-        except Exception as e_hist:
-            print("Could not update mock interview history (text):", e_hist)
+        # 2) Update mock interview history
+        history = session.get("mock_history", [])
+        history.append(
+            {
+                "question": question_text,
+                "answer": answer_text,
+                "evaluation": eval_result,
+            }
+        )
+        session["mock_history"] = history
 
-        # Save to DB - transcript is None so is_voice stays False
+        # 3) Update count and generate next question if needed
+        total_questions = 10
+        current_count = session.get("mock_question_count", 1)
+        job_title = session.get("mock_job_title", "")
+        company = session.get("mock_company", "")
+
+        next_intro = None
+        next_question = None
+        done = False
+        next_number = current_count
+
+        if current_count >= total_questions:
+            done = True
+        else:
+            next_number = current_count + 1
+            session["mock_question_count"] = next_number
+
+            next_intro, next_question = generate_mock_interview_question(
+                job_title=job_title,
+                company=company,
+                history=history,
+            )
+
+        # 4) Save to DB
         current_user = get_current_user()
         try:
             save_answer_to_db(
@@ -1669,11 +1777,15 @@ def mock_interview_answer_text():
             print("Error saving mock interview text answer:", e2)
             db.session.rollback()
 
-        # For the frontend, we still return "transcript" for a unified interface
         return jsonify(
             {
                 "transcript": answer_text,
                 "evaluation": eval_result,
+                "done": done,
+                "next_intro": next_intro or "",
+                "next_question": next_question or "",
+                "question_number": next_number,
+                "total_questions": total_questions,
             }
         ), 200
 
