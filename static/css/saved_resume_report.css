@@ -2,18 +2,18 @@
 
 .saved-resume-report-page {
   min-height: 100vh;
-  background: #0b1120;
+  background: var(--bg);
   padding: 2.4rem 6% 3rem;
-  color: #e5e7eb;
+  color: var(--text-main);
 }
 
 .saved-resume-shell {
   max-width: 860px;
   margin: 0 auto;
-  background: #0f172a;
+  background: var(--card-bg);
   border-radius: 1.4rem;
-  border: 1px solid #1f2937;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
   overflow: hidden;
 }
 
@@ -24,7 +24,8 @@
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  background: radial-gradient(circle at top left, #1d4ed8, #020617);
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: #e5e7eb;
 }
 
 .saved-resume-logo {
@@ -166,6 +167,88 @@
   color: #b91c1c;
 }
 
+/* Dark theme overrides to match neon style */
+
+html[data-theme="dark"] .saved-resume-report-page {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 43, 136, 0.25), transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(22, 242, 255, 0.25), transparent 60%),
+    #050014;
+  color: #e5e7eb;
+}
+
+html[data-theme="dark"] .saved-resume-shell {
+  background:
+    radial-gradient(circle at top left, rgba(255, 43, 136, 0.18), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(22, 242, 255, 0.18), transparent 60%),
+    #0b0220;
+  border-color: #26234b;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+}
+
+html[data-theme="dark"] .saved-resume-header {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 43, 136, 0.55), transparent 65%),
+    radial-gradient(circle at 100% 100%, rgba(22, 242, 255, 0.45), transparent 60%),
+    #020617;
+  color: #e5e7eb;
+}
+
+html[data-theme="dark"] .saved-resume-logo-main span {
+  color: #16f2ff;
+}
+
+html[data-theme="dark"] .saved-resume-logo-tagline {
+  color: #cbd5f5;
+}
+
+html[data-theme="dark"] .saved-resume-tag {
+  background: rgba(15, 23, 42, 0.9);
+  border-color: #4b5563;
+}
+
+html[data-theme="dark"] .saved-resume-body {
+  background: #050014;
+  color: #e5e7eb;
+}
+
+html[data-theme="dark"] .saved-resume-section + .saved-resume-section {
+  border-top-color: #26234b;
+}
+
+html[data-theme="dark"] .saved-resume-heading {
+  color: #e5e7eb;
+}
+
+html[data-theme="dark"] .saved-resume-subheading {
+  color: #e5e7eb;
+}
+
+html[data-theme="dark"] .saved-resume-p {
+  color: #cbd5f5;
+}
+
+html[data-theme="dark"] .saved-resume-example {
+  background: #0b0220;
+  border-color: #26234b;
+}
+
+html[data-theme="dark"] .saved-resume-example-label {
+  color: #cbd5f5;
+}
+
+html[data-theme="dark"] .saved-resume-example-label.improved {
+  color: #4ade80;
+}
+
+html[data-theme="dark"] .saved-resume-example-text {
+  color: #e5e7eb;
+}
+
+html[data-theme="dark"] .saved-resume-example-why {
+  color: #cbd5f5;
+}
+
 /* Top level for_pdf tweak helper */
 
 @media print {
@@ -186,6 +269,8 @@
 
   .saved-resume-body {
     padding: 1rem 1rem 1.2rem;
+    background: #ffffff;
+    color: #111827;
   }
 }
 

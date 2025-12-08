@@ -1,0 +1,325 @@
+/* ===========================
+   Layout for saved prep report PDF view
+   =========================== */
+
+.prep-view-body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text-main);
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Top controls row (back + download) */
+
+.prep-view-main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.25rem 6% 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.prep-view-header-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.prep-back-link {
+  font-size: 0.9rem;
+  text-decoration: none;
+  color: var(--text-muted);
+}
+
+.prep-back-link:hover {
+  color: var(--primary);
+}
+
+/* Basic button styles in case base.css is not loaded for some reason */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: #f9fafb;
+  border-color: transparent;
+  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.4);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.05);
+}
+
+/* ===========================
+   Main report page
+   =========================== */
+
+.report-page {
+  max-width: 960px;
+  margin: 0 auto;
+  margin-top: 0.75rem;
+  margin-bottom: 2.5rem;
+  background: var(--card-bg);
+  border-radius: 1.4rem;
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
+  overflow: hidden;
+}
+
+/* ===========================
+   Header bar
+   =========================== */
+
+.report-topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.4rem 1.8rem 1.1rem;
+  background: radial-gradient(circle at top left, #1d4ed8, #020617);
+  color: #e5e7eb;
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  font-size: 1.1rem;
+}
+
+.brand span {
+  color: #38bdf8;
+}
+
+.meta {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-end;
+}
+
+.meta .title {
+  font-size: 0.95rem;
+}
+
+.meta .stamp {
+  font-size: 0.8rem;
+  color: #cbd5f5;
+}
+
+/* ===========================
+   Report card shell
+   =========================== */
+
+.report-card {
+  padding: 1.4rem 1.8rem 1.6rem;
+}
+
+/* Badges row */
+
+.report-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 1.1rem;
+}
+
+.report-badges .tag {
+  font-size: 0.78rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  border: 1px solid var(--border-soft);
+  font-weight: 600;
+}
+
+/* ===========================
+   Content blocks
+   =========================== */
+
+.report-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.block {
+  padding-top: 0.1rem;
+}
+
+.block h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.1rem;
+  color: var(--text-main);
+}
+
+.block h3 {
+  margin: 0.6rem 0 0.25rem;
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.block ul {
+  margin: 0 0 0.4rem;
+  padding-left: 1.1rem;
+  font-size: 0.88rem;
+  color: var(--text-main);
+}
+
+.block li {
+  margin-bottom: 0.25rem;
+  line-height: 1.55;
+}
+
+/* Examples (behavioral / technical sample answers) */
+
+.example {
+  margin: 0.5rem 0 0.6rem;
+  border-radius: 0.9rem;
+  padding: 0.7rem 0.8rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border-soft);
+}
+
+.example .q {
+  margin: 0 0 0.3rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.example .a {
+  margin: 0.05rem 0 0.3rem;
+  font-size: 0.88rem;
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+.example .legend {
+  margin: 0.15rem 0 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.example .legend span {
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  background: var(--primary-soft);
+}
+
+/* ===========================
+   Footer
+   =========================== */
+
+.report-footer {
+  padding: 0.9rem 1.8rem 1.2rem;
+  border-top: 1px solid var(--border-soft);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ===========================
+   Dark mode tweaks
+   =========================== */
+
+html[data-theme="dark"] .report-page {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
+}
+
+html[data-theme="dark"] .report-badges .tag {
+  background: rgba(37, 99, 235, 0.18);
+  color: #e0f2fe;
+  border-color: #1d4ed8;
+}
+
+html[data-theme="dark"] .example {
+  background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), #020617);
+  border-color: #1e293b;
+}
+
+/* ===========================
+   Responsive tweaks
+   =========================== */
+
+@media (max-width: 768px) {
+  .prep-view-main {
+    padding-inline: 4%;
+  }
+
+  .report-page {
+    margin-inline: 4%;
+  }
+
+  .report-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .meta {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .report-card {
+    padding: 1.1rem 1.2rem 1.4rem;
+  }
+
+  .report-footer {
+    padding-inline: 1.2rem;
+  }
+}
+
+/* ===========================
+   Print view for PDF
+   =========================== */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .prep-view-body {
+    background: #ffffff;
+  }
+
+  .report-page {
+    margin: 0;
+    max-width: 100%;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+
+  .report-topbar {
+    background: #0f172a;
+    color: #f9fafb;
+  }
+
+  .report-card {
+    padding: 1rem 1.2rem 1.2rem;
+  }
+
+  .report-footer {
+    border-top-color: #d1d5db;
+  }
+}

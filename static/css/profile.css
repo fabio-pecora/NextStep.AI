@@ -1,9 +1,179 @@
 /* ===========================
+   THEME VARIABLES FOR PROFILE PAGE
+   =========================== */
+
+:root {
+  /* Layout */
+  --profile-main-bg: #f5f7fb;
+  --profile-hero-bg:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.12), transparent 60%),
+    #eef4ff;
+  --profile-body-bg: #f9fafb;
+
+  /* Hero text */
+  --profile-hero-kicker: #64748b;
+  --profile-hero-title: #0f172a;
+  --profile-hero-subtitle: #475569;
+  --profile-hero-email: #0f172a;
+
+  /* Small stats */
+  --profile-stat-bg: rgba(255, 255, 255, 0.7);
+  --profile-stat-border: rgba(209, 213, 219, 0.7);
+  --profile-stat-label: #6b7280;
+  --profile-stat-value: #111827;
+
+  /* Cards */
+  --profile-card-bg: radial-gradient(circle at top left, #f9fafb 0, #ffffff 40%, #f9fafb 100%);
+  --profile-card-border: #e2e8f0;
+  --profile-card-header-border: #e5e7eb;
+  --profile-card-title: #111827;
+  --profile-card-subtitle: #6b7280;
+
+  /* Timeline and answers */
+  --profile-timeline-line: linear-gradient(to bottom, #bfdbfe, #e5e7eb);
+  --profile-item-bg: #f9fafb;
+  --profile-item-hover-bg: #eef2ff;
+  --profile-item-hover-border: #d4d4ff;
+  --profile-item-hover-shadow: rgba(37, 99, 235, 0.18);
+  --profile-item-question: #111827;
+  --profile-item-answer: #374151;
+  --profile-item-meta: #6b7280;
+  --profile-item-meta-muted: #9ca3af;
+  --profile-item-source: #4b5563;
+  --profile-final-pill-bg: #eef2ff;
+  --profile-final-pill-text: #1e3a8a;
+
+  --answers-list-bullet: #2563eb;
+  --answers-list-bullet-ring: rgba(191, 219, 254, 0.7);
+
+  /* Empty state */
+  --profile-empty-text: #6b7280;
+  --profile-empty-link: #2563eb;
+
+  /* Reports */
+  --reports-item-bg: #f9fafb;
+  --reports-hover-bg: #fefce8;
+  --reports-hover-border: #facc15;
+  --reports-hover-shadow: rgba(250, 204, 21, 0.18);
+  --reports-title: #111827;
+  --reports-company: #4b5563;
+  --reports-focus: #4b5563;
+  --reports-hint: #6b7280;
+  --reports-date: #9ca3af;
+
+  /* Resume report card */
+  --resume-hover-bg: #eefdfc;
+  --resume-hover-border: #5eead4;
+  --resume-hover-shadow: rgba(45, 212, 191, 0.2);
+  --resume-title: #0f766e;
+  --resume-hint: #0d9488;
+
+  /* Feedback panels */
+  --feedback-strengths-bg: #ecfdf5;
+  --feedback-strengths-border: #bbf7d0;
+  --feedback-improvements-bg: #fff7ed;
+  --feedback-improvements-border: #fed7aa;
+}
+
+/* ===========================
+   DARK MODE NEON OVERRIDES
+   =========================== */
+
+html[data-theme="dark"] {
+  --profile-main-bg: transparent;
+  --profile-hero-bg:
+    radial-gradient(circle at 0% 0%, rgba(255, 43, 136, 0.36), transparent 55%),
+    radial-gradient(circle at 100% 0%, rgba(22, 242, 255, 0.3), transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(0, 255, 136, 0.22), transparent 60%),
+    #050016;
+  --profile-body-bg:
+    radial-gradient(circle at 0% 100%, rgba(255, 43, 136, 0.24), transparent 60%),
+    #050016;
+
+  --profile-hero-kicker: #94a3b8;
+  --profile-hero-title: #f9fafb;
+  --profile-hero-subtitle: #cbd5f5;
+  --profile-hero-email: #e5e7eb;
+
+  --profile-stat-bg: rgba(8, 4, 31, 0.9);
+  --profile-stat-border: rgba(148, 163, 184, 0.7);
+  --profile-stat-label: #94a3b8;
+  --profile-stat-value: #e5e7eb;
+
+  --profile-card-bg:
+    radial-gradient(circle at top left, rgba(255, 43, 136, 0.2), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(22, 242, 255, 0.18), transparent 60%),
+    #0e0828;
+  --profile-card-border: rgba(148, 163, 184, 0.5);
+  --profile-card-header-border: rgba(148, 163, 184, 0.55);
+  --profile-card-title: #f9fafb;
+  --profile-card-subtitle: #94a3b8;
+
+  --profile-timeline-line: linear-gradient(
+    to bottom,
+    rgba(148, 163, 184, 0.9),
+    rgba(30, 64, 175, 0.9)
+  );
+  --profile-item-bg: rgba(15, 23, 42, 0.7);
+  --profile-item-hover-bg: rgba(30, 64, 175, 0.7);
+  --profile-item-hover-border: rgba(129, 140, 248, 0.9);
+  --profile-item-hover-shadow: rgba(129, 140, 248, 0.5);
+  --profile-item-question: #e5e7eb;
+  --profile-item-answer: #cbd5f5;
+  --profile-item-meta: #9ca3af;
+  --profile-item-meta-muted: #64748b;
+  --profile-item-source: #e5e7eb;
+  --profile-final-pill-bg: rgba(15, 118, 110, 0.16);
+  --profile-final-pill-text: #6ee7b7;
+
+  --answers-list-bullet: #16f2ff;
+  --answers-list-bullet-ring: rgba(22, 242, 255, 0.45);
+
+  --profile-empty-text: #9ca3af;
+  --profile-empty-link: #16f2ff;
+
+  --reports-item-bg: rgba(15, 23, 42, 0.7);
+  --reports-hover-bg: rgba(250, 204, 21, 0.1);
+  --reports-hover-border: #facc15;
+  --reports-hover-shadow: rgba(250, 204, 21, 0.35);
+  --reports-title: #f9fafb;
+  --reports-company: #e5e7eb;
+  --reports-focus: #e5e7eb;
+  --reports-hint: #cbd5f5;
+  --reports-date: #9ca3af;
+
+  --resume-hover-bg: rgba(45, 212, 191, 0.12);
+  --resume-hover-border: #5eead4;
+  --resume-hover-shadow: rgba(45, 212, 191, 0.5);
+  --resume-title: #6ee7b7;
+  --resume-hint: #a5f3fc;
+
+  --feedback-strengths-bg: rgba(22, 163, 74, 0.18);
+  --feedback-strengths-border: rgba(74, 222, 128, 0.7);
+  --feedback-improvements-bg: rgba(251, 146, 60, 0.16);
+  --feedback-improvements-border: rgba(251, 191, 36, 0.7);
+}
+
+/* Make streak card border match logo gradient in dark */
+html[data-theme="dark"] .streak-card::before {
+  background: conic-gradient(
+    from 0deg,
+    #ff2b88,
+    #ff8a3c,
+    #ffd447,
+    #00ff88,
+    #16f2ff,
+    #ff2b88
+  );
+}
+
+/* ===========================
    Overall layout
    =========================== */
 
 .profile-main {
-  background: #f5f7fb;
+  background: var(--profile-main-bg);
 }
 
 /* ===========================
@@ -12,10 +182,7 @@
 
 .profile-hero {
   padding: 3.5rem 6% 3.2rem;
-  background:
-    radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 55%),
-    radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.12), transparent 60%),
-    #eef4ff;
+  background: var(--profile-hero-bg);
 }
 
 .profile-hero-inner {
@@ -34,28 +201,28 @@
   font-size: 0.8rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #64748b;
+  color: var(--profile-hero-kicker);
 }
 
 .profile-title {
   margin: 0 0 0.6rem;
   font-size: 2rem;
   letter-spacing: -0.03em;
-  color: #0f172a;
+  color: var(--profile-hero-title);
 }
 
 .profile-subtitle {
   margin: 0 0 0.7rem;
   max-width: 34rem;
   font-size: 0.98rem;
-  color: #475569;
+  color: var(--profile-hero-subtitle);
   line-height: 1.6;
 }
 
 .profile-email {
   margin: 0 0 1.1rem;
   font-size: 0.9rem;
-  color: #0f172a;
+  color: var(--profile-hero-email);
 }
 
 /* Hero small stats */
@@ -70,8 +237,8 @@
   min-width: 130px;
   padding: 0.6rem 0.9rem;
   border-radius: 0.9rem;
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(209, 213, 219, 0.7);
+  background: var(--profile-stat-bg);
+  border: 1px solid var(--profile-stat-border);
   backdrop-filter: blur(8px);
 }
 
@@ -80,14 +247,14 @@
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #6b7280;
+  color: var(--profile-stat-label);
   margin-bottom: 0.18rem;
 }
 
 .profile-stat-value {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--profile-stat-value);
 }
 
 /* Streak card */
@@ -235,7 +402,7 @@
 
 .profile-body {
   padding: 2.8rem 6% 4.2rem;
-  background: #f9fafb;
+  background: var(--profile-body-bg);
 }
 
 .profile-body .app-shell {
@@ -250,12 +417,13 @@
   align-items: stretch;
 }
 
-/* Shared card style, premium feel */
+/* Shared card style */
+
 .profile-card {
   position: relative;
   border-radius: 1.25rem;
-  background: radial-gradient(circle at top left, #f9fafb 0, #ffffff 40%, #f9fafb 100%);
-  border: 1px solid #e2e8f0;
+  background: var(--profile-card-bg);
+  border: 1px solid var(--profile-card-border);
   box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
   padding: 1.5rem 1.7rem 1.7rem;
   height: 100%;
@@ -294,7 +462,7 @@
   gap: 1rem;
   margin: 0 0 1rem;
   padding-top: 0.25rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--profile-card-header-border);
   padding-bottom: 0.75rem;
 }
 
@@ -302,12 +470,13 @@
   margin: 0 0 0.25rem;
   font-size: 1.15rem;
   letter-spacing: -0.01em;
+  color: var(--profile-card-title);
 }
 
 .profile-card-subtitle {
   margin: 0;
   font-size: 0.9rem;
-  color: #6b7280;
+  color: var(--profile-card-subtitle);
 }
 
 /* Make lists fill card height */
@@ -335,7 +504,7 @@
   bottom: 0.3rem;
   left: 0.55rem;
   width: 2px;
-  background: linear-gradient(to bottom, #bfdbfe, #e5e7eb);
+  background: var(--profile-timeline-line);
   opacity: 0.9;
 }
 
@@ -345,7 +514,7 @@
   border-radius: 1rem;
   padding: 0.8rem 0.9rem 0.9rem;
   border: 1px solid transparent;
-  background: #f9fafb;
+  background: var(--profile-item-bg);
   transition:
     background 0.18s ease,
     border-color 0.18s ease,
@@ -367,15 +536,15 @@
   width: 10px;
   height: 10px;
   border-radius: 999px;
-  background: #2563eb;
-  box-shadow: 0 0 0 4px rgba(191, 219, 254, 0.7);
+  background: var(--answers-list-bullet);
+  box-shadow: 0 0 0 4px var(--answers-list-bullet-ring);
 }
 
 /* Hover state */
 .answers-list .profile-list-item:hover {
-  background: #eef2ff;
-  border-color: #d4d4ff;
-  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.18);
+  background: var(--profile-item-hover-bg);
+  border-color: var(--profile-item-hover-border);
+  box-shadow: 0 10px 24px var(--profile-item-hover-shadow);
   transform: translateY(-1px);
 }
 
@@ -395,12 +564,12 @@
   gap: 0.35rem;
   align-items: center;
   font-size: 0.78rem;
-  color: #6b7280;
+  color: var(--profile-item-meta);
 }
 
 .profile-list-source {
   font-weight: 500;
-  color: #4b5563;
+  color: var(--profile-item-source);
 }
 
 .profile-list-dot {
@@ -408,7 +577,7 @@
 }
 
 .profile-list-date {
-  color: #9ca3af;
+  color: var(--profile-item-meta-muted);
 }
 
 /* Final score pill */
@@ -416,8 +585,8 @@
   font-size: 0.8rem;
   padding: 0.18rem 0.7rem;
   border-radius: 999px;
-  background: #eef2ff;
-  color: #1e3a8a;
+  background: var(--profile-final-pill-bg);
+  color: var(--profile-final-pill-text);
   font-weight: 500;
 }
 
@@ -426,13 +595,13 @@
 .profile-list-question {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--profile-item-question);
   margin: 0.2rem 0 0.1rem;
 }
 
 .profile-list-answer {
   font-size: 0.9rem;
-  color: #374151;
+  color: var(--profile-item-answer);
   margin: 0 0 0.25rem;
 }
 
@@ -446,14 +615,14 @@
 
 .profile-list-scores > div {
   font-size: 0.8rem;
-  color: #4b5563;
+  color: var(--profile-item-meta);
 }
 
 /* Feedback text */
 .profile-list-feedback {
   margin: 0.3rem 0 0;
   font-size: 0.82rem;
-  color: #4b5563;
+  color: var(--profile-item-meta);
 }
 
 /* ===========================
@@ -463,11 +632,11 @@
 .profile-empty {
   margin: 0.6rem 0 0;
   font-size: 0.9rem;
-  color: #6b7280;
+  color: var(--profile-empty-text);
 }
 
 .profile-empty a {
-  color: #2563eb;
+  color: var(--profile-empty-link);
   text-decoration: none;
 }
 
@@ -486,14 +655,14 @@
 }
 
 .reports-list .profile-list-item {
-  background: #f9fafb;
+  background: var(--reports-item-bg);
 }
 
 /* Hover */
 .reports-list .profile-list-item:hover {
-  background: #fefce8;
-  border-color: #facc15;
-  box-shadow: 0 10px 24px rgba(250, 204, 21, 0.18);
+  background: var(--reports-hover-bg);
+  border-color: var(--reports-hover-border);
+  box-shadow: 0 10px 24px var(--reports-hover-shadow);
   transform: translateY(-1px);
 }
 
@@ -508,31 +677,31 @@
 .profile-report-title {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--reports-title);
 }
 
 .profile-report-company {
   font-weight: 400;
-  color: #4b5563;
+  color: var(--reports-company);
   margin-left: 0.1rem;
 }
 
 .profile-report-date {
   font-size: 0.78rem;
-  color: #9ca3af;
+  color: var(--reports-date);
 }
 
 /* Report body text */
 .profile-report-focus {
   margin: 0.35rem 0 0.1rem;
   font-size: 0.86rem;
-  color: #4b5563;
+  color: var(--reports-focus);
 }
 
 .profile-report-hint {
   margin: 0;
   font-size: 0.8rem;
-  color: #6b7280;
+  color: var(--reports-hint);
 }
 
 /* Make whole report card clickable */
@@ -549,18 +718,18 @@
 
 /* Resume card specific hover accent */
 .profile-resume-card .profile-list-item:hover {
-  background: #eefdfc;
-  border-color: #5eead4;
-  box-shadow: 0 10px 24px rgba(45, 212, 191, 0.2);
+  background: var(--resume-hover-bg);
+  border-color: var(--resume-hover-border);
+  box-shadow: 0 10px 24px var(--resume-hover-shadow);
   transform: translateY(-1px);
 }
 
 .profile-resume-card .profile-report-title {
-  color: #0f766e;
+  color: var(--resume-title);
 }
 
 .profile-resume-card .profile-report-hint {
-  color: #0d9488;
+  color: var(--resume-hint);
 }
 
 /* ===========================
@@ -643,11 +812,11 @@
 /* Light green for strengths, soft orange for improvements */
 
 .profile-feedback-strengths {
-  background: #ecfdf5;
-  border: 1px solid #bbf7d0;
+  background: var(--feedback-strengths-bg);
+  border: 1px solid var(--feedback-strengths-border);
 }
 
 .profile-feedback-improvements {
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
+  background: var(--feedback-improvements-bg);
+  border: 1px solid var(--feedback-improvements-border);
 }

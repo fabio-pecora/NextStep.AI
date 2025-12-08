@@ -1,6 +1,128 @@
 /* ============ COURSES PAGE ============ */
 
-/* Wider shell here to match the marketing look */
+/* THEME VARIABLES FOR COURSES PAGE */
+
+:root {
+  /* Layout backgrounds */
+  --courses-hero-bg: var(--bg);
+  --courses-section-bg: var(--bg);
+
+  /* Hero and cards */
+  --courses-card-surface: var(--card-bg);
+  --courses-card-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+
+  --courses-hero-heading: #0f172a;
+  --courses-hero-text: var(--text-muted);
+  --courses-hero-note-text: var(--text-muted);
+
+  /* Metric card */
+  --courses-metric-bg: var(--primary-soft);
+  --courses-metric-border: var(--border-soft);
+  --courses-metric-text: var(--text-main);
+  --courses-metric-label: var(--primary);
+  --courses-metric-pill-bg: #ffffff;
+  --courses-metric-pill-border: var(--border-soft);
+
+  /* Header text */
+  --courses-title-text: #0f172a;
+  --courses-subtitle-text: var(--text-muted);
+
+  /* Filter chips */
+  --courses-chip-bg: #ffffff;
+  --courses-chip-border: var(--border-soft);
+  --courses-chip-text: var(--text-main);
+  --courses-chip-hover-shadow: var(--primary-soft);
+
+  --courses-chip-active-bg: var(--primary);
+  --courses-chip-active-text: #ffffff;
+  --courses-chip-active-border: var(--primary);
+
+  /* Course cards */
+  --courses-grid-card-bg: var(--card-bg);
+  --courses-grid-card-shadow: 0 6px 14px rgba(0, 0, 0, 0.05);
+  --courses-course-name: #0f172a;
+  --courses-course-description: var(--text-muted);
+
+  /* Meta pills */
+  --courses-meta-pill-bg: var(--primary-soft);
+  --courses-meta-pill-border: var(--border-soft);
+  --courses-meta-pill-text: var(--text-main);
+
+  /* Tags on course images */
+  --courses-tag-primary-bg: var(--primary);
+  --courses-tag-soft-bg: rgba(0, 0, 0, 0.5);
+}
+
+/* DARK MODE NEON OVERRIDES */
+
+html[data-theme="dark"] {
+  /* Backgrounds */
+  --courses-hero-bg:
+    radial-gradient(circle at 0% 0%, rgba(255, 43, 136, 0.36), transparent 55%),
+    radial-gradient(circle at 100% 0%, rgba(22, 242, 255, 0.3), transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(0, 255, 136, 0.22), transparent 60%),
+    #050016;
+  --courses-section-bg:
+    radial-gradient(circle at 0% 100%, rgba(255, 43, 136, 0.24), transparent 60%),
+    #050016;
+
+  /* Cards with neon soft glow */
+  --courses-card-surface:
+    radial-gradient(circle at top left, rgba(255, 43, 136, 0.2), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(22, 242, 255, 0.18), transparent 60%),
+    #0e0828;
+  --courses-card-shadow:
+    0 20px 45px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+
+  /* Text */
+  --courses-hero-heading: #f9fafb;
+  --courses-hero-text: #cbd5f5;
+  --courses-hero-note-text: #94a3b8;
+  --courses-title-text: #f9fafb;
+  --courses-subtitle-text: #cbd5f5;
+
+  /* Metric card */
+  --courses-metric-bg: rgba(8, 4, 31, 0.9);
+  --courses-metric-border: var(--ns-border-strong);
+  --courses-metric-text: var(--ns-text-sub);
+  --courses-metric-label: #16f2ff;
+  --courses-metric-pill-bg: rgba(14, 8, 40, 0.96);
+  --courses-metric-pill-border: var(--ns-border-subtle);
+
+  /* Filter chips */
+  --courses-chip-bg: rgba(14, 8, 40, 0.92);
+  --courses-chip-border: var(--ns-border-subtle);
+  --courses-chip-text: var(--ns-text-sub);
+  --courses-chip-hover-shadow: rgba(22, 242, 255, 0.18);
+
+  --courses-chip-active-bg: #16f2ff;
+  --courses-chip-active-text: #050016;
+  --courses-chip-active-border: #16f2ff;
+
+  /* Course cards */
+  --courses-grid-card-bg:
+    radial-gradient(circle at top left, rgba(255, 43, 136, 0.2), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(22, 242, 255, 0.18), transparent 60%),
+    #0e0828;
+  --courses-grid-card-shadow:
+    0 20px 45px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+  --courses-course-name: #f9fafb;
+  --courses-course-description: #cbd5f5;
+
+  /* Meta pills */
+  --courses-meta-pill-bg: rgba(22, 242, 255, 0.12);
+  --courses-meta-pill-border: rgba(148, 163, 184, 0.7);
+  --courses-meta-pill-text: #e5e7eb;
+
+  /* Tags */
+  --courses-tag-primary-bg: #16f2ff;
+  --courses-tag-soft-bg: rgba(5, 0, 22, 0.8);
+}
+
+/* Wider shell to match marketing look */
+
 .courses-hero-shell,
 .courses-shell {
   max-width: 1200px;
@@ -9,8 +131,9 @@
 }
 
 /* ---------- HERO ---------- */
+
 .courses-hero {
-  background: var(--bg);
+  background: var(--courses-hero-bg);
   padding: 3.5rem 0 3rem;
 }
 
@@ -19,19 +142,20 @@
   grid-template-columns: 1.2fr 1fr;
   gap: 2rem;
   padding: 2rem;
-  background: var(--card-bg);
+  background: var(--courses-card-surface);
   border-radius: 1.25rem;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  box-shadow: var(--courses-card-shadow);
 }
 
 .courses-hero-text h1 {
   font-size: 2.35rem;
   line-height: 1.25;
   margin: 0.25rem 0 0.75rem;
+  color: var(--courses-hero-heading);
 }
 
 .courses-hero-text p {
-  color: var(--text-muted);
+  color: var(--courses-hero-text);
   margin: 0 0 1rem;
   max-width: 52ch;
 }
@@ -40,8 +164,12 @@
   list-style: none;
   padding: 0;
   margin: 1rem 0 2rem;
+  color: var(--courses-hero-text);
 }
-.courses-hero-list li { margin-bottom: 0.5rem; }
+
+.courses-hero-list li {
+  margin-bottom: 0.5rem;
+}
 
 .courses-hero-cta {
   display: flex;
@@ -49,17 +177,26 @@
   gap: 0.5rem;
 }
 
-.btn-pill { border-radius: 999px; padding: 0.65rem 1.4rem; }
-.courses-hero-note { color: var(--text-muted); font-size: 0.92rem; }
+.btn-pill {
+  border-radius: 999px;
+  padding: 0.65rem 1.4rem;
+}
 
-.courses-hero-highlight { align-self: stretch; }
+.courses-hero-note {
+  color: var(--courses-hero-note-text);
+  font-size: 0.92rem;
+}
+
+.courses-hero-highlight {
+  align-self: stretch;
+}
 
 .courses-metric-card {
-  background: var(--primary-soft);
+  background: var(--courses-metric-bg);
   padding: 1.4rem;
   border-radius: 1rem;
-  color: var(--text-main);
-  border: 1px solid var(--border-soft);
+  color: var(--courses-metric-text);
+  border: 1px solid var(--courses-metric-border);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -68,7 +205,7 @@
 
 .courses-metric-label {
   font-weight: 700;
-  color: var(--primary);
+  color: var(--courses-metric-label);
   margin-bottom: 0.5rem;
 }
 
@@ -85,17 +222,19 @@
   list-style: none;
   padding: 0;
 }
+
 .courses-metric-pill-row li {
-  background: #fff;
-  border: 1px solid var(--border-soft);
+  background: var(--courses-metric-pill-bg);
+  border: 1px solid var(--courses-metric-pill-border);
   border-radius: 999px;
   padding: 0.35rem 0.9rem;
   font-size: 0.86rem;
 }
 
 /* ---------- GRID HEADER ---------- */
+
 .courses-section {
-  background: var(--bg);
+  background: var(--courses-section-bg);
   padding: 2.5rem 0 4rem;
 }
 
@@ -111,9 +250,11 @@
 .courses-title {
   font-size: 1.9rem;
   margin: 0 0 0.25rem;
+  color: var(--courses-title-text);
 }
+
 .courses-subtitle {
-  color: var(--text-muted);
+  color: var(--courses-subtitle-text);
   font-size: 0.96rem;
   margin: 0;
   max-width: 60ch;
@@ -125,25 +266,47 @@
   gap: 0.75rem;
 }
 
-.courses-filter-label { font-weight: 600; }
+.courses-filter-label {
+  font-weight: 600;
+}
 
-.courses-filter-chips { display: flex; gap: 0.5rem; }
+.courses-filter-chips {
+  display: flex;
+  gap: 0.5rem;
+}
 
 .chip {
-  border: 1px solid var(--border-soft);
+  border: 1px solid var(--courses-chip-border);
   border-radius: 999px;
   padding: 0.38rem 0.95rem;
-  background: #fff;
+  background: var(--courses-chip-bg);
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.06s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.06s ease;
   font-weight: 600;
   font-size: 0.92rem;
+  color: var(--courses-chip-text);
 }
-.chip:hover { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
-.chip:active { transform: translateY(1px); }
-.chip-filter-active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+.chip:hover {
+  border-color: var(--courses-chip-active-border);
+  box-shadow: 0 0 0 3px var(--courses-chip-hover-shadow);
+}
+
+.chip:active {
+  transform: translateY(1px);
+}
+
+.chip-filter-active {
+  background: var(--courses-chip-active-bg);
+  color: var(--courses-chip-active-text);
+  border-color: var(--courses-chip-active-border);
+}
 
 /* ---------- CARDS ---------- */
+
 .course-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -152,20 +315,24 @@
 
 .course-card {
   grid-column: span 4;
-  background: var(--card-bg);
+  background: var(--courses-grid-card-bg);
   border-radius: 1rem;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+  box-shadow: var(--courses-grid-card-shadow);
   overflow: hidden;
   display: flex;
   flex-direction: column;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
+
 .course-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
 }
 
-.course-image-wrap { position: relative; }
+.course-image-wrap {
+  position: relative;
+}
+
 .course-image {
   width: 100%;
   height: 190px;
@@ -173,26 +340,38 @@
   display: block;
 }
 
-/* subtle gradient for contrast so pills never get lost on bright photos */
+/* Subtle gradient for contrast so pills never get lost on bright photos */
 .course-image-wrap::after {
   content: "";
-  position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.15) 100%);
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.05) 0%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
   pointer-events: none;
 }
 
 .course-tag {
   position: absolute;
-  top: 12px; left: 12px;
+  top: 12px;
+  left: 12px;
   padding: 0.3rem 0.75rem;
   border-radius: 999px;
   font-size: 0.82rem;
   font-weight: 700;
-  color: #fff;
+  color: #ffffff;
   letter-spacing: 0.01em;
 }
-.course-tag-primary { background: var(--primary); }
-.course-tag-soft { background: rgba(0,0,0,0.5); }
+
+.course-tag-primary {
+  background: var(--courses-tag-primary-bg);
+}
+
+.course-tag-soft {
+  background: var(--courses-tag-soft-bg);
+}
 
 .course-body {
   padding: 1.25rem 1.25rem 1rem;
@@ -205,10 +384,11 @@
 .course-name {
   font-size: 1.12rem;
   margin: 0;
+  color: var(--courses-course-name);
 }
 
 .course-description {
-  color: var(--text-muted);
+  color: var(--courses-course-description);
   font-size: 0.96rem;
   line-height: 1.55;
   margin: 0;
@@ -221,12 +401,12 @@
 }
 
 .course-meta-pill {
-  background: var(--primary-soft);
-  color: var(--text-main);
+  background: var(--courses-meta-pill-bg);
+  color: var(--courses-meta-pill-text);
   padding: 0.32rem 0.8rem;
   border-radius: 999px;
   font-size: 0.8rem;
-  border: 1px solid var(--border-soft);
+  border: 1px solid var(--courses-meta-pill-border);
 }
 
 .course-footer {
@@ -235,30 +415,42 @@
   justify-content: flex-end;
 }
 
-/* ---------- FOOTER ---------- */
-.landing-footer {
-  text-align: center;
-  padding: 1.5rem;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  background: var(--card-bg);
-  border-top: 1px solid var(--border-soft);
-}
-
 /* ---------- RESPONSIVE ---------- */
+
 @media (max-width: 1100px) {
   .courses-hero-content {
     grid-template-columns: 1fr;
     padding: 1.5rem;
   }
-  .course-card { grid-column: span 6; }
-  .course-image { height: 180px; }
+
+  .course-card {
+    grid-column: span 6;
+  }
+
+  .course-image {
+    height: 180px;
+  }
 }
 
 @media (max-width: 720px) {
-  .courses-title { font-size: 1.6rem; }
-  .courses-hero-text h1 { font-size: 1.9rem; }
-  .course-card { grid-column: span 12; }
-  .course-image { height: 170px; }
-  .courses-filter-row { width: 100%; justify-content: space-between; }
+  .courses-title {
+    font-size: 1.6rem;
+  }
+
+  .courses-hero-text h1 {
+    font-size: 1.9rem;
+  }
+
+  .course-card {
+    grid-column: span 12;
+  }
+
+  .course-image {
+    height: 170px;
+  }
+
+  .courses-filter-row {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
