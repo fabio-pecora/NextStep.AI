@@ -82,7 +82,7 @@
   --w-name-pill-bg7: linear-gradient(90deg, #f7fff6, #ffffff);
 }
 
-/* Dark mode overrides for winners page */
+/* Dark mode overrides for winners page, aligned with neon home vibes */
 html[data-theme="dark"] {
   --w-hero-pill-bg: rgba(34, 211, 238, 0.15);
   --w-hero-pill-text: #22d3ee;
@@ -108,9 +108,15 @@ html[data-theme="dark"] {
   --w-section-pill-text: #22d3ee;
   --w-section-pill-border: #26234b;
 
-  --w-card-bg: #0b0220;
+  /* subtle neon glow in cards */
+  --w-card-bg: radial-gradient(
+      circle at top left,
+      rgba(255, 43, 136, 0.16),
+      transparent 55%
+    )
+    #0b0220;
   --w-card-border: #26234b;
-  --w-card-shadow: rgba(0, 0, 0, 0.8);
+  --w-card-shadow: rgba(0, 0, 0, 0.85);
 
   --w-avatar-bg: #26234b;
   --w-avatar-fallback-from: #22d3ee;
@@ -163,6 +169,13 @@ html[data-theme="dark"] {
   background: var(--page-bg);
 }
 
+/* extra neon background just for winners in dark */
+html[data-theme="dark"] .winners-body {
+  background:
+    radial-gradient(circle at top left, rgba(255, 43, 136, 0.26), transparent 60%),
+    radial-gradient(circle at bottom right, rgba(22, 242, 255, 0.22), transparent 60%),
+    #050014;
+}
 
 /* ---------- HERO ---------- */
 .w-hero {

@@ -33,6 +33,7 @@ const answerModeButtons = document.querySelectorAll(".answer-mode-btn");
 
 let answerMode = "voice"; // "voice" or "text"
 
+
 // Expression sources from data attributes on the <img>
 const expressions = {
   neutral: avatar.dataset.neutralSrc,
@@ -340,14 +341,21 @@ async function fetchNextMockQuestion() {
       return;
     }
 
-    const intro = data.intro || "";
+    // We ignore data.intro on purpose so Fabio does not reintroduce himself
     const question = data.question || "";
 
-    await playIntroAndQuestion(intro, question);
+    // Store only the question as the last spoken text
+    lastSpokenText = question;
+    lastQuestionText = question;
+    aiText.innerText = question || "The interviewer has a question for you.";
+
+    // Speak only the question, not the intro
+    await speakText(question);
   } catch (err) {
     console.error("Error getting next mock question:", err);
   }
 }
+
 
 // ---------------------------
 // Helper to append answer block
@@ -465,13 +473,37 @@ async function handleRecordedAnswer(blob) {
     const evalResult = data.evaluation || {};
     const qForLog = lastQuestionText || aiText.innerText || "";
 
+    // Show transcript + feedback
     appendAnswerBlock(qForLog, transcript, evalResult);
 
     recordingText.innerText = "Not recording";
     setBaseExpression("neutral");
 
-    if (mockInterviewActive) {
-      await fetchNextMockQuestion();
+    // Handle next question directly from the response
+    if (data.done) {
+      aiText.innerText =
+        data.message ||
+        "This concludes your mock interview. Great job. You can start another session any time.";
+      mockInterviewActive = false;
+      startInterviewBtn.disabled = false;
+      repeatQuestionBtn.disabled = true;
+      lastSpokenText = "";
+      lastQuestionText = "";
+      return;
+    }
+
+    const nextQuestion = data.next_question || "";
+    const nextIntro = data.next_intro || "";
+
+    if (nextQuestion) {
+      // Fabio should only introduce himself the first time,
+      // so for follow-ups we only speak the question.
+      lastQuestionText = nextQuestion;
+      lastSpokenText = nextQuestion;
+
+      aiText.innerText = nextQuestion;
+      await speakText(nextQuestion);
+      repeatQuestionBtn.disabled = false;
     }
   } catch (err) {
     console.error("Error sending mock interview audio:", err);
@@ -530,8 +562,28 @@ async function submitTextAnswer() {
     textAnswerInput.value = "";
     setBaseExpression("neutral");
 
-    if (mockInterviewActive) {
-      await fetchNextMockQuestion();
+    if (data.done) {
+      aiText.innerText =
+        data.message ||
+        "This concludes your mock interview. Great job. You can start another session any time.";
+      mockInterviewActive = false;
+      startInterviewBtn.disabled = false;
+      repeatQuestionBtn.disabled = true;
+      lastSpokenText = "";
+      lastQuestionText = "";
+      return;
+    }
+
+    const nextQuestion = data.next_question || "";
+    const nextIntro = data.next_intro || "";
+
+    if (nextQuestion) {
+      lastQuestionText = nextQuestion;
+      lastSpokenText = nextQuestion;
+
+      aiText.innerText = nextQuestion;
+      await speakText(nextQuestion);
+      repeatQuestionBtn.disabled = false;
     }
   } catch (err) {
     console.error("Error sending mock interview text answer:", err);
