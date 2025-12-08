@@ -82,99 +82,132 @@
   --w-name-pill-bg7: linear-gradient(90deg, #f7fff6, #ffffff);
 }
 
-/* Dark mode overrides for winners page, aligned with neon home vibes */
+/* Dark mode overrides aligned with index hero and daily sections */
 html[data-theme="dark"] {
-  --w-hero-pill-bg: rgba(34, 211, 238, 0.15);
-  --w-hero-pill-text: #22d3ee;
-  --w-hero-title: #f9fafb;
-  --w-hero-subtitle: #cbd5f5;
+  /* text and pills */
+  --w-hero-pill-bg: var(--hero-pill-bg);
+  --w-hero-pill-text: var(--hero-pill-text);
+  --w-hero-title: var(--hero-heading);
+  --w-hero-subtitle: var(--hero-text);
 
-  --w-search-bg: #0b0220;
-  --w-search-border: #26234b;
-  --w-search-shadow: rgba(0, 0, 0, 0.6);
+  /* search and filters */
+  --w-search-bg: #050016;
+  --w-search-border: rgba(148, 163, 184, 0.65);
+  --w-search-shadow: rgba(0, 0, 0, 0.85);
   --w-search-icon: #9ca3af;
   --w-search-input: #f9fafb;
 
-  --w-chip-bg: #050014;
-  --w-chip-text: #e5e7eb;
-  --w-chip-border: #26234b;
-  --w-chip-shadow: rgba(0, 0, 0, 0.7);
-  --w-chip-active-border: #22d3ee;
-  --w-chip-active-text: #22d3ee;
-  --w-chip-active-shadow: rgba(34, 211, 238, 0.35);
+  --w-chip-bg: #050016;
+  --w-chip-text: #cbd5f5;
+  --w-chip-border: rgba(148, 163, 184, 0.7);
+  --w-chip-shadow: rgba(0, 0, 0, 0.9);
+  --w-chip-active-border: #16f2ff;
+  --w-chip-active-text: #16f2ff;
+  --w-chip-active-shadow: rgba(22, 242, 255, 0.45);
 
   --w-section-line: #26234b;
-  --w-section-pill-bg: #050014;
-  --w-section-pill-text: #22d3ee;
+  --w-section-pill-bg: #050016;
+  --w-section-pill-text: #16f2ff;
   --w-section-pill-border: #26234b;
 
-  /* subtle neon glow in cards */
+  /* cards use same deep violet base with cyan pink glow */
   --w-card-bg: radial-gradient(
       circle at top left,
-      rgba(255, 43, 136, 0.16),
+      rgba(22, 242, 255, 0.18),
       transparent 55%
     )
-    #0b0220;
-  --w-card-border: #26234b;
-  --w-card-shadow: rgba(0, 0, 0, 0.85);
+    #050016;
+  --w-card-border: rgba(148, 163, 184, 0.7);
+  --w-card-shadow: rgba(0, 0, 0, 0.95);
 
   --w-avatar-bg: #26234b;
-  --w-avatar-fallback-from: #22d3ee;
-  --w-avatar-fallback-to: #fb923c;
+  --w-avatar-fallback-from: #16f2ff;
+  --w-avatar-fallback-to: #ff8a3c;
 
   --w-name-text: #f9fafb;
   --w-date-text: #9ca3af;
-  --w-rank-text: #22d3ee;
-  --w-rank-bg: rgba(34, 211, 238, 0.15);
-  --w-rank-border: #22d3ee;
+  --w-rank-text: #16f2ff;
+  --w-rank-bg: rgba(22, 242, 255, 0.14);
+  --w-rank-border: #16f2ff;
 
   --w-label-text: #cbd5f5;
-  --w-label-bg: rgba(34, 211, 238, 0.08);
-  --w-label-border: #26234b;
+  --w-label-bg: rgba(22, 242, 255, 0.08);
+  --w-label-border: rgba(148, 163, 184, 0.7);
 
   --w-body-text: #e5e7eb;
 
-  --w-ghost-border: #22d3ee;
+  --w-ghost-border: #16f2ff;
   --w-ghost-bg: transparent;
-  --w-ghost-text: #22d3ee;
-  --w-ghost-shadow: rgba(34, 211, 238, 0.35);
-  --w-ghost-hover-bg: rgba(34, 211, 238, 0.12);
-  --w-ghost-hover-shadow: rgba(34, 211, 238, 0.45);
+  --w-ghost-text: #16f2ff;
+  --w-ghost-shadow: rgba(22, 242, 255, 0.4);
+  --w-ghost-hover-bg: rgba(22, 242, 255, 0.12);
+  --w-ghost-hover-shadow: rgba(22, 242, 255, 0.55);
 
   --w-tag-text: #e5e7eb;
-  --w-tag-bg: #050014;
+  --w-tag-bg: #050016;
   --w-tag-border: #26234b;
 
   --w-rail-line-gradient: linear-gradient(
     180deg,
-    rgba(34, 211, 238, 0.4),
-    rgba(248, 113, 113, 0.35)
+    rgba(255, 43, 136, 0.55),
+    rgba(22, 242, 255, 0.55)
   );
 
   --w-name-pill-text: #f9fafb;
-  --w-name-pill-bg: #050014;
+  --w-name-pill-bg: #050016;
   --w-name-pill-border: #26234b;
-  --w-name-pill-shadow: rgba(0, 0, 0, 0.9);
+  --w-name-pill-shadow: rgba(0, 0, 0, 0.95);
 
-  --w-name-pill-bg1: linear-gradient(90deg, rgba(34, 211, 238, 0.18), #050014);
-  --w-name-pill-bg2: linear-gradient(90deg, rgba(244, 114, 182, 0.2), #050014);
-  --w-name-pill-bg3: linear-gradient(90deg, rgba(251, 146, 60, 0.22), #050014);
-  --w-name-pill-bg4: linear-gradient(90deg, rgba(52, 211, 153, 0.2), #050014);
-  --w-name-pill-bg5: linear-gradient(90deg, rgba(129, 140, 248, 0.22), #050014);
-  --w-name-pill-bg6: linear-gradient(90deg, rgba(56, 189, 248, 0.24), #050014);
-  --w-name-pill-bg7: linear-gradient(90deg, rgba(250, 204, 21, 0.24), #050014);
+  --w-name-pill-bg1: linear-gradient(90deg, rgba(255, 43, 136, 0.4), #050016);
+  --w-name-pill-bg2: linear-gradient(90deg, rgba(22, 242, 255, 0.4), #050016);
+  --w-name-pill-bg3: linear-gradient(90deg, rgba(0, 255, 136, 0.38), #050016);
+  --w-name-pill-bg4: linear-gradient(90deg, rgba(255, 212, 71, 0.38), #050016);
+  --w-name-pill-bg5: linear-gradient(90deg, rgba(129, 140, 248, 0.4), #050016);
+  --w-name-pill-bg6: linear-gradient(90deg, rgba(248, 113, 113, 0.4), #050016);
+  --w-name-pill-bg7: linear-gradient(90deg, rgba(56, 189, 248, 0.4), #050016);
 }
 
 .winners-body {
   background: var(--page-bg);
 }
 
-/* extra neon background just for winners in dark */
+/* Dark background bands using same palette as index hero/mission/daily */
+
 html[data-theme="dark"] .winners-body {
-  background:
-    radial-gradient(circle at top left, rgba(255, 43, 136, 0.26), transparent 60%),
-    radial-gradient(circle at bottom right, rgba(22, 242, 255, 0.22), transparent 60%),
-    #050014;
+  background: #050016;
+}
+
+/* hero band uses hero background from index */
+html[data-theme="dark"] .w-hero {
+  background: var(--hero-bg);
+  border-bottom: 1px solid #111827;
+}
+
+/* top 3 band uses features background from index */
+html[data-theme="dark"] .top3-section {
+  background: var(--features-bg);
+  border-top: 1px solid #111827;
+  border-bottom: 1px solid #020617;
+}
+
+/* rest of winners band uses daily hero overlay from index */
+html[data-theme="dark"] .winners-section {
+  background: var(--daily-hero-bg-overlay);
+  border-top: 1px solid #020617;
+}
+
+/* inner shells sit on slightly raised panels, consistent with neon vibe */
+.top3-shell,
+.winners-shell {
+  position: relative;
+}
+
+html[data-theme="dark"] .top3-shell,
+html[data-theme="dark"] .winners-shell {
+  background: rgba(5, 0, 22, 0.9);
+  border-radius: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.9);
 }
 
 /* ---------- HERO ---------- */
@@ -305,6 +338,7 @@ html[data-theme="dark"] .winners-body {
   border-radius: 999px;
 }
 
+/* ---------- GRIDS ---------- */
 .top3-grid {
   list-style: none;
   padding: 0;
