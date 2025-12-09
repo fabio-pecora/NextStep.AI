@@ -490,6 +490,33 @@ def get_next_question():
     return question
 
 
+def prune_user_records(model, user_id, keep: int):
+    """
+    Keep only the newest `keep` rows for this user in `model`.
+    Assumes the model has `user_id` and `created_at` columns.
+    """
+    if not user_id:
+        return
+
+    extra_rows = (
+        model.query
+        .filter_by(user_id=user_id)
+        .order_by(model.created_at.desc())
+        .offset(keep)  # skip newest `keep`, fetch the rest
+        .all()
+    )
+
+    if not extra_rows:
+        return
+
+    for row in extra_rows:
+        db.session.delete(row)
+
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+
 def save_answer_to_db(
     *,
     source: str,
@@ -530,8 +557,10 @@ def save_answer_to_db(
         elif daily_question_id is not None:
             question_id_val = daily_question_id
 
+        resolved_user_id = user_id if user_id is not None else (session.get("user_id") or None)
+
         answer = Answer(
-            user_id=user_id if user_id is not None else (session.get("user_id") or None),
+            user_id=resolved_user_id,
             question_source=source,
             question_id=question_id_val,
             raw_question_text=question_text,
@@ -547,9 +576,11 @@ def save_answer_to_db(
         db.session.add(answer)
         db.session.commit()
 
+        # keep only the last 20 answers for this user
+        prune_user_records(Answer, resolved_user_id, keep=20)
+
     except Exception:
         db.session.rollback()
-
 
 # ---------------------------------------------------------------------------
 # Auth routes
@@ -647,7 +678,6 @@ def logout():
 # Profile route
 # ---------------------------------------------------------------------------
 
-
 @app.route("/profile")
 @login_required
 def profile():
@@ -663,14 +693,14 @@ def profile():
     recent_reports = (
         PrepReport.query.filter_by(user_id=user.id)
         .order_by(PrepReport.created_at.desc())
-        .limit(10)
+        .limit(20)
         .all()
     )
 
     recent_resume_reports = (
         ResumeReport.query.filter_by(user_id=user.id)
         .order_by(ResumeReport.created_at.desc())
-        .limit(10)
+        .limit(20)
         .all()
     )
 
@@ -681,6 +711,7 @@ def profile():
         prep_reports=recent_reports,
         resume_reports=recent_resume_reports,
     )
+
 
 
 # ---------------------------------------------------------------------------
@@ -1000,7 +1031,6 @@ def job_detail(job_id: int):
 # Custom prep reports
 # ---------------------------------------------------------------------------
 
-
 @app.route("/custom_prep", methods=["GET", "POST"])
 def custom_prep():
     report = None
@@ -1038,6 +1068,11 @@ def custom_prep():
                     )
                     db.session.add(prep)
                     db.session.commit()
+
+                    # keep only last 20 prep reports for this user
+                    if current_user:
+                        prune_user_records(PrepReport, current_user.id, keep=20)
+
                 except Exception:
                     db.session.rollback()
 
@@ -1046,6 +1081,7 @@ def custom_prep():
         report=report,
         error=error,
     )
+
 
 
 @app.route("/custom_prep/report/<int:report_id>", methods=["GET"])
@@ -1146,7 +1182,6 @@ def download_saved_prep_report(report_id: int):
 # Resume check
 # ---------------------------------------------------------------------------
 
-
 @app.route("/resume_check", methods=["GET", "POST"])
 def resume_check():
     report = None
@@ -1217,6 +1252,11 @@ def resume_check():
                 db.session.add(row)
                 db.session.commit()
                 report["saved_id"] = row.id
+
+                # keep only last 20 resume reports for this user
+                if current_user:
+                    prune_user_records(ResumeReport, current_user.id, keep=20)
+
             except Exception:
                 db.session.rollback()
 
@@ -1225,6 +1265,7 @@ def resume_check():
         report=report,
         error=error,
     )
+
 
 
 @app.route("/resume_check/report/<int:report_id>", methods=["GET"])
