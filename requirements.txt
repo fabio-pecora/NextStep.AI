@@ -1,12 +1,12 @@
 flask
-flask-session
+flask_sqlalchemy
+sqlalchemy
+psycopg2-binary
+
 gunicorn
 python-dotenv
 
-sqlalchemy
-psycopg2-binary
 supabase
-supabase-py
 
 torch
 torchvision
@@ -26,8 +26,12 @@ pydub
 soundfile
 ffmpeg-python
 
+pdfkit
+PyPDF2
+
 requests
 tqdm
+
 jinja2
 itsdangerous
 werkzeug
