@@ -1,17 +1,11 @@
 import os
-import math
 import json
 from typing import Dict
 
-import numpy as np
-from sentence_transformers import SentenceTransformer
-from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 from openai import OpenAI
 
-# Global singletons for models and OpenAI client
-_sentence_model = None
-_sentiment_pipeline = None
-client = OpenAI()  # uses OPENAI_API_KEY from your environment
+# Single OpenAI client (uses OPENAI_API_KEY from env)
+client = OpenAI()
 
 # System prompt for GPT based evaluation
 SYSTEM_PROMPT = """
@@ -60,164 +54,6 @@ Return a JSON object with exactly these fields:
 """
 
 
-def get_sentence_model():
-    """
-    Load the sentence transformer model once and reuse.
-    Uses a small CPU friendly model.
-    """
-    global _sentence_model
-    if _sentence_model is None:
-        _sentence_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-    return _sentence_model
-
-
-def get_sentiment_pipeline():
-    """
-    Load a sentiment analysis pipeline.
-    We use a small RoBERTa sentiment model from Hugging Face.
-    """
-    global _sentiment_pipeline
-    if _sentiment_pipeline is None:
-        model_name = "cardiffnlp/twitter-roberta-base-sentiment"
-        tokenizer = AutoTokenizer.from_pretrained(model_name)
-        model = AutoModelForSequenceClassification.from_pretrained(model_name)
-        _sentiment_pipeline = pipeline(
-            "sentiment-analysis",
-            model=model,
-            tokenizer=tokenizer,
-        )
-    return _sentiment_pipeline
-
-
-def cosine_similarity(vec1: np.ndarray, vec2: np.ndarray) -> float:
-    """
-    Compute cosine similarity between two 1D numpy arrays.
-    Returns a value between -1 and 1.
-    """
-    dot = float(np.dot(vec1, vec2))
-    norm1 = float(np.linalg.norm(vec1))
-    norm2 = float(np.linalg.norm(vec2))
-    if norm1 == 0.0 or norm2 == 0.0:
-        return 0.0
-    return dot / (norm1 * norm2)
-
-
-def score_relevance(question: str, ideal_answer: str, user_answer: str) -> float:
-    """
-    Use sentence embeddings to measure relevance between the user answer
-    and the ideal answer, with a small contribution from the question text itself.
-    """
-    model = get_sentence_model()
-
-    texts = [ideal_answer, user_answer, question]
-    embeddings = model.encode(texts, convert_to_numpy=True)
-
-    ideal_vec = embeddings[0]
-    user_vec = embeddings[1]
-    question_vec = embeddings[2]
-
-    sim_ideal = cosine_similarity(ideal_vec, user_vec)
-    sim_question = cosine_similarity(question_vec, user_vec)
-
-    combined_sim = 0.7 * sim_ideal + 0.3 * sim_question
-
-    relevance_score = (combined_sim + 1.0) / 2.0 * 100.0
-    relevance_score = max(0.0, min(100.0, relevance_score))
-
-    return relevance_score
-
-
-def score_confidence(user_answer: str) -> float:
-    """
-    Approximate "confidence" or communication quality.
-    """
-    sentiment = get_sentiment_pipeline()(user_answer[:512])[0]
-    label = sentiment["label"]
-    score = float(sentiment["score"])
-
-    if label.upper() == "POSITIVE":
-        base = 0.8 + 0.2 * score
-    elif label.upper() == "NEUTRAL":
-        base = 0.5 + 0.3 * score
-    else:
-        base = 0.2 + 0.3 * (1 - score)
-
-    words = user_answer.split()
-    length = len(words)
-    length_factor = min(length / 40.0, 1.0)
-
-    confidence_score = base * 0.6 + length_factor * 0.4
-    confidence_score = confidence_score * 100.0
-    confidence_score = max(0.0, min(100.0, confidence_score))
-
-    return confidence_score
-
-
-def build_feedback_text(
-    question: str,
-    user_answer: str,
-    relevance_score: float,
-    confidence_score: float,
-) -> str:
-    """
-    Build a simple textual feedback string based on the scores.
-    """
-    parts = []
-
-    if relevance_score > 80:
-        parts.append("Your answer is highly relevant to the question.")
-    elif relevance_score > 60:
-        parts.append(
-            "Your answer is mostly relevant, but you could align it more closely with what the question is asking."
-        )
-    else:
-        parts.append(
-            "Your answer only partially addresses the question. Try to focus more on what is being asked."
-        )
-
-    if confidence_score > 80:
-        parts.append("You sound confident and clear in your explanation.")
-    elif confidence_score > 60:
-        parts.append(
-            "Your communication is okay, but you could be more structured and assertive."
-        )
-    else:
-        parts.append(
-            "Your answer comes across as hesitant or incomplete. Try speaking more clearly and giving concrete examples."
-        )
-
-    if len(user_answer.split()) < 30:
-        parts.append("Consider expanding your answer with more detail or examples.")
-
-    return " ".join(parts)
-
-
-def evaluate_answer(question: str, ideal_answer: str, user_answer: str) -> Dict:
-    """
-    Classical local evaluation function (no GPT).
-    """
-    relevance_score = score_relevance(question, ideal_answer, user_answer)
-    confidence_score = score_confidence(user_answer)
-
-    final_score = 0.6 * relevance_score + 0.4 * confidence_score
-
-    feedback_text = build_feedback_text(
-        question=question,
-        user_answer=user_answer,
-        relevance_score=relevance_score,
-        confidence_score=confidence_score,
-    )
-
-    return {
-        "question": question,
-        "user_answer": user_answer,
-        "relevance_score": round(relevance_score, 2),
-        "confidence_score": round(confidence_score, 2),
-        "final_score": round(final_score, 2),
-        "feedback_text": feedback_text,
-    }
-
-
 def transcribe_audio_whisper(file_path: str) -> str:
     """
     Transcribe an audio file using OpenAI's transcription API.
@@ -229,9 +65,8 @@ def transcribe_audio_whisper(file_path: str) -> str:
         raise FileNotFoundError(f"Audio file does not exist: {file_path}")
 
     with open(file_path, "rb") as f:
-        # gpt-4o-mini-transcribe or whisper-1 both work
         resp = client.audio.transcriptions.create(
-            model="gpt-4o-mini-transcribe",
+            model="gpt-4o-mini-transcribe",  # or "whisper-1"
             file=f,
         )
 
@@ -246,6 +81,15 @@ def gpt_evaluate_answer(
 ) -> Dict:
     """
     Use OpenAI GPT to evaluate the answer.
+    Returns a dict with:
+      - question
+      - user_answer
+      - relevance_score
+      - confidence_score
+      - final_score
+      - feedback_text
+      - strengths
+      - improvements
     """
     user_prompt = (
         "Analyze the following interview answer and return a JSON object with fields: "
@@ -301,3 +145,17 @@ def gpt_evaluate_answer(
         "strengths": strengths,
         "improvements": improvements,
     }
+
+
+def evaluate_answer(question: str, ideal_answer: str, user_answer: str) -> Dict:
+    """
+    Backwards compatible wrapper that calls gpt_evaluate_answer.
+
+    app.py imports this name, even if it does not call it right now.
+    Keeping it avoids import errors without needing extra dependencies.
+    """
+    return gpt_evaluate_answer(
+        question=question,
+        ideal_answer=ideal_answer,
+        user_answer=user_answer,
+    )
