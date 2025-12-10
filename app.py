@@ -6,6 +6,11 @@ from datetime import datetime, date, time, timedelta
 import pdfkit
 import io
 
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
 from flask import (
     Flask,
     render_template,
@@ -51,6 +56,12 @@ SUPABASE_URL = os.environ.get(
     "@aws-1-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require",
 )
 
+if os.environ.get("DATABASE_URL"):
+    logger.info("Using DATABASE_URL from environment")
+else:
+    logger.info("Using hardcoded Supabase URL fallback")
+
+
 app.config["SQLALCHEMY_DATABASE_URI"] = SUPABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -69,6 +80,21 @@ client = OpenAI()
 # ---------------------------------------------------------------------------
 # SQLAlchemy models aligned with DB schema
 # ---------------------------------------------------------------------------
+
+from werkzeug.exceptions import HTTPException
+import traceback
+
+# ---------------------------------------------------------------------------
+# Global error handler - log any unexpected exception
+# ---------------------------------------------------------------------------
+@app.errorhandler(Exception)
+def handle_unexpected_error(e):
+    # Let Flask handle HTTP errors (404, 405, etc.)
+    if isinstance(e, HTTPException):
+        return e
+
+    logger.error("Unhandled exception in request", exc_info=e)
+    return "Internal server error", 500
 
 
 class User(db.Model):
@@ -650,10 +676,17 @@ def login():
         identifier = request.form.get("identifier", "").strip().lower()
         password = request.form.get("password", "")
 
+        logger.info("Login attempt - identifier=%s", identifier)
+
         user = (
             User.query.filter(db.func.lower(User.email) == identifier).first()
             or User.query.filter(db.func.lower(User.username) == identifier).first()
         )
+
+        if not user:
+            logger.info("Login failed - user not found for identifier=%s", identifier)
+        else:
+            logger.info("Login found user_id=%s for identifier=%s", user.id, identifier)
 
         if not user or not check_password_hash(user.password_hash, password):
             flash("Invalid credentials. Please try again.", "error")
@@ -662,6 +695,7 @@ def login():
         session["user_id"] = user.id
 
         next_url = request.args.get("next") or url_for("index")
+        logger.info("Login success for user_id=%s, redirecting to %s", user.id, next_url)
         return redirect(next_url)
 
     return render_template("login.html")
@@ -677,11 +711,11 @@ def logout():
 # ---------------------------------------------------------------------------
 # Profile route
 # ---------------------------------------------------------------------------
-
 @app.route("/profile")
 @login_required
 def profile():
     user = get_current_user()
+    logger.info("Rendering profile for user_id=%s", user.id if user else None)
 
     recent_answers = (
         Answer.query.filter_by(user_id=user.id)
@@ -716,13 +750,13 @@ def profile():
 
 # ---------------------------------------------------------------------------
 # Main practice routes
-# ---------------------------------------------------------------------------
-
-
+# --------------------------------------------------------------------------
 @app.route("/", methods=["GET"])
 def index():
+    logger.info("Rendering index - user_id in session=%s", session.get("user_id"))
     daily_question = get_today_daily_question()
     return render_template("index.html", question=daily_question)
+
 
 
 @app.route("/next_question", methods=["POST"])
