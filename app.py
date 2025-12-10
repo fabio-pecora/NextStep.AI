@@ -27,6 +27,9 @@ from flask import (
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
+from dotenv import load_dotenv
+load_dotenv()
+
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.pool import NullPool
@@ -48,13 +51,8 @@ from openai import OpenAI
 app = Flask(__name__)
 
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "change-this-in-production")
+SUPABASE_URL = os.environ.get("DATABASE_URL", "...")
 
-SUPABASE_URL = os.environ.get(
-    "DATABASE_URL",
-    "postgresql+psycopg://"
-    "postgres.zbqzfmjdcfagobdyrvva:fabbofabbO1.."
-    "@aws-1-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require",
-)
 
 if os.environ.get("DATABASE_URL"):
     logger.info("Using DATABASE_URL from environment")
