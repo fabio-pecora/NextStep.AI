@@ -176,7 +176,6 @@ html[data-theme="dark"] {
 
 /* =========================================================
    RESUME REPORT LAYOUT
-   (used by the template you pasted)
    ========================================================= */
 
 /* Prevent report stretching too wide */
@@ -208,6 +207,12 @@ html[data-theme="dark"] {
 
 .brand span {
   color: var(--prep-header-brand-accent);
+}
+
+.topbar-subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  color: var(--prep-header-meta);
 }
 
 .meta {
@@ -273,14 +278,7 @@ html[data-theme="dark"] {
   color: var(--prep-text);
 }
 
-/* Debug note */
-.debug-note {
-  margin: 0 0 0.75rem;
-  font-size: 0.9rem;
-  color: var(--prep-chip-warning-text);
-}
-
-/* Content blocks for each numbered section */
+/* Content blocks for generic numbered sections if used */
 .block {
   margin-bottom: 1.4rem;
   padding: 1rem 1.1rem 1.05rem;
@@ -358,11 +356,7 @@ html[data-theme="dark"] {
 
 /* =========================================================
    ORIGINAL CUSTOM PREP REPORT STYLES
-   (for pages that use .report-header / .report-body)
    ========================================================= */
-
-/* These selectors keep the old layout working
-   but use the same theme variables so dark mode is consistent. */
 
 .report-header {
   display: flex;
@@ -488,4 +482,263 @@ html[data-theme="dark"] {
   margin: 0 0 0.75rem;
   color: var(--prep-chip-warning-text);
   font-size: 0.9rem;
+}
+
+/* =========================================================
+   PREMIUM RESUME REVIEW TAGS AND LAYOUT
+   ========================================================= */
+
+/* Red / green badges */
+.badge-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-top: 0.4rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.35rem 0.65rem;
+  border-radius: 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.badge.strength {
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+  border-left: 4px solid #16a34a;
+}
+
+.badge.issue {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border-left: 4px solid #dc2626;
+}
+
+.badge.recommendation {
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
+  border-left: 4px solid #2563eb;
+}
+
+.badge.keyword-missing {
+  background: rgba(250, 204, 21, 0.14);
+  color: #b45309;
+  border-left: 4px solid #facc15;
+}
+
+.badge.keyword-present {
+  background: rgba(34, 197, 94, 0.15);
+  color: #16a34a;
+  border-left: 4px solid #16a34a;
+}
+
+/* Resume section shells */
+
+.resume-section {
+  margin-bottom: 1.4rem;
+  padding: 1.05rem 1.05rem 1.1rem;
+  border-radius: 0.9rem;
+  border: 1px solid var(--prep-section-border);
+  background: var(--prep-section-bg);
+}
+
+.resume-section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.7rem;
+}
+
+.section-index {
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 0.8rem;
+  background: radial-gradient(circle at top left, #2563eb, #1d4ed8);
+  color: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.resume-section-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--prep-muted);
+}
+
+.resume-section-header p {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  color: var(--prep-subtle);
+}
+
+/* Summary layout */
+
+.resume-summary-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2.3fr) minmax(0, 1.3fr);
+  gap: 1.2rem;
+}
+
+.resume-summary-main p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.resume-score-card {
+  border-radius: 0.85rem;
+  border: 1px dashed rgba(148, 163, 184, 0.7);
+  padding: 0.85rem 0.9rem;
+  background: radial-gradient(circle at top, rgba(37, 99, 235, 0.04), transparent);
+}
+
+.score-circle {
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 999px;
+  margin-bottom: 0.6rem;
+  background: conic-gradient(#22c55e calc(var(--score, 7) * 10%), #e2e8f0 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.score-circle span.score-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.score-tips {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.85rem;
+  color: var(--prep-muted);
+}
+
+.score-tips li {
+  margin: 0.1rem 0;
+}
+
+/* Two column layout for structure section */
+
+.resume-two-col {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.1rem;
+}
+
+.resume-col-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--prep-subtle);
+  margin-bottom: 0.25rem;
+}
+
+/* Experience bullet cards */
+
+.bullet-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.9rem;
+}
+
+.bullet-card {
+  border-radius: 0.85rem;
+  border: 1px solid var(--prep-section-border);
+  padding: 0.8rem 0.9rem;
+  background: rgba(15, 23, 42, 0.02);
+}
+
+.bullet-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 0.25rem;
+  color: var(--prep-muted);
+}
+
+.bullet-text {
+  font-size: 0.93rem;
+  margin: 0 0 0.35rem;
+}
+
+.bullet-why {
+  font-size: 0.82rem;
+  color: var(--prep-muted);
+  margin: 0;
+}
+
+/* Title suggestion pills */
+
+.title-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.title-pill {
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  color: var(--prep-link);
+}
+
+/* Small list styling inside resume sections */
+
+.resume-section ul {
+  margin: 0.2rem 0 0.3rem 1.2rem;
+  padding: 0;
+  font-size: 0.9rem;
+}
+
+.resume-section li {
+  margin: 0.12rem 0;
+}
+
+/* Keywords layout */
+
+.keywords-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+  gap: 1rem;
+}
+
+.keywords-layout h4 {
+  margin: 0 0 0.3rem;
+  font-size: 0.92rem;
+  color: var(--prep-subtle);
+}
+
+/* Smaller on mobile */
+
+@media (max-width: 880px) {
+  .prep-view-main {
+    padding: 1.6rem 4% 2.6rem;
+  }
+
+  .report-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .resume-summary-grid,
+  .resume-two-col,
+  .bullet-grid,
+  .keywords-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
