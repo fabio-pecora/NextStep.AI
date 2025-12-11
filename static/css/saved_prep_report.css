@@ -1,14 +1,97 @@
-/* Page shell */
-.prep-view-body {
-  background: #f5f7fb;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+/* =========================================================
+   THEME VARIABLES
+   ========================================================= */
+
+:root {
+  /* Light theme */
+  --prep-bg: #f5f7fb;
+  --prep-text: #0f172a;
+  --prep-muted: #6b7280;
+  --prep-subtle: #4b5563;
+
+  --prep-card-bg: #ffffff;
+  --prep-card-border: #e5e7eb;
+
+  --prep-section-bg: #ffffff;
+  --prep-section-border: #e5e7eb;
+
+  --prep-chip-bg: #dbeafe;
+  --prep-chip-text: #2563eb;
+  --prep-chip-warning-bg: #fef3c7;
+  --prep-chip-warning-text: #92400e;
+
+  --prep-header-gradient: linear-gradient(135deg, #eef2ff, #e0f2fe);
+  --prep-header-brand: #0f172a;
+  --prep-header-brand-accent: #22c55e;
+  --prep-header-meta: #6b7280;
+
+  --prep-link: #2563eb;
+  --prep-link-hover: #1d4ed8;
+
+  --prep-button-bg: #2563eb;
+  --prep-button-bg-hover: #1d4ed8;
+  --prep-button-text: #f9fafb;
+
+  --prep-border-soft: rgba(148, 163, 184, 0.6);
+
+  --prep-footer-text: #94a3b8;
+  --prep-shadow-soft: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
+/* Dark theme override - uses same mechanism as rest of site */
+html[data-theme="dark"] {
+  --prep-bg: #020617;
+  --prep-text: #e5e7eb;
+  --prep-muted: #9ca3af;
+  --prep-subtle: #cbd5f5;
+
+  --prep-card-bg: #020617;
+  --prep-card-border: #1e293b;
+
+  --prep-section-bg: #020617;
+  --prep-section-border: #1f2937;
+
+  --prep-chip-bg: rgba(59, 130, 246, 0.2);
+  --prep-chip-text: #bfdbfe;
+  --prep-chip-warning-bg: rgba(250, 204, 21, 0.08);
+  --prep-chip-warning-text: #facc15;
+
+  --prep-header-gradient: radial-gradient(circle at top left, #0f172a, #020617 55%, #020617 100%);
+  --prep-header-brand: #e5e7eb;
+  --prep-header-brand-accent: #22c55e;
+  --prep-header-meta: #9ca3af;
+
+  --prep-link: #60a5fa;
+  --prep-link-hover: #93c5fd;
+
+  --prep-button-bg: #2563eb;
+  --prep-button-bg-hover: #1d4ed8;
+  --prep-button-text: #f9fafb;
+
+  --prep-border-soft: rgba(30, 64, 175, 0.7);
+
+  --prep-footer-text: #64748b;
+  --prep-shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.6);
+}
+
+/* =========================================================
+   PAGE SHELL
+   ========================================================= */
+
+.prep-view-body {
+  background: var(--prep-bg);
+  color: var(--prep-text);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Outer container that wraps header controls and report */
 .prep-view-main {
   padding: 2.5rem 6% 3.5rem;
 }
 
-/* Header row */
+/* Header row: back link + download button */
 .prep-view-header-row {
   display: flex;
   justify-content: space-between;
@@ -22,61 +105,336 @@
   font-size: 1.6rem;
 }
 
-.muted { color: #6b7280; }
-.gen-date { margin-left: 0.5rem; color: #6b7280; font-size: 0.9rem; }
+.muted {
+  color: var(--prep-muted);
+}
+
+.gen-date {
+  margin-left: 0.5rem;
+  color: var(--prep-muted);
+  font-size: 0.9rem;
+}
 
 .prep-subtitle {
   margin: 0.2rem 0 0;
-  color: #4b5563;
+  color: var(--prep-subtle);
   font-size: 0.98rem;
 }
 
-.prep-view-actions { display: flex; gap: 0.6rem; }
-
-/* Report card */
-.report-card {
-  background: #ffffff;
-  border-radius: 1rem;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 10px 24px rgba(15,23,42,0.08);
+.prep-view-actions {
+  display: flex;
+  gap: 0.6rem;
 }
 
-/* Header strip */
+/* Simple button styles in case global styles are not applied */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease, transform 0.1s ease;
+}
+
+.btn-primary {
+  background: var(--prep-button-bg);
+  color: var(--prep-button-text);
+  border-color: transparent;
+}
+
+.btn-primary:hover {
+  background: var(--prep-button-bg-hover);
+  transform: translateY(-1px);
+}
+
+/* Back link */
+.prep-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+  text-decoration: none;
+  color: var(--prep-link);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid transparent;
+  background: transparent;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.1s ease;
+}
+
+.prep-back-link:hover {
+  background: rgba(37, 99, 235, 0.06);
+  border-color: var(--prep-border-soft);
+  color: var(--prep-link-hover);
+  transform: translateY(-0.5px);
+}
+
+/* =========================================================
+   RESUME REPORT LAYOUT
+   (used by the template you pasted)
+   ========================================================= */
+
+/* Prevent report stretching too wide */
+.report-page {
+  max-width: 1120px;
+  margin: 0 auto 3rem;
+}
+
+/* Top bar with brand and meta */
+.report-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 1.3rem 1.7rem 1.15rem;
+  border-radius: 1.1rem 1.1rem 0.6rem 0.6rem;
+  background: var(--prep-header-gradient);
+  color: var(--prep-header-brand);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  box-shadow: var(--prep-shadow-soft);
+  margin-bottom: 1.2rem;
+}
+
+.brand {
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.brand span {
+  color: var(--prep-header-brand-accent);
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+}
+
+.meta .title {
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+
+.meta .title strong {
+  font-weight: 700;
+}
+
+.meta .stamp {
+  font-size: 0.82rem;
+  color: var(--prep-header-meta);
+}
+
+/* Main report card that contains everything */
+.report-card {
+  background: var(--prep-card-bg);
+  border-radius: 1rem;
+  border: 1px solid var(--prep-card-border);
+  box-shadow: var(--prep-shadow-soft);
+  padding: 1.25rem 1.6rem 1.6rem;
+}
+
+/* Small tags row under header */
+.report-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.9rem;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.18rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  background: var(--prep-chip-bg);
+  color: var(--prep-chip-text);
+}
+
+.tag.warning {
+  background: var(--prep-chip-warning-bg);
+  color: var(--prep-chip-warning-text);
+}
+
+/* Report content wrapper */
+.report-content {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--prep-text);
+}
+
+/* Debug note */
+.debug-note {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  color: var(--prep-chip-warning-text);
+}
+
+/* Content blocks for each numbered section */
+.block {
+  margin-bottom: 1.4rem;
+  padding: 1rem 1.1rem 1.05rem;
+  background: var(--prep-section-bg);
+  border-radius: 0.9rem;
+  border: 1px solid var(--prep-section-border);
+}
+
+/* Headings inside report blocks */
+.block h2 {
+  margin: 0 0 0.6rem;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--prep-muted);
+}
+
+.block h3 {
+  margin: 0.6rem 0 0.3rem;
+  font-size: 0.98rem;
+  color: var(--prep-link);
+}
+
+.block h4 {
+  margin: 0.45rem 0 0.25rem;
+  font-size: 0.95rem;
+  color: var(--prep-text);
+}
+
+/* Paragraphs and lists */
+.block p {
+  margin: 0.2rem 0;
+  font-size: 0.94rem;
+}
+
+.block ul {
+  margin: 0.2rem 0 0.3rem 1.1rem;
+  padding: 0;
+}
+
+.block li {
+  margin: 0.15rem 0;
+}
+
+/* Example boxes used in experience rewrites */
+.example {
+  margin: 0.6rem 0;
+  padding: 0.85rem 0.9rem;
+  border-radius: 0.75rem;
+  background: rgba(129, 140, 248, 0.08);
+}
+
+.example .q {
+  margin: 0 0 0.3rem;
+  font-weight: 600;
+}
+
+.example .a {
+  margin: 0;
+}
+
+.example .legend {
+  margin-top: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--prep-muted);
+}
+
+/* Footer */
+.report-footer {
+  margin-top: 1.2rem;
+  font-size: 0.8rem;
+  text-align: center;
+  color: var(--prep-footer-text);
+}
+
+/* =========================================================
+   ORIGINAL CUSTOM PREP REPORT STYLES
+   (for pages that use .report-header / .report-body)
+   ========================================================= */
+
+/* These selectors keep the old layout working
+   but use the same theme variables so dark mode is consistent. */
+
 .report-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
   padding: 1.2rem 1.6rem 1rem;
-  border-bottom: 1px solid #e5e7eb;
-  background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+  border-bottom: 1px solid var(--prep-card-border);
+  background: var(--prep-header-gradient);
 }
 
-.report-logo-text { font-weight: 700; font-size: 1.15rem; color: #2563eb; }
-.report-logo-text span { color: #111827; }
-.report-logo-tagline { font-size: 0.85rem; color: #6b7280; }
+.report-logo-text {
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--prep-chip-text);
+}
 
-.report-meta { text-align: right; }
-.report-job { margin: 0 0 0.25rem; font-weight: 600; }
-.report-candidate { margin: 0.1rem 0; color: #6b7280; font-size: 0.9rem; }
+.report-logo-text span {
+  color: var(--prep-header-brand);
+}
 
-.report-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; justify-content: flex-end; }
+.report-logo-tagline {
+  font-size: 0.85rem;
+  color: var(--prep-header-meta);
+}
+
+.report-meta {
+  text-align: right;
+}
+
+.report-job {
+  margin: 0 0 0.25rem;
+  font-weight: 600;
+}
+
+.report-candidate {
+  margin: 0.1rem 0;
+  font-size: 0.9rem;
+  color: var(--prep-muted);
+}
+
+.report-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: flex-end;
+}
+
 .report-tag {
-  background: #dbeafe; color: #2563eb;
-  padding: 0.2rem 0.7rem; border-radius: 999px;
+  background: var(--prep-chip-bg);
+  color: var(--prep-chip-text);
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
   font-size: 0.78rem;
 }
-.report-tag-warning { background: #fef3c7; color: #92400e; }
 
-/* Body */
-.report-body { padding: 1.3rem 1.6rem 1.5rem; background: #f9fafb; }
-.report-debug-note { margin: 0 0 0.75rem; color: #92400e; font-size: 0.9rem; }
+.report-tag-warning {
+  background: var(--prep-chip-warning-bg);
+  color: var(--prep-chip-warning-text);
+}
 
-/* Sections */
+/* Body wrapper for custom prep report */
+.report-body {
+  padding: 1.3rem 1.6rem 1.5rem;
+  background: var(--prep-section-bg);
+}
+
+/* Sections inside custom prep report */
 .report-section {
   margin-bottom: 1.1rem;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--prep-section-bg);
+  border: 1px solid var(--prep-section-border);
   border-radius: 0.9rem;
   padding: 1rem 1.05rem 1.05rem;
 }
@@ -86,24 +444,48 @@
   font-size: 0.95rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #6b7280;
+  color: var(--prep-muted);
 }
 
 .report-subheading {
   margin: 0.45rem 0 0.25rem;
   font-size: 1rem;
-  color: #2563eb;
+  color: var(--prep-link);
 }
 
-.report-paragraph { margin: 0.18rem 0; font-size: 0.94rem; line-height: 1.5; }
+.report-paragraph {
+  margin: 0.18rem 0;
+  font-size: 0.94rem;
+  line-height: 1.5;
+}
 
 .report-example-block {
-  background: #eef2ff;
+  background: rgba(129, 140, 248, 0.08);
   border-radius: 0.75rem;
   padding: 0.8rem 0.9rem;
   margin: 0.6rem 0;
 }
 
-.report-example-question { margin: 0 0 0.35rem; font-weight: 600; }
-.report-example-answer { margin: 0; font-size: 0.94rem; color: #111827; }
-.report-legend { margin-top: 0.4rem; font-size: 0.82rem; color: #6b7280; }
+.report-example-question {
+  margin: 0 0 0.35rem;
+  font-weight: 600;
+}
+
+.report-example-answer {
+  margin: 0;
+  font-size: 0.94rem;
+  color: var(--prep-text);
+}
+
+.report-legend {
+  margin-top: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--prep-muted);
+}
+
+/* Debug note for custom prep report */
+.report-debug-note {
+  margin: 0 0 0.75rem;
+  color: var(--prep-chip-warning-text);
+  font-size: 0.9rem;
+}

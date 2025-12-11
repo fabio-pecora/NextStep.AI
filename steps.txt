@@ -1,8 +1,7 @@
-activate environment:  .\venv\Scripts\activate
 
-run: python app.py
 
 https://platform.openai.com/api-keys
+https://platform.openai.com/settings/organization/billing/overview
 
 check key: echo $env:OPENAI_API_KEY
 
