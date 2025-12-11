@@ -3,13 +3,12 @@ import json
 import tempfile
 import random
 from datetime import datetime, date, time, timedelta
-import pdfkit
 import io
+from xhtml2pdf import pisa
 
 import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 
 from flask import (
     Flask,
@@ -30,7 +29,6 @@ from functools import wraps
 from dotenv import load_dotenv
 load_dotenv()
 
-
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.pool import NullPool
 
@@ -42,7 +40,7 @@ from utils.evaluation import (
 from utils.prep_generator import generate_prep_report
 from utils.resume_review_generator import generate_resume_report
 from openai import OpenAI
-
+from werkzeug.exceptions import HTTPException
 
 # ---------------------------------------------------------------------------
 # Flask app + DB config
@@ -53,12 +51,10 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "change-this-in-production")
 SUPABASE_URL = os.environ.get("DATABASE_URL", "...")
 
-
 if os.environ.get("DATABASE_URL"):
     logger.info("Using DATABASE_URL from environment")
 else:
     logger.info("Using hardcoded Supabase URL fallback")
-
 
 app.config["SQLALCHEMY_DATABASE_URI"] = SUPABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -74,26 +70,21 @@ db = SQLAlchemy(
 # OpenAI client (uses OPENAI_API_KEY env var)
 client = OpenAI()
 
+# ---------------------------------------------------------------------------
+# Global error handler
+# ---------------------------------------------------------------------------
 
-# ---------------------------------------------------------------------------
-# SQLAlchemy models aligned with DB schema
-# ---------------------------------------------------------------------------
-
-from werkzeug.exceptions import HTTPException
-import traceback
-
-# ---------------------------------------------------------------------------
-# Global error handler - log any unexpected exception
-# ---------------------------------------------------------------------------
 @app.errorhandler(Exception)
 def handle_unexpected_error(e):
-    # Let Flask handle HTTP errors (404, 405, etc.)
     if isinstance(e, HTTPException):
         return e
 
     logger.error("Unhandled exception in request", exc_info=e)
     return "Internal server error", 500
 
+# ---------------------------------------------------------------------------
+# SQLAlchemy models aligned with DB schema
+# ---------------------------------------------------------------------------
 
 class User(db.Model):
     __tablename__ = "users"
@@ -375,7 +366,6 @@ class Winner(db.Model):
         db.UniqueConstraint("winner_date", name="uq_winner_date"),
     )
 
-
 # ---------------------------------------------------------------------------
 # JSON data paths
 # ---------------------------------------------------------------------------
@@ -387,11 +377,9 @@ JOBS_PATH = os.path.join(BASE_DIR, "data", "jobs.json")
 JOB_QUESTIONS_PATH = os.path.join(BASE_DIR, "data", "job_questions.json")
 WINNERS_PATH = os.path.join(BASE_DIR, "data", "winners.json")
 
-
 # ---------------------------------------------------------------------------
 # Helpers / auth utilities
 # ---------------------------------------------------------------------------
-
 
 def get_current_user():
     user_id = session.get("user_id")
@@ -515,10 +503,6 @@ def get_next_question():
 
 
 def prune_user_records(model, user_id, keep: int):
-    """
-    Keep only the newest `keep` rows for this user in `model`.
-    Assumes the model has `user_id` and `created_at` columns.
-    """
     if not user_id:
         return
 
@@ -526,7 +510,7 @@ def prune_user_records(model, user_id, keep: int):
         model.query
         .filter_by(user_id=user_id)
         .order_by(model.created_at.desc())
-        .offset(keep)  # skip newest `keep`, fetch the rest
+        .offset(keep)
         .all()
     )
 
@@ -540,6 +524,7 @@ def prune_user_records(model, user_id, keep: int):
         db.session.commit()
     except Exception:
         db.session.rollback()
+
 
 def save_answer_to_db(
     *,
@@ -600,7 +585,6 @@ def save_answer_to_db(
         db.session.add(answer)
         db.session.commit()
 
-        # keep only the last 20 answers for this user
         prune_user_records(Answer, resolved_user_id, keep=20)
 
     except Exception:
@@ -609,7 +593,6 @@ def save_answer_to_db(
 # ---------------------------------------------------------------------------
 # Auth routes
 # ---------------------------------------------------------------------------
-
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -705,10 +688,10 @@ def logout():
     flash("You have been logged out.", "success")
     return redirect(url_for("index"))
 
-
 # ---------------------------------------------------------------------------
 # Profile route
 # ---------------------------------------------------------------------------
+
 @app.route("/profile")
 @login_required
 def profile():
@@ -744,17 +727,15 @@ def profile():
         resume_reports=recent_resume_reports,
     )
 
-
-
 # ---------------------------------------------------------------------------
 # Main practice routes
-# --------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+
 @app.route("/", methods=["GET"])
 def index():
     logger.info("Rendering index - user_id in session=%s", session.get("user_id"))
     daily_question = get_today_daily_question()
     return render_template("index.html", question=daily_question)
-
 
 
 @app.route("/next_question", methods=["POST"])
@@ -817,7 +798,6 @@ def answer():
         update_streak_for_user(current_user)
 
     return render_template("result.html", result=eval_result)
-
 
 @app.route("/audio", methods=["POST"])
 def audio():
@@ -883,11 +863,9 @@ def audio():
             except Exception:
                 pass
 
-
 # ---------------------------------------------------------------------------
 # Job-specific practice
 # ---------------------------------------------------------------------------
-
 
 @app.route("/job_answer", methods=["POST"])
 def job_answer():
@@ -938,13 +916,6 @@ def job_answer():
 
 @app.route("/job_audio", methods=["POST"])
 def job_audio():
-    """
-    Receive audio for a job specific question, transcribe and evaluate with GPT,
-    then return the SAME feedback page (result.html) as text answers.
-
-    The route returns JSON with an `html` field that contains the fully rendered
-    result page. The frontend will replace the current page with this HTML.
-    """
     job_id = request.form.get("job_id")
     question_id = request.form.get("question_id")
 
@@ -966,26 +937,21 @@ def job_audio():
     temp_path = None
 
     try:
-        # Save uploaded blob to a temp file (same pattern as /audio)
         suffix = os.path.splitext(filename)[1] or ".webm"
         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
             temp_path = tmp.name
         audio_file.save(temp_path)
 
-        # 1) Transcribe
         transcript_text = transcribe_audio_whisper(temp_path)
 
-        # 2) Evaluate with GPT
         eval_result = gpt_evaluate_answer(
             question=question.question_text,
             ideal_answer=question.ideal_answer or "",
             user_answer=transcript_text,
         )
 
-        # Add transcript so result.html can show it if you want
         eval_result["transcript"] = transcript_text
 
-        # 3) Save in DB (best-effort)
         current_user = get_current_user()
         try:
             save_answer_to_db(
@@ -1003,10 +969,8 @@ def job_audio():
             print("Error saving job voice answer:", e2)
             db.session.rollback()
 
-        # 4) Render the SAME feedback page used by text answers
         html = render_template("result.html", result=eval_result)
 
-        # Return it as JSON; frontend will swap the page with this HTML
         return jsonify({"html": html}), 200
 
     except Exception as e:
@@ -1025,7 +989,6 @@ def job_audio():
 # ---------------------------------------------------------------------------
 # Jobs library
 # ---------------------------------------------------------------------------
-
 
 @app.route("/jobs", methods=["GET"])
 def jobs():
@@ -1057,7 +1020,6 @@ def job_detail(job_id: int):
     ]
 
     return render_template("job_detail.html", job=job, questions=questions)
-
 
 # ---------------------------------------------------------------------------
 # Custom prep reports
@@ -1101,7 +1063,6 @@ def custom_prep():
                     db.session.add(prep)
                     db.session.commit()
 
-                    # keep only last 20 prep reports for this user
                     if current_user:
                         prune_user_records(PrepReport, current_user.id, keep=20)
 
@@ -1113,7 +1074,6 @@ def custom_prep():
         report=report,
         error=error,
     )
-
 
 
 @app.route("/custom_prep/report/<int:report_id>", methods=["GET"])
@@ -1137,11 +1097,52 @@ def view_saved_prep_report(report_id: int):
         report=prep_report.report_json,
     )
 
+def render_pdf_from_html(html: str, css_files: list[str] | None = None) -> bytes:
+    full_html = html
+
+    if css_files:
+        styles = ""
+        for path in css_files:
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    styles += f.read() + "\n"
+            except Exception:
+                continue
+
+        full_html = f"""
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <style>
+            {styles}
+            </style>
+          </head>
+          <body>
+            {html}
+          </body>
+        </html>
+        """
+
+    pdf_buffer = io.BytesIO()
+    pisa.CreatePDF(io.StringIO(full_html), dest=pdf_buffer)
+    pdf_buffer.seek(0)
+    return pdf_buffer.getvalue()
+
 
 @app.route("/custom_prep/report/<int:report_id>/pdf", methods=["GET"])
 @login_required
 def download_saved_prep_report_pdf(report_id: int):
-    prep_report = PrepReport.query.get_or_404(report_id)
+    user = get_current_user()
+    if not user:
+        return redirect(url_for("login", next=request.path))
+
+    prep_report = PrepReport.query.filter_by(
+        id=report_id,
+        user_id=user.id,
+    ).first()
+
+    if not prep_report:
+        abort(404)
 
     html = render_template(
         "saved_prep_report.html",
@@ -1156,24 +1157,7 @@ def download_saved_prep_report_pdf(report_id: int):
         os.path.join(base_dir, "static", "css", "saved_prep_report.css"),
     ]
 
-    config = pdfkit.configuration(
-        wkhtmltopdf=r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
-    )
-
-    options = {
-        "enable-local-file-access": None,
-        "page-size": "Letter",
-        "margin-top": "10mm",
-        "margin-right": "10mm",
-        "margin-bottom": "12mm",
-        "margin-left": "10mm",
-        "print-media-type": None,
-        "quiet": "",
-    }
-
-    pdf_bytes = pdfkit.from_string(
-        html, False, css=css_files, options=options, configuration=config
-    )
+    pdf_bytes = render_pdf_from_html(html, css_files)
 
     filename = f"prep_report_{report_id}.pdf"
     return (
@@ -1209,7 +1193,6 @@ def download_saved_prep_report(report_id: int):
     )
     return response
 
-
 # ---------------------------------------------------------------------------
 # Resume check
 # ---------------------------------------------------------------------------
@@ -1239,7 +1222,7 @@ def resume_check():
                         resume_file.save(temp_path)
 
                     try:
-                        from PyPDF2 import PdfReader  # type: ignore
+                        from PyPDF2 import PdfReader
 
                         reader = PdfReader(temp_path)
                         pages_text = []
@@ -1285,7 +1268,6 @@ def resume_check():
                 db.session.commit()
                 report["saved_id"] = row.id
 
-                # keep only last 20 resume reports for this user
                 if current_user:
                     prune_user_records(ResumeReport, current_user.id, keep=20)
 
@@ -1297,7 +1279,6 @@ def resume_check():
         report=report,
         error=error,
     )
-
 
 
 @app.route("/resume_check/report/<int:report_id>", methods=["GET"])
@@ -1325,7 +1306,17 @@ def view_saved_resume_report(report_id: int):
 @app.route("/resume_check/report/<int:report_id>/pdf", methods=["GET"])
 @login_required
 def download_saved_resume_report_pdf(report_id: int):
-    resume_report = ResumeReport.query.get_or_404(report_id)
+    user = get_current_user()
+    if not user:
+        return redirect(url_for("login", next=request.path))
+
+    resume_report = ResumeReport.query.filter_by(
+        id=report_id,
+        user_id=user.id,
+    ).first()
+
+    if not resume_report:
+        abort(404)
 
     html = render_template(
         "saved_resume_report.html",
@@ -1340,24 +1331,7 @@ def download_saved_resume_report_pdf(report_id: int):
         os.path.join(base_dir, "static", "css", "saved_resume_report.css"),
     ]
 
-    config = pdfkit.configuration(
-        wkhtmltopdf=r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
-    )
-
-    options = {
-        "enable-local-file-access": None,
-        "page-size": "Letter",
-        "margin-top": "10mm",
-        "margin-right": "10mm",
-        "margin-bottom": "12mm",
-        "margin-left": "10mm",
-        "print-media-type": None,
-        "quiet": "",
-    }
-
-    pdf_bytes = pdfkit.from_string(
-        html, False, css=css_files, options=options, configuration=config
-    )
+    pdf_bytes = render_pdf_from_html(html, css_files)
 
     filename = f"resume_report_{report_id}.pdf"
     return (
@@ -1369,11 +1343,9 @@ def download_saved_resume_report_pdf(report_id: int):
         },
     )
 
-
 # ---------------------------------------------------------------------------
 # Winners and Courses
 # ---------------------------------------------------------------------------
-
 
 @app.route("/winners", methods=["GET"])
 def winners():
@@ -1397,22 +1369,18 @@ def winners():
 def courses():
     return render_template("courses.html")
 
-
 # ---------------------------------------------------------------------------
 # Mock Interview - UI
 # ---------------------------------------------------------------------------
-
 
 @app.route("/mock_interview")
 @login_required
 def mock_interview():
     return render_template("mock_interview.html")
 
-
 # ---------------------------------------------------------------------------
 # TTS endpoint for AI questions
 # ---------------------------------------------------------------------------
-
 
 @app.route("/api/tts_question", methods=["POST"])
 @login_required
@@ -1424,7 +1392,6 @@ def tts_question():
         return jsonify({"error": "No text provided"}), 400
 
     try:
-        # stream TTS audio and buffer it into memory
         with client.audio.speech.with_streaming_response.create(
             model="gpt-4o-mini-tts",
             voice="alloy",
@@ -1445,7 +1412,6 @@ def tts_question():
     except Exception as e:
         print("TTS error in /api/tts_question:", e)
         return jsonify({"error": "TTS failed"}), 500
-
 
 # ---------------------------------------------------------------------------
 # Mock interview - candidate audio answer
@@ -1469,7 +1435,6 @@ def mock_interview_start():
         history=[]
     )
 
-    # First question counts as question 1
     session["mock_question_count"] = 1
 
     return jsonify({
@@ -1479,15 +1444,10 @@ def mock_interview_start():
         "total_questions": 10
     })
 
+
 @app.route("/api/mock_interview_answer", methods=["POST"])
 @login_required
 def mock_interview_answer():
-    """
-    Receive an audio answer from the mock interview page,
-    transcribe with OpenAI STT, evaluate it, update mock
-    interview history, optionally generate the next question,
-    and return everything in one JSON response.
-    """
     if "audio" not in request.files:
         return jsonify({"error": "No audio file received"}), 400
 
@@ -1495,13 +1455,11 @@ def mock_interview_answer():
     if audio_file.filename == "":
         return jsonify({"error": "Empty audio filename"}), 400
 
-    # Question text sent from the frontend
     question_text = request.form.get("question", "").strip() or "Mock interview question"
 
     temp_path = None
 
     try:
-        # Save to a temporary .webm file
         with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp:
             temp_path = tmp.name
         audio_file.save(temp_path)
@@ -1512,22 +1470,19 @@ def mock_interview_answer():
             file_size = 0
         print("Mock interview audio saved to:", temp_path, "size:", file_size)
 
-        # 1) Transcribe with OpenAI STT
         with open(temp_path, "rb") as f:
             stt_resp = client.audio.transcriptions.create(
-                model="gpt-4o-mini-transcribe",  # or "whisper-1"
+                model="gpt-4o-mini-transcribe",
                 file=f,
             )
         transcript_text = stt_resp.text
 
-        # 2) Evaluate answer
         eval_result = gpt_evaluate_answer(
             question=question_text,
             ideal_answer="",
             user_answer=transcript_text,
         )
 
-        # 3) Update mock interview history in the session
         history = session.get("mock_history", [])
         history.append(
             {
@@ -1538,9 +1493,8 @@ def mock_interview_answer():
         )
         session["mock_history"] = history
 
-        # 4) Update count and (optionally) generate next question
         total_questions = 10
-        current_count = session.get("mock_question_count", 1)  # already 1 after start
+        current_count = session.get("mock_question_count", 1)
         job_title = session.get("mock_job_title", "")
         company = session.get("mock_company", "")
 
@@ -1552,18 +1506,15 @@ def mock_interview_answer():
         if current_count >= total_questions:
             done = True
         else:
-            # We are about to ask the next question
             next_number = current_count + 1
             session["mock_question_count"] = next_number
 
-            # Generate next question using updated history
             next_intro, next_question = generate_mock_interview_question(
                 job_title=job_title,
                 company=company,
                 history=history,
             )
 
-        # 5) Save to DB (best effort)
         current_user = get_current_user()
         try:
             save_answer_to_db(
@@ -1579,7 +1530,6 @@ def mock_interview_answer():
             print("Error saving mock interview answer:", e2)
             db.session.rollback()
 
-        # 6) Return everything, including next question (if any)
         return jsonify(
             {
                 "transcript": transcript_text,
@@ -1604,7 +1554,6 @@ def mock_interview_answer():
                 os.remove(temp_path)
             except Exception:
                 pass
-
 
 
 @app.route("/api/mock_interview_next_question", methods=["POST"])
@@ -1635,13 +1584,12 @@ def mock_interview_next_question():
         "question_number": count,
         "total_questions": total_questions
     })
+
+
 def generate_mock_interview_question(job_title: str, company: str, history: list):
     role = job_title or "software engineer"
     org = company or "a top tech company"
 
-    # If there is NO history, Fabio introduces himself.
-    # If there IS history, Fabio must NOT introduce himself again
-    # and should set "intro" to an empty string.
     system_prompt = (
         f"You are Fabio, a friendly but rigorous behavioral interviewer. "
         f"You work at {org} and you are interviewing for a {role} position. "
@@ -1659,7 +1607,6 @@ def generate_mock_interview_question(job_title: str, company: str, history: list
 
     messages = [{"role": "system", "content": system_prompt}]
 
-    # If we have previous Q&A, give the model a short summary
     if history:
         brief_history = []
         for idx, item in enumerate(history[-5:], start=1):
@@ -1711,80 +1658,15 @@ def generate_mock_interview_question(job_title: str, company: str, history: list
         intro = f"Hi, I am Fabio, I work at {org}, and I am excited to interview you for the {role} role today."
         question = content.strip()
 
-    # Fallback only for the first question (no history)
     if not intro and not history:
         intro = f"Hi, I am Fabio, I work at {org}, and I am excited to interview you for the {role} role today."
 
     return intro, question
 
 
-
-    messages = [{"role": "system", "content": system_prompt}]
-
-    # Optionally give context from history
-    if history:
-        brief_history = []
-        # You can trim if needed to avoid token bloat
-        for idx, item in enumerate(history[-5:], start=1):
-            q = item.get("question", "")
-            a = item.get("answer", "")
-            feedback = item.get("evaluation", {}).get("feedback_text", "")
-            brief_history.append(
-                f"Q{idx}: {q}\nCandidate answer: {a}\nYour feedback: {feedback}"
-            )
-
-        messages.append({
-            "role": "user",
-            "content": (
-                "Here is the previous part of the interview:\n\n"
-                + "\n\n".join(brief_history)
-            )
-        })
-
-        messages.append({
-            "role": "user",
-            "content": "Now continue the interview and respond in JSON with fields intro and question for the next question only."
-        })
-    else:
-        messages.append({
-            "role": "user",
-            "content": (
-                "Start the interview. Introduce yourself as Fabio and ask the first "
-                "good interview question. Respond in JSON with fields intro and question."
-            )
-        })
-
-    resp = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=messages,
-        temperature=0.7,
-    )
-
-    content = resp.choices[0].message.content.strip()
-
-    # Try to parse JSON answer
-    try:
-        data = json.loads(content)
-        intro = data.get("intro", "").strip()
-        question = data.get("question", "").strip()
-    except Exception:
-        # Fallback if the model did not return JSON
-        intro = f"Hi, I am Fabio, I work at {org}, and I am excited to interview you for the {role} role today."
-        question = content
-
-    if not intro:
-        intro = f"Hi, I am Fabio, I work at {org}, and I am excited to interview you for the {role} role today."
-
-    return intro, question
-
 @app.route("/api/mock_interview_answer_text", methods=["POST"])
 @login_required
 def mock_interview_answer_text():
-    """
-    Receive a typed answer from the mock interview page,
-    evaluate it, update mock interview history, optionally
-    generate the next question, and return everything in one JSON.
-    """
     data = request.get_json() or {}
     answer_text = (data.get("answer_text") or "").strip()
     question_text = (data.get("question") or "").strip() or "Mock interview question"
@@ -1793,14 +1675,12 @@ def mock_interview_answer_text():
         return jsonify({"error": "No answer text provided"}), 400
 
     try:
-        # 1) Evaluate answer
         eval_result = gpt_evaluate_answer(
             question=question_text,
             ideal_answer="",
             user_answer=answer_text,
         )
 
-        # 2) Update mock interview history
         history = session.get("mock_history", [])
         history.append(
             {
@@ -1811,7 +1691,6 @@ def mock_interview_answer_text():
         )
         session["mock_history"] = history
 
-        # 3) Update count and generate next question if needed
         total_questions = 10
         current_count = session.get("mock_question_count", 1)
         job_title = session.get("mock_job_title", "")
@@ -1834,7 +1713,6 @@ def mock_interview_answer_text():
                 history=history,
             )
 
-        # 4) Save to DB
         current_user = get_current_user()
         try:
             save_answer_to_db(
@@ -1868,11 +1746,9 @@ def mock_interview_answer_text():
             {"error": f"Error processing mock interview text answer: {str(e)}"}
         ), 500
 
-
 # ---------------------------------------------------------------------------
 # Entrypoint
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
-

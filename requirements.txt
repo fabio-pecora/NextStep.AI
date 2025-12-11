@@ -3,10 +3,10 @@ Flask-SQLAlchemy
 SQLAlchemy
 openai
 psycopg[binary]
-pdfkit
 PyPDF2
 python-dotenv
 gunicorn
+xhtml2pdf
 
 
 gunicorn
