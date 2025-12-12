@@ -2,62 +2,107 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>NextStep.AI – Sign Up</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" /> 
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NextStep.AI | Sign Up</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
 </head>
-<body>
-  <header class="auth-header">
-    <a href="{{ url_for('index') }}" class="brand">NextStep.<span>AI</span></a>
-  </header>
 
-  <main class="auth-container">
-    <div class="auth-card">
-      <h1>Create your account</h1>
-      <p class="subtitle">Practice smarter, track your streaks, and save your progress.</p>
+<body class="auth-page">
+  <main class="auth-shell">
+    <section class="auth-left">
+      <div class="auth-left-inner">
+        <a href="{{ url_for('index') }}" class="brand brand-hero" aria-label="NextStep.AI home">
+          <span class="brand-word">NextStep</span><span class="brand-dot">.</span><span class="brand-ai">ai</span>
+        </a>
 
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          <ul class="flash-list">
-            {% for category, message in messages %}
-              <li class="{{ 'flash-error' if category == 'error' else 'flash-success' }}">{{ message }}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      {% endwith %}
-
-      <form method="POST" class="auth-form">
-        <label>Email</label>
-        <input type="email" name="email" required placeholder="you@example.com" />
-
-        <label>Username</label>
-        <input type="text" name="username" required placeholder="your_handle" />
-
-        <label>Password</label>
-        <input type="password" name="password" required placeholder="********" />
-
-        <label>Confirm Password</label>
-        <input type="password" name="confirm_password" required placeholder="********" />
-
-        <label>Profile image URL (optional)</label>
-        <input type="text" name="profile_image_url" placeholder="https://..." />
-
-        <div class="checkbox-row">
-          <input type="checkbox" id="opt_out_emails" name="opt_out_emails" value="1" />
-          <label for="opt_out_emails">I prefer not to receive product emails.</label>
+        <div class="logo-wrap" aria-hidden="true">
+          <img src="{{ url_for('static', filename='img/logo.png') }}" alt="" class="logo-img" />
+          <div class="logo-glow"></div>
         </div>
 
-        <button type="submit" class="btn-primary">Sign up</button>
-
-        <p class="switch-link">
-          Already have an account? <a href="{{ url_for('login') }}">Log in</a>
+        <h1 class="hero-title">Create your account</h1>
+        <p class="hero-subtitle">
+          Practice smarter, save progress, and get personalized feedback that improves fast.
         </p>
-      </form>
-    </div>
-  </main>
 
-  <footer class="auth-footer">
-    © {{ current_year or "2025" }} NextStep.AI
-  </footer>
+        <div class="hero-pills" aria-hidden="true">
+          <span class="pill">Daily questions</span>
+          <span class="pill">AI feedback</span>
+          <span class="pill">Streaks</span>
+          <span class="pill">Saved reports</span>
+        </div>
+      </div>
+
+      <div class="auth-left-noise" aria-hidden="true"></div>
+    </section>
+
+    <section class="auth-right">
+      <div class="top-row">
+        <a href="{{ url_for('index') }}" class="brand brand-top" aria-label="NextStep.AI home">
+          <span class="brand-word">NextStep</span><span class="brand-dot">.</span><span class="brand-ai">ai</span>
+        </a>
+      </div>
+
+      <div class="auth-card">
+        <div class="card-head">
+          <h2 class="card-title">Sign up</h2>
+          <p class="card-subtitle">It takes less than a minute.</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <ul class="flash-list" role="status" aria-live="polite">
+              {% for category, message in messages %}
+                <li class="flash {{ 'flash-error' if category == 'error' else 'flash-success' }}">{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" class="auth-form">
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" type="email" name="email" required placeholder="you@example.com" />
+          </div>
+
+          <div class="field">
+            <label for="username">Username</label>
+            <input id="username" type="text" name="username" required placeholder="your_handle" />
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" type="password" name="password" required placeholder="********" />
+          </div>
+
+          <div class="field">
+            <label for="confirm_password">Confirm Password</label>
+            <input id="confirm_password" type="password" name="confirm_password" required placeholder="********" />
+          </div>
+
+          <div class="field">
+            <label for="profile_image_url">Profile image URL (optional)</label>
+            <input id="profile_image_url" type="text" name="profile_image_url" placeholder="https://..." />
+          </div>
+
+          <div class="checkbox-row">
+            <input type="checkbox" id="opt_out_emails" name="opt_out_emails" value="1" />
+            <label for="opt_out_emails">I prefer not to receive product emails.</label>
+          </div>
+
+          <button type="submit" class="btn-primary">Create account</button>
+
+          <p class="switch-link">
+            Already have an account? <a href="{{ url_for('login') }}">Log in</a>
+          </p>
+        </form>
+      </div>
+
+      <footer class="auth-footer">
+        © {{ current_year or "2025" }} NextStep.AI
+      </footer>
+    </section>
+  </main>
 </body>
 </html>

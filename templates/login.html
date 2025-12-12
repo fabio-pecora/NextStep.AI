@@ -2,48 +2,87 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>NextStep.AI – Login</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" /> 
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NextStep.AI | Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
 </head>
-<body>
-  <header class="auth-header">
-    <a href="{{ url_for('index') }}" class="brand">NextStep.<span>AI</span></a>
-  </header>
 
-  <main class="auth-container">
-    <div class="auth-card">
-      <h1>Welcome back</h1>
-      <p class="subtitle">Log in to continue your interview practice.</p>
+<body class="auth-page">
+  <main class="auth-shell">
+    <section class="auth-left">
+      <div class="auth-left-inner">
+        <a href="{{ url_for('index') }}" class="brand brand-hero" aria-label="NextStep.AI home">
+          <span class="brand-word">NextStep</span><span class="brand-dot">.</span><span class="brand-ai">ai</span>
+        </a>
 
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          <ul class="flash-list">
-            {% for category, message in messages %}
-              <li class="{{ 'flash-error' if category == 'error' else 'flash-success' }}">{{ message }}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      {% endwith %}
+        <div class="logo-wrap" aria-hidden="true">
+          <img src="{{ url_for('static', filename='img/logo.png') }}" alt="" class="logo-img" />
+          <div class="logo-glow"></div>
+        </div>
 
-      <form method="POST" class="auth-form">
-        <label>Email or username</label>
-        <input type="text" name="identifier" required placeholder="you@example.com or your_handle" />
-
-        <label>Password</label>
-        <input type="password" name="password" required placeholder="********" />
-
-        <button type="submit" class="btn-primary">Log in</button>
-
-        <p class="switch-link">
-          New here? <a href="{{ url_for('register') }}">Create an account</a>
+        <h1 class="hero-title">Welcome back</h1>
+        <p class="hero-subtitle">
+          Log in to keep your streak, refine answers, and generate job specific prep reports.
         </p>
-      </form>
-    </div>
-  </main>
 
-  <footer class="auth-footer">
-    © {{ current_year or "2025" }} NextStep.AI
-  </footer>
+        <div class="hero-pills" aria-hidden="true">
+          <span class="pill">Behavioral practice</span>
+          <span class="pill">Resume review</span>
+          <span class="pill">Job library</span>
+          <span class="pill">Prep reports</span>
+        </div>
+      </div>
+
+      <div class="auth-left-noise" aria-hidden="true"></div>
+    </section>
+
+    <section class="auth-right">
+      <div class="top-row">
+        <a href="{{ url_for('index') }}" class="brand brand-top" aria-label="NextStep.AI home">
+          <span class="brand-word">NextStep</span><span class="brand-dot">.</span><span class="brand-ai">ai</span>
+        </a>
+      </div>
+
+      <div class="auth-card">
+        <div class="card-head">
+          <h2 class="card-title">Log in</h2>
+          <p class="card-subtitle">Use your email or username.</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <ul class="flash-list" role="status" aria-live="polite">
+              {% for category, message in messages %}
+                <li class="flash {{ 'flash-error' if category == 'error' else 'flash-success' }}">{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" class="auth-form">
+          <div class="field">
+            <label for="identifier">Email or username</label>
+            <input id="identifier" type="text" name="identifier" required placeholder="you@example.com or your_handle" />
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" type="password" name="password" required placeholder="********" />
+          </div>
+
+          <button type="submit" class="btn-primary">Log in</button>
+
+          <p class="switch-link">
+            New here? <a href="{{ url_for('register') }}">Create an account</a>
+          </p>
+        </form>
+      </div>
+
+      <footer class="auth-footer">
+        © {{ current_year or "2025" }} NextStep.AI
+      </footer>
+    </section>
+  </main>
 </body>
 </html>
