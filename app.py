@@ -31,6 +31,8 @@ load_dotenv()
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.pool import NullPool
+from sqlalchemy import and_
+
 
 from utils.evaluation import (
     evaluate_answer,
@@ -47,6 +49,7 @@ from werkzeug.exceptions import HTTPException
 # ---------------------------------------------------------------------------
 
 app = Flask(__name__)
+
 
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "change-this-in-production")
 SUPABASE_URL = os.environ.get("DATABASE_URL", "...")
@@ -385,7 +388,11 @@ def get_current_user():
     user_id = session.get("user_id")
     if not user_id:
         return None
-    return User.query.get(user_id)
+
+    user = User.query.get(user_id)
+    if user:
+        reconcile_streak_for_user(user)
+    return user
 
 
 def login_required(view_func):
@@ -437,7 +444,6 @@ def get_today_daily_question():
     today = date.today()
     return DailyQuestion.query.filter_by(active_for_date=today).first()
 
-
 def update_streak_for_user(user: User):
     if not user:
         return
@@ -446,6 +452,7 @@ def update_streak_for_user(user: User):
     today = now.date()
     cutoff = time(20, 0)
 
+    # Only count if answered before 8pm
     if now.time() >= cutoff:
         return
 
@@ -461,13 +468,11 @@ def update_streak_for_user(user: User):
     ).first()
 
     if yesterday_kept:
-        current = user.streak_count or 0
-        user.streak_count = current + 1
+        user.streak_count = (user.streak_count or 0) + 1
     else:
         user.streak_count = 1
 
-    longest = user.longest_streak or 0
-    if user.streak_count > longest:
+    if (user.longest_streak or 0) < user.streak_count:
         user.longest_streak = user.streak_count
 
     today_record = StreakHistory(
@@ -481,6 +486,92 @@ def update_streak_for_user(user: User):
         db.session.commit()
     except Exception:
         db.session.rollback()
+
+
+def reconcile_streak_for_user(user: User):
+    if not user:
+        return
+
+    now = datetime.now()
+    today = now.date()
+    cutoff = time(20, 0)
+
+    # If the user already kept today, streak_count should reflect the
+    # consecutive kept run ending today.
+    today_kept = StreakHistory.query.filter_by(
+        user_id=user.id, date=today, status="kept"
+    ).first()
+
+    if today_kept:
+        # Count consecutive kept days ending today
+        streak = 0
+        d = today
+        while True:
+            kept = StreakHistory.query.filter_by(
+                user_id=user.id, date=d, status="kept"
+            ).first()
+            if not kept:
+                break
+            streak += 1
+            d = d - timedelta(days=1)
+
+        changed = False
+        if (user.streak_count or 0) != streak:
+            user.streak_count = streak
+            changed = True
+
+        if (user.longest_streak or 0) < streak:
+            user.longest_streak = streak
+            changed = True
+
+        if changed:
+            try:
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
+        return
+
+    # If today is not kept, decide whether the streak is still "alive"
+    # (before 8pm) or should be reset (after 8pm or missed day(s)).
+    yesterday = today - timedelta(days=1)
+    yesterday_kept = StreakHistory.query.filter_by(
+        user_id=user.id, date=yesterday, status="kept"
+    ).first()
+
+    # Find last kept date (if any)
+    last_kept = (
+        StreakHistory.query
+        .filter_by(user_id=user.id, status="kept")
+        .order_by(StreakHistory.date.desc())
+        .first()
+    )
+    last_kept_date = last_kept.date if last_kept else None
+
+    should_reset_to_zero = False
+
+    if last_kept_date is None:
+        should_reset_to_zero = True
+    elif last_kept_date < yesterday:
+        # Missed at least one full day already
+        should_reset_to_zero = True
+    elif last_kept_date == yesterday:
+        # Streak is alive only until 8pm today
+        if now.time() >= cutoff:
+            should_reset_to_zero = True
+        else:
+            # Before 8pm, keep showing the streak that ended yesterday
+            # (do not reset yet)
+            should_reset_to_zero = False
+    else:
+        # last_kept_date == today would have been handled above
+        should_reset_to_zero = True
+
+    if should_reset_to_zero and (user.streak_count or 0) != 0:
+        user.streak_count = 0
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
 
 
 def get_next_question():
@@ -1349,18 +1440,24 @@ def download_saved_resume_report_pdf(report_id: int):
 
 @app.route("/winners", methods=["GET"])
 def winners():
-    winners_data = load_winners()
+    rows = (
+        Winner.query
+        .order_by(Winner.winner_date.desc())
+        .limit(20)
+        .all()
+    )
 
-    try:
-        winners_data = sorted(
-            winners_data,
-            key=lambda w: w.get("date", ""),
-            reverse=True,
-        )
-    except Exception:
-        pass
-
-    winners_data = winners_data[:20]
+    winners_data = [
+        {
+            "date": w.winner_date.isoformat(),
+            "user_id": w.user_id,
+            "question_text": w.question_text,
+            "answer_text": w.answer_text,
+            "final_score": float(w.final_score) if w.final_score is not None else None,
+            "feedback_text": w.feedback_text,
+        }
+        for w in rows
+    ]
 
     return render_template("winners.html", winners=winners_data)
 
@@ -1368,6 +1465,124 @@ def winners():
 @app.route("/courses", methods=["GET"])
 def courses():
     return render_template("courses.html")
+
+
+def _date_range_for_day(day: date):
+    start = datetime.combine(day, time.min)
+    end = start + timedelta(days=1)
+    return start, end
+
+from datetime import datetime, date, time
+
+CUTOFF_TIME = time(20, 0)  # 8pm
+
+
+def select_and_save_daily_winner_for_date(day: date) -> bool:
+    """
+    Creates the daily winner for `day` using only answers submitted before 8pm.
+    Returns True if a winner was created.
+    Returns False if no winner was created (already exists, no daily question, no answers, etc).
+    """
+
+    # Do not create twice
+    existing = Winner.query.filter_by(winner_date=day).first()
+    if existing:
+        return False
+
+    daily_q = DailyQuestion.query.filter_by(active_for_date=day).first()
+    if not daily_q:
+        return False
+
+    # Only consider answers from 00:00 up to (but not including) 8pm
+    start_dt = datetime.combine(day, time.min)
+    end_dt = datetime.combine(day, CUTOFF_TIME)
+
+    # Pick best answer for that daily question on that day (before 8pm)
+    best = (
+        Answer.query
+        .filter(
+            Answer.question_source == "daily",
+            Answer.question_id == daily_q.id,
+            Answer.created_at >= start_dt,
+            Answer.created_at < end_dt,
+        )
+        .order_by(
+            Answer.final_score.desc().nullslast(),
+            Answer.confidence_score.desc().nullslast(),
+            Answer.relevance_score.desc().nullslast(),
+            Answer.created_at.asc(),
+        )
+        .first()
+    )
+
+    if not best:
+        return False
+
+    winner_row = Winner(
+        winner_date=day,
+        user_id=best.user_id,
+        question_text=best.raw_question_text,
+        answer_text=best.answer_text,
+        final_score=best.final_score,
+        feedback_text=best.feedback_text,
+    )
+
+    db.session.add(winner_row)
+
+    try:
+        db.session.commit()
+    except Exception:
+        # If another process already created it (uq_winner_date), just back out cleanly.
+        db.session.rollback()
+        return False
+
+    # Optional: also append to winners.json (best effort only)
+    try:
+        winners_data = load_winners()
+        winners_data.append(
+            {
+                "date": day.isoformat(),
+                "user_id": best.user_id,
+                "question_text": best.raw_question_text,
+                "answer_text": best.answer_text,
+                "final_score": float(best.final_score) if best.final_score is not None else None,
+                "feedback_text": best.feedback_text,
+            }
+        )
+
+        winners_data = sorted(
+            winners_data,
+            key=lambda w: w.get("date", ""),
+            reverse=True,
+        )
+
+        with open(WINNERS_PATH, "w", encoding="utf-8") as f:
+            json.dump(winners_data, f, ensure_ascii=False, indent=2)
+    except Exception:
+        # Ignore file write errors in production
+        pass
+
+    return True
+
+
+_last_winner_check = None
+
+def maybe_run_daily_winner_job():
+    global _last_winner_check
+
+    now = datetime.now()
+    cutoff = time(20, 0)
+    if now.time() < cutoff:
+        return
+
+    today = now.date()
+
+    if _last_winner_check == today:
+        return
+
+    created = select_and_save_daily_winner_for_date(today)
+    _last_winner_check = today
+
 
 # ---------------------------------------------------------------------------
 # Mock Interview - UI
