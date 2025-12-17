@@ -1462,7 +1462,7 @@ def view_saved_resume_report(report_id: int):
     return render_template(
         "saved_resume_report.html",
         resume_report=resume_report,
-        report=normalize_resume_report_for_ui(resume_report.report_json),
+        report=resume_report.report_json,
     )
 
 
