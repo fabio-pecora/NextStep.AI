@@ -6,23 +6,27 @@
 
   <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/result.css') }}">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-        rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="landing-body">
   {% include "navbar.html" %}
 
-  {% macro score_label(score) %}
-    {% if score < 50 %}
+  {% macro score_label(score) -%}
+    {%- set s = (score|default(0)|float) -%}
+    {%- if s < 50 -%}
       <span class="score-label bad">Below hiring bar</span>
-    {% elif score < 70 %}
+    {%- elif s < 70 -%}
       <span class="score-label ok">Needs improvement</span>
-    {% elif score < 85 %}
+    {%- elif s < 85 -%}
       <span class="score-label good">Meets hiring bar</span>
-    {% else %}
+    {%- else -%}
       <span class="score-label strong">Strong</span>
-    {% endif %}
-  {% endmacro %}
+    {%- endif -%}
+  {%- endmacro %}
+
+  {% set final_s = (result.final_score|default(0)|float) %}
+  {% set rel_s = (result.relevance_score|default(0)|float) %}
+  {% set conf_s = (result.confidence_score|default(0)|float) %}
 
   <main>
     <section class="result-section">
@@ -33,115 +37,152 @@
             <h1 class="result-title">Feedback</h1>
             <p class="error">{{ result.error }}</p>
           {% else %}
+            <header class="result-header">
+              <div>
+                <h1 class="result-title">Interview feedback</h1>
+                <p class="subtitle">AI evaluation using hiring bar standards and STAR structure.</p>
+              </div>
+            </header>
 
-          <header class="result-header">
-            <div>
-              <h1 class="result-title">Interview feedback</h1>
-              <p class="subtitle">
-                AI evaluation based on real interview hiring standards.
-              </p>
+            <div class="result-body">
+              <section class="result-block qa-block qa-question">
+                <div class="qa-head">
+                  <div class="qa-badge">Q</div>
+                  <div class="qa-meta">
+                    <h2 class="qa-title">Question</h2>
+                    <p class="qa-sub">What the interviewer asked</p>
+                  </div>
+                </div>
+                <p class="qa-text">{{ result.question }}</p>
+              </section>
+              <section class="result-block qa-block qa-answer">
+                <div class="qa-head">
+                  <div class="qa-badge">A</div>
+                  <div class="qa-meta">
+                    <h2 class="qa-title">Your answer</h2>
+                    <p class="qa-sub">Your response, as submitted</p>
+                  </div>
+                </div>
+                <p class="qa-text qa-text-answer">{{ result.user_answer }}</p>
+              </section>
+              <section class="result-block">
+                <h2 class="section-title">Scores</h2>
+                <p class="score-scale">Scores are on a 0 to 100 scale.</p>
+
+                <div class="score-rows">
+
+                  <div class="score-row final">
+                    <div class="score-row-head">
+                      <span class="score-name">Final</span>
+                      <span class="score-value">{{ "%.0f"|format(final_s) }}</span>
+                      {{ score_label(final_s) }}
+                    </div>
+                    <div class="score-bar">
+                      <div class="score-fill" data-score="{{ final_s }}"></div>
+                    </div>
+                  </div>
+
+                  <div class="score-row">
+                    <div class="score-row-head">
+                      <span class="score-name">Relevance</span>
+                      <span class="score-value">{{ "%.0f"|format(rel_s) }}</span>
+                      {{ score_label(rel_s) }}
+                    </div>
+                    <div class="score-bar">
+                      <div class="score-fill" data-score="{{ rel_s }}"></div>
+                    </div>
+                  </div>
+
+                  <div class="score-row">
+                    <div class="score-row-head">
+                      <span class="score-name">Confidence</span>
+                      <span class="score-value">{{ "%.0f"|format(conf_s) }}</span>
+                      {{ score_label(conf_s) }}
+                    </div>
+                    <div class="score-bar">
+                      <div class="score-fill" data-score="{{ conf_s }}"></div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <p class="score-explainer">
+                  The hiring bar labels show how this answer would typically land in a real interview.
+                </p>
+              </section>
+
+              <section class="result-block">
+                <h2 class="section-title">Feedback</h2>
+
+                <div class="feedback-grid">
+                  {% if result.strengths %}
+                    <div class="feedback-section feedback-strengths">
+                      <h3>Strengths</h3>
+                      <ul>
+                        {% for item in result.strengths %}
+                          {% if item %}<li>{{ item }}</li>{% endif %}
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  {% endif %}
+
+                  {% if result.improvements %}
+                    <div class="feedback-section feedback-improvements">
+                      <h3>Improvements</h3>
+                      <ul>
+                        {% for item in result.improvements %}
+                          {% if item %}<li>{{ item }}</li>{% endif %}
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  {% endif %}
+                </div>
+
+                {% if (not result.strengths) and (not result.improvements) and result.feedback_text %}
+                  <p class="result-text">{{ result.feedback_text }}</p>
+                {% endif %}
+              </section>
+
+              {% set rw = (result.rewritten_answer or {}) %}
+              {% if rw and (rw.star or rw.concise) %}
+                <section class="result-block rewrite-block">
+                  <div class="rewrite-head">
+                    <h2 class="section-title">AI Rewrite Suggestions</h2>
+                    <span class="rewrite-badge">Magical upgrade</span>
+                  </div>
+
+                  <p class="rewrite-subtitle">
+                    Two improved versions you can reuse. STAR is structured. Concise is punchy.
+                  </p>
+
+                  <div class="rewrite-tabs">
+                    <button class="tab active" type="button" data-tab="star">STAR version</button>
+                    <button class="tab" type="button" data-tab="concise">Concise version</button>
+                  </div>
+
+                  <div class="rewrite-content">
+
+                    <div class="rewrite-panel active" data-panel="star">
+                      <div class="rewrite-topbar">
+                        <div class="rewrite-title">STAR rewrite</div>
+                        <button class="copy-btn" type="button" onclick="copyRewrite(this)">Copy</button>
+                      </div>
+                      <pre>{{ rw.star }}</pre>
+                    </div>
+
+                    <div class="rewrite-panel" data-panel="concise">
+                      <div class="rewrite-topbar">
+                        <div class="rewrite-title">Concise rewrite</div>
+                        <button class="copy-btn" type="button" onclick="copyRewrite(this)">Copy</button>
+                      </div>
+                      <pre>{{ rw.concise }}</pre>
+                    </div>
+                  </div>
+                  <div class="copy-toast" id="copyToast">Copied</div>
+                </section>
+              {% endif %}
+
             </div>
-          </header>
-
-          <div class="result-body">
-
-            <section class="result-block">
-              <h2 class="section-title">Question</h2>
-              <p class="result-text">{{ result.question }}</p>
-            </section>
-
-            <section class="result-block">
-              <h2 class="section-title">Your answer</h2>
-              <p class="result-text result-answer">{{ result.user_answer }}</p>
-            </section>
-
-            <!-- SCORES -->
-            <section class="result-block">
-              <h2 class="section-title">Scores</h2>
-              <p class="score-scale">Scores are on a 0–100 scale.</p>
-
-              <div class="scores">
-                <div>
-                  Relevance
-                  <span class="score-pill">{{ result.relevance_score }}</span>
-                  {{ score_label(result.relevance_score) }}
-                </div>
-
-                <div>
-                  Confidence
-                  <span class="score-pill">{{ result.confidence_score }}</span>
-                  {{ score_label(result.confidence_score) }}
-                </div>
-
-                <div class="final-score">
-                  Final
-                  <span class="score-pill">{{ result.final_score }}</span>
-                  {{ score_label(result.final_score) }}
-                </div>
-              </div>
-
-              <p class="score-explainer">
-                The hiring bar reflects how this answer would typically be evaluated in a real interview.
-              </p>
-            </section>
-
-            <!-- FEEDBACK -->
-            <section class="result-block">
-              <h2 class="section-title">Feedback</h2>
-
-              <div class="feedback-grid">
-                {% if result.strengths %}
-                <div class="feedback-section feedback-strengths">
-                  <h3>Strengths</h3>
-                  <ul>
-                    {% for s in result.strengths %}
-                      <li>{{ s }}</li>
-                    {% endfor %}
-                  </ul>
-                </div>
-                {% endif %}
-
-                {% if result.improvements %}
-                <div class="feedback-section feedback-improvements">
-                  <h3>Improvements</h3>
-                  <ul>
-                    {% for i in result.improvements %}
-                      <li>{{ i }}</li>
-                    {% endfor %}
-                  </ul>
-                </div>
-                {% endif %}
-              </div>
-            </section>
-
-            <!-- AI REWRITES -->
-            {% if result.rewritten_answer %}
-            <section class="result-block rewrite-block">
-              <h2 class="section-title">✨ AI Rewrite Suggestions</h2>
-              <p class="rewrite-subtitle">
-                Here’s how your answer could sound in a real interview.
-              </p>
-
-              <div class="rewrite-tabs">
-                <button class="tab active" data-tab="star">STAR version</button>
-                <button class="tab" data-tab="concise">Concise version</button>
-              </div>
-
-              <div class="rewrite-content">
-                <div class="rewrite-panel active" id="star">
-                  <pre>{{ result.rewritten_answer.star }}</pre>
-                  <button class="copy-btn" onclick="copyText('star')">Copy</button>
-                </div>
-
-                <div class="rewrite-panel" id="concise">
-                  <pre>{{ result.rewritten_answer.concise }}</pre>
-                  <button class="copy-btn" onclick="copyText('concise')">Copy</button>
-                </div>
-              </div>
-            </section>
-            {% endif %}
-
-          </div>
           {% endif %}
 
           <a href="{{ url_for('index') }}" class="back-link">Back to question</a>
@@ -153,25 +194,64 @@
   <footer class="landing-footer">
     <p>© {{ current_year or "2025" }} NextStep.AI. All rights reserved.</p>
   </footer>
-
   <script>
-    const tabs = document.querySelectorAll(".tab");
-    const panels = document.querySelectorAll(".rewrite-panel");
-
-    tabs.forEach(tab => {
-      tab.addEventListener("click", () => {
-        tabs.forEach(t => t.classList.remove("active"));
-        panels.forEach(p => p.classList.remove("active"));
-
-        tab.classList.add("active");
-        document.getElementById(tab.dataset.tab).classList.add("active");
-      });
+    document.querySelectorAll(".score-fill").forEach(el => {
+      const raw = el.getAttribute("data-score");
+      let v = parseFloat(raw);
+      if (Number.isNaN(v)) v = 0;
+      if (v < 0) v = 0;
+      if (v > 100) v = 100;
+    
+      el.style.width = v + "%";
+    
+      el.classList.remove("bad", "ok", "good", "strong");
+    
+      if (v < 50) {
+        el.classList.add("bad");
+      } else if (v < 70) {
+        el.classList.add("ok");
+      } else if (v < 85) {
+        el.classList.add("good");
+      } else {
+        el.classList.add("strong");
+      }
     });
-
-    function copyText(id) {
-      const text = document.querySelector(`#${id} pre`).innerText;
-      navigator.clipboard.writeText(text);
-    }
-  </script>
+  
+     // Tab switching, scoped to each rewrite block
+   document.querySelectorAll(".rewrite-block").forEach(block => {
+     const tabs = block.querySelectorAll(".rewrite-tabs .tab");
+     const panels = block.querySelectorAll(".rewrite-panel");
+  
+     tabs.forEach(tab => {
+       tab.addEventListener("click", () => {
+         const key = tab.dataset.tab;
+      
+         tabs.forEach(t => t.classList.remove("active"));
+         panels.forEach(p => p.classList.remove("active"));
+      
+         tab.classList.add("active");
+         const panel = block.querySelector(`.rewrite-panel[data-panel="${key}"]`);
+         if (panel) panel.classList.add("active");
+       });
+     });
+   });
+   // Copy, scoped to the clicked button's panel
+   function copyRewrite(btn) {
+     const panel = btn.closest(".rewrite-panel");
+     if (!panel) return;
+  
+     const pre = panel.querySelector("pre");
+     if (!pre) return;
+  
+     const text = pre.innerText || "";
+     navigator.clipboard.writeText(text);
+  
+     const toast = document.getElementById("copyToast");
+     if (toast) {
+       toast.classList.add("show");
+       setTimeout(() => toast.classList.remove("show"), 900);
+     }
+   }
+    </script> 
 </body>
 </html>
