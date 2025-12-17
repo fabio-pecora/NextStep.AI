@@ -32,8 +32,8 @@
             <div class="resume-step">
               <div class="step-circle">2</div>
               <div class="step-info">
-                <h4>Tell us the target</h4>
-                <p>Optional role like "Software Engineer"</p>
+                <h4>Add the job description</h4>
+                <p>Optional but best results</p>
               </div>
             </div>
             <div class="resume-step">
@@ -140,7 +140,7 @@
           <section class="card resume-form-card no-print">
             <h2 class="section-title">Upload your resume</h2>
             <p class="subtitle">
-              The PDF is required so the AI can read your real bullets and structure. Target role is optional but helps the review go deeper.
+              The PDF is required so the AI can read your real bullets and structure. Adding the job description gives the best keyword and ATS alignment results.
             </p>
 
             {% if error %}
@@ -193,9 +193,25 @@
                   id="target_role"
                   name="target_role"
                   placeholder="Software Engineer, Product Manager, Data Analyst..."
+                  value="{{ target_role or '' }}"
                 >
                 <p class="field-hint">
                   If you fill this, the AI will tune the review for that type of job.
+                </p>
+              </div>
+
+              <!-- Job description (optional but recommended) -->
+              <div class="field">
+                <label for="job_description">Job description (recommended)</label><br>
+                <textarea
+                  id="job_description"
+                  name="job_description"
+                  class="resume-textarea"
+                  placeholder="Paste the full job description here. The AI will extract ATS keywords and tailor the report to this role."
+                  rows="9"
+                >{{ job_description or '' }}</textarea>
+                <p class="field-hint">
+                  Best results: paste the responsibilities + requirements + preferred qualifications.
                 </p>
               </div>
 
@@ -280,6 +296,9 @@
             <div class="resume-report-tags no-print">
               <span class="resume-report-tag">AI generated</span>
               <span class="resume-report-tag">Resume focused</span>
+              {% if report.used_job_description %}
+                <span class="resume-report-tag">Job description used</span>
+              {% endif %}
               {% if report.debug_note or report.error %}
                 <span class="resume-report-tag resume-report-tag-warning">Fallback mode</span>
               {% endif %}
@@ -501,7 +520,7 @@
   <div id="resume-report-loading" class="resume-report-loading-overlay no-print">
     <div class="resume-report-loading-inner">
       <div class="resume-report-spinner"></div>
-      <p>NextStep.AI is reading your resume and crafting the review…</p>
+      <p>NextStep.AI is reading your resume and crafting the review...</p>
     </div>
   </div>
 

@@ -984,3 +984,29 @@ html[data-theme="dark"] .resume-report-spinner {
     padding: 1.1rem 1.25rem 1.4rem;
   }
 }
+
+.resume-textarea {
+  width: 100%;
+  max-width: 100%;
+  margin-top: 0.3rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--resume-field-border);
+  background: var(--resume-field-bg);
+  font-size: 0.88rem;
+  color: var(--resume-field-text);
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 160px;
+}
+
+.resume-textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.15);
+  background: #ffffff;
+}
+
+html[data-theme="dark"] .resume-textarea:focus {
+  background: #0b0220;
+}

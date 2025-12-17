@@ -2,309 +2,525 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Resume review - {{ resume_report.target_role or report.target_role or "Resume" }}</title>
+  <title>Resume report{% if resume_report and resume_report.target_role %} - {{ resume_report.target_role }}{% endif %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/saved_prep_report.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/saved_resume_report.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="prep-view-body">
+
+<body class="resume-view-body">
   {% include "navbar.html" %}
 
-  <main class="prep-view-main">
-    <div class="prep-view-header-row">
+  {% macro pretty_key(k) -%}
+    {%- if not k -%}
+      Section
+    {%- else -%}
+      {{ k|replace("_", " ")|title }}
+    {%- endif -%}
+  {%- endmacro %}
+
+  {% set summary = report.summary or "" %}
+  {% set sections = report.sections or {} %}
+  {% set exp = report.experience_bullets or {} %}
+  {% set struct = report.structure or {} %}
+  {% set sr = report.spacing_readability or {} %}
+  {% set kw = report.keywords or {} %}
+
+  {% set rewrites = exp.rewrites or [] %}
+  {% set titles = exp.title_suggestions or [] %}
+  {% set missing_info = exp.missing_information or [] %}
+
+  {% set ordering = struct.ordering or [] %}
+  {% set add_remove = struct.sections_to_add_or_remove or {} %}
+  {% set add_sections = add_remove.add or [] %}
+  {% set remove_sections = add_remove.remove or [] %}
+
+  {% set sc = sr.scannability_score %}
+  {% set tips = sr.tips or [] %}
+
+  {% set missing_kw = kw.missing_keywords or [] %}
+  {% set present_kw = kw.present_keywords_to_keep or [] %}
+  {% set how_add = kw.how_to_add_them or [] %}
+
+  {% set used_jd = report.used_job_description if report.used_job_description is not none else (resume_report.used_job_description if resume_report is defined else false) %}
+
+  {% set sections_count = sections|length %}
+  {% set rewrite_count = rewrites|length %}
+  {% set kw_count = (missing_kw|length) + (present_kw|length) %}
+  {% set structure_count = (ordering|length) + (add_sections|length) + (remove_sections|length) %}
+  {% set readability_count = (tips|length) + (1 if sc is not none else 0) %}
+
+  <main class="resume-view-main">
+
+    <div class="resume-view-header-row">
       <div>
-        <h1 class="prep-title">
-          Resume review
-          {% if resume_report.target_role or report.target_role %}
-            <span class="muted"> · {{ resume_report.target_role or report.target_role }}</span>
+        <h1 class="resume-title">
+          Resume report
+          {% if resume_report and resume_report.target_role %}
+            <span class="muted"> · {{ resume_report.target_role }}</span>
+          {% elif report.target_role %}
+            <span class="muted"> · {{ report.target_role }}</span>
           {% endif %}
         </h1>
-        <p class="prep-subtitle">
-          A focused resume feedback report with rewrites, structure advice, and keyword tips
-          tailored to your profile{% if resume_report.target_role or report.target_role %} and the role
-          <strong>{{ resume_report.target_role or report.target_role }}</strong>{% endif %}.
-          {% if resume_report.created_at %}
+
+        <p class="resume-subtitle">
+          ATS and recruiter focused review with concrete, honest fixes.
+          {% if resume_report and resume_report.created_at %}
             <span class="gen-date">Generated on {{ resume_report.created_at.strftime("%Y-%m-%d") }}</span>
           {% endif %}
         </p>
       </div>
 
-      <div class="prep-view-actions">
-        <a class="btn btn-outline prep-back-link" href="{{ url_for('profile') }}">Back to profile</a>
-        <a class="btn btn-primary" href="{{ url_for('download_saved_resume_report_pdf', report_id=resume_report.id) }}">
-          Download as PDF
-        </a>
+      <div class="resume-view-actions">
+        <a class="resume-back-link" href="{{ url_for('profile') }}">Back to profile</a>
+
+        {% if resume_report and resume_report.id %}
+          <a class="btn btn-primary" href="{{ url_for('download_saved_resume_report_pdf', report_id=resume_report.id) }}">
+            Download PDF
+          </a>
+        {% endif %}
       </div>
     </div>
 
-    <section class="report-page">
-      <header class="report-topbar">
-        <div>
-          <div class="brand">NextStep.<span>AI</span></div>
-          <p class="topbar-subtitle">Resume review report</p>
+    <section class="report-card">
+      <header class="report-header">
+        <div class="report-logo-mark">
+          <div class="report-logo-text">NextStep.<span>AI</span></div>
+          <div class="report-logo-tagline">Resume review report</div>
         </div>
-        <div class="meta">
-          <div class="title">
-            Resume review
-            {% if resume_report.target_role or report.target_role %}
-              · <strong>{{ resume_report.target_role or report.target_role }}</strong>
+
+        <div class="report-meta">
+          <p class="report-job">
+            {% if resume_report and resume_report.target_role %}
+              {{ resume_report.target_role }}
+            {% elif report.target_role %}
+              {{ report.target_role }}
+            {% else %}
+              Resume feedback
+            {% endif %}
+          </p>
+
+          <div class="report-tags">
+            <span class="report-tag">AI generated</span>
+            {% if used_jd %}
+              <span class="report-tag report-tag-good">JD aligned</span>
+            {% else %}
+              <span class="report-tag">No job description</span>
+            {% endif %}
+            {% if sc is not none %}
+              <span class="report-tag">Scannability {{ sc }}/10</span>
+            {% endif %}
+            {% if report.error %}
+              <span class="report-tag report-tag-warning">Fallback mode</span>
             {% endif %}
           </div>
-          {% if resume_report.created_at %}
-            <div class="stamp">
-              Generated on {{ resume_report.created_at.strftime("%Y-%m-%d") }}
-            </div>
-          {% endif %}
         </div>
       </header>
 
-      <section class="report-card">
-        <div class="report-badges">
-          <span class="tag">AI generated</span>
-          <span class="tag">Resume feedback</span>
-          {% if report.keywords.target_role %}
-            <span class="tag">Target: {{ report.keywords.target_role }}</span>
-          {% endif %}
-          {% if report.spacing_readability.scannability_score %}
-            <span class="tag warning">
-              Scannability {{ report.spacing_readability.scannability_score }}/10
-            </span>
-          {% endif %}
-        </div>
+      <div class="report-body" id="report-content">
 
-        <div class="report-content">
-          {# 1. SUMMARY AT A GLANCE #}
-          <section class="resume-section">
-            <div class="resume-section-header">
-              <span class="section-index">1</span>
-              <div>
-                <h2>Summary at a glance</h2>
-                <p>High level view of how strong this resume is for your target role.</p>
-              </div>
+        {% if report.error %}
+          <p class="report-debug-note">{{ report.error }}</p>
+        {% endif %}
+
+        <!-- TLDR -->
+        <section class="tldr-card">
+          <div class="tldr-top">
+            <div class="tldr-title">
+              <div class="tldr-badge">TLDR</div>
+              <h2 class="tldr-h">Your fix list</h2>
             </div>
 
-            <div class="resume-summary-grid">
-              <div class="resume-summary-main">
-                <p>{{ report.summary }}</p>
+            <div class="tldr-meta">
+              <div class="tldr-meta-row">
+                <span class="tldr-k">Target role</span>
+                <span class="tldr-v">
+                  {% if kw.target_role %}
+                    {{ kw.target_role }}
+                  {% elif report.target_role %}
+                    {{ report.target_role }}
+                  {% else %}
+                    Not specified
+                  {% endif %}
+                </span>
               </div>
-              <aside class="resume-score-card">
-                {% set score = report.spacing_readability.scannability_score or 7 %}
-                <div class="score-circle" style="--score: {{ score }}">
-                  <span class="score-number">{{ score }}</span>
-                  <span class="score-label">Scannability</span>
+
+              <div class="tldr-meta-row">
+                <span class="tldr-k">JD provided</span>
+                <span class="tldr-v">{% if used_jd %}Yes{% else %}No{% endif %}</span>
+              </div>
+
+              {% if sc is not none %}
+              <div class="tldr-meta-row">
+                <span class="tldr-k">Scannability</span>
+                <span class="tldr-v">{{ sc }}/10</span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="tldr-grid">
+            <a class="tldr-pill" href="#sec-summary">
+              <span class="tldr-emoji">🧠</span>
+              <span class="tldr-label">Summary</span>
+              <span class="tldr-count">1</span>
+            </a>
+
+            <a class="tldr-pill" href="#sec-sections">
+              <span class="tldr-emoji">🧩</span>
+              <span class="tldr-label">Section feedback</span>
+              <span class="tldr-count">{{ sections_count }}</span>
+            </a>
+
+            <a class="tldr-pill" href="#sec-keywords">
+              <span class="tldr-emoji">🔎</span>
+              <span class="tldr-label">Keywords</span>
+              <span class="tldr-count">{{ kw_count }}</span>
+            </a>
+
+            <a class="tldr-pill" href="#sec-rewrites">
+              <span class="tldr-emoji">✍️</span>
+              <span class="tldr-label">Bullet rewrites</span>
+              <span class="tldr-count">{{ rewrite_count }}</span>
+            </a>
+
+            <a class="tldr-pill" href="#sec-structure">
+              <span class="tldr-emoji">🧱</span>
+              <span class="tldr-label">Structure</span>
+              <span class="tldr-count">{{ structure_count }}</span>
+            </a>
+
+            <a class="tldr-pill" href="#sec-readability">
+              <span class="tldr-emoji">👀</span>
+              <span class="tldr-label">Readability</span>
+              <span class="tldr-count">{{ readability_count }}</span>
+            </a>
+          </div>
+
+          <div class="tldr-tip">
+            Tip: start with Keywords and Bullet rewrites, then tighten spacing and section ordering.
+          </div>
+        </section>
+
+        <div class="resume-layout">
+
+          <aside class="resume-rail">
+            <div class="rail-card">
+              <div class="rail-title">Progress</div>
+
+              <nav class="rail-nav">
+                <a class="rail-link" href="#sec-summary"><span class="rail-dot"></span><span class="rail-text">🧠 Summary</span></a>
+                <a class="rail-link" href="#sec-sections"><span class="rail-dot"></span><span class="rail-text">🧩 Section feedback</span></a>
+                <a class="rail-link" href="#sec-keywords"><span class="rail-dot"></span><span class="rail-text">🔎 Keywords</span></a>
+                <a class="rail-link" href="#sec-rewrites"><span class="rail-dot"></span><span class="rail-text">✍️ Bullet rewrites</span></a>
+                <a class="rail-link" href="#sec-structure"><span class="rail-dot"></span><span class="rail-text">🧱 Structure</span></a>
+                <a class="rail-link" href="#sec-readability"><span class="rail-dot"></span><span class="rail-text">👀 Readability</span></a>
+              </nav>
+
+              <div class="rail-mini">
+                <div class="rail-mini-row"><span>Items</span><strong>{{ 1 + sections_count + kw_count + rewrite_count + structure_count + readability_count }}</strong></div>
+                <div class="rail-mini-row"><span>ATS mode</span><strong>{% if used_jd %}JD aligned{% else %}General{% endif %}</strong></div>
+              </div>
+            </div>
+          </aside>
+
+          <div class="resume-content">
+
+            <!-- SUMMARY -->
+            <section class="report-section section-summary" id="sec-summary">
+              <div class="section-head">
+                <h3 class="report-heading">🧠 Summary</h3>
+                <div class="section-chip">High level</div>
+              </div>
+
+              {% if summary %}
+                <p class="report-paragraph">{{ summary }}</p>
+              {% else %}
+                <p class="report-paragraph muted">No summary returned.</p>
+              {% endif %}
+            </section>
+
+            <!-- SECTIONS -->
+            <section class="report-section section-sections" id="sec-sections">
+              <div class="section-head">
+                <h3 class="report-heading">🧩 Section by section feedback</h3>
+                <div class="section-chip">{{ sections_count }} sections</div>
+              </div>
+
+              {% if sections %}
+                {% for section_key, block in sections.items() %}
+                  {% set b = block or {} %}
+                  <div class="subcard">
+                    <div class="subcard-head">
+                      <h4 class="report-subheading">{{ pretty_key(section_key) }}</h4>
+                    </div>
+
+                    <div class="tri-grid">
+                      <div class="tri-box tri-good">
+                        <div class="tri-title">Green flags</div>
+                        {% if b.strengths %}
+                          <ul class="tri-list">
+                            {% for item in b.strengths %}
+                              <li>{{ item }}</li>
+                            {% endfor %}
+                          </ul>
+                        {% else %}
+                          <div class="tri-empty">No strengths listed.</div>
+                        {% endif %}
+                      </div>
+
+                      <div class="tri-box tri-bad">
+                        <div class="tri-title">Red flags</div>
+                        {% if b.issues %}
+                          <ul class="tri-list">
+                            {% for item in b.issues %}
+                              <li>{{ item }}</li>
+                            {% endfor %}
+                          </ul>
+                        {% else %}
+                          <div class="tri-empty">No issues listed.</div>
+                        {% endif %}
+                      </div>
+
+                      <div class="tri-box tri-fix">
+                        <div class="tri-title">Improvements</div>
+                        {% if b.recommendations %}
+                          <ul class="tri-list">
+                            {% for item in b.recommendations %}
+                              <li>{{ item }}</li>
+                            {% endfor %}
+                          </ul>
+                        {% else %}
+                          <div class="tri-empty">No recommendations listed.</div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <p class="report-paragraph muted">No section feedback returned.</p>
+              {% endif %}
+            </section>
+
+            <!-- KEYWORDS -->
+            <section class="report-section section-keywords" id="sec-keywords">
+              <div class="section-head">
+                <h3 class="report-heading">🔎 ATS keywords and skills</h3>
+                <div class="section-chip">{{ kw_count }} items</div>
+              </div>
+
+              <p class="section-intro">
+                Keep what is already strong, and add missing terms only through honest rewrites of real work.
+              </p>
+
+              <div class="kw-grid">
+                <div class="kw-card">
+                  <div class="kw-title">Present keywords to keep</div>
+                  {% if present_kw %}
+                    <div class="kw-pills">
+                      {% for k in present_kw %}
+                        <span class="kw-pill kw-present">{{ k }}</span>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    <div class="kw-empty">No present keywords returned.</div>
+                  {% endif %}
                 </div>
-                {% if report.spacing_readability.tips %}
-                  <ul class="score-tips">
-                    {% for tip in report.spacing_readability.tips %}
-                      <li>{{ tip }}</li>
+
+                <div class="kw-card">
+                  <div class="kw-title">Missing keywords</div>
+                  {% if missing_kw %}
+                    <div class="kw-pills">
+                      {% for k in missing_kw %}
+                        <span class="kw-pill kw-missing">{{ k }}</span>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    <div class="kw-empty">No missing keywords returned.</div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="how-add">
+                <h4 class="report-subheading">How to add them (honest phrasing)</h4>
+                {% if how_add %}
+                  <ul class="clean-list">
+                    {% for s in how_add %}
+                      <li>{{ s }}</li>
                     {% endfor %}
                   </ul>
+                {% else %}
+                  <p class="report-paragraph muted">No how to add suggestions returned.</p>
                 {% endif %}
-              </aside>
-            </div>
-          </section>
-
-          {# 2. SECTIONS AND STRUCTURE #}
-          <section class="resume-section">
-            <div class="resume-section-header">
-              <span class="section-index">2</span>
-              <div>
-                <h2>Sections and structure</h2>
-                <p>What is working and what needs a fix in each major section.</p>
               </div>
-            </div>
+            </section>
 
-            <div class="resume-two-col">
-              <div>
-                <p class="resume-col-title">Overall structure</p>
-                <div class="badge-row">
-                  {% for s in report.sections.overall_structure.strengths or [] %}
-                    <div class="badge strength">✓ {{ s }}</div>
-                  {% endfor %}
-                  {% for issue in report.sections.overall_structure.issues or [] %}
-                    <div class="badge issue">✗ {{ issue }}</div>
-                  {% endfor %}
-                  {% for rec in report.sections.overall_structure.recommendations or [] %}
-                    <div class="badge recommendation">→ {{ rec }}</div>
-                  {% endfor %}
-                </div>
-
-                <p class="resume-col-title" style="margin-top:0.9rem;">Experience</p>
-                <div class="badge-row">
-                  {% for s in report.sections.experience.strengths or [] %}
-                    <div class="badge strength">✓ {{ s }}</div>
-                  {% endfor %}
-                  {% for issue in report.sections.experience.issues or [] %}
-                    <div class="badge issue">✗ {{ issue }}</div>
-                  {% endfor %}
-                  {% for rec in report.sections.experience.recommendations or [] %}
-                    <div class="badge recommendation">→ {{ rec }}</div>
-                  {% endfor %}
-                </div>
+            <!-- BULLET REWRITES -->
+            <section class="report-section section-rewrites" id="sec-rewrites">
+              <div class="section-head">
+                <h3 class="report-heading">✍️ Experience bullets</h3>
+                <div class="section-chip">{{ rewrite_count }} rewrites</div>
               </div>
 
-              <div>
-                <p class="resume-col-title">Education</p>
-                <div class="badge-row">
-                  {% for s in report.sections.education.strengths or [] %}
-                    <div class="badge strength">✓ {{ s }}</div>
-                  {% endfor %}
-                  {% for issue in report.sections.education.issues or [] %}
-                    <div class="badge issue">✗ {{ issue }}</div>
-                  {% endfor %}
-                  {% for rec in report.sections.education.recommendations or [] %}
-                    <div class="badge recommendation">→ {{ rec }}</div>
-                  {% endfor %}
-                </div>
+              <p class="section-intro">
+                These are the highest impact changes. They improve clarity, outcomes, and keyword alignment.
+              </p>
 
-                <p class="resume-col-title" style="margin-top:0.9rem;">Skills</p>
-                <div class="badge-row">
-                  {% for s in report.sections.skills.strengths or [] %}
-                    <div class="badge strength">✓ {{ s }}</div>
-                  {% endfor %}
-                  {% for issue in report.sections.skills.issues or [] %}
-                    <div class="badge issue">✗ {{ issue }}</div>
-                  {% endfor %}
-                  {% for rec in report.sections.skills.recommendations or [] %}
-                    <div class="badge recommendation">→ {{ rec }}</div>
-                  {% endfor %}
-                </div>
-              </div>
-            </div>
-          </section>
+              {% if rewrites %}
+                {% for r in rewrites %}
+                  <div class="rewrite-card">
+                    <div class="rewrite-row">
+                      <div class="rewrite-label">Before</div>
+                      <div class="rewrite-text">{{ r.original }}</div>
+                    </div>
 
-          {# 3. EXPERIENCE BULLET UPGRADES #}
-          <section class="resume-section">
-            <div class="resume-section-header">
-              <span class="section-index">3</span>
-              <div>
-                <h2>Experience bullet upgrades</h2>
-                <p>Side by side rewrites that show impact, metrics, and clarity.</p>
-              </div>
-            </div>
+                    <div class="rewrite-row rewrite-row-after">
+                      <div class="rewrite-label">After</div>
+                      <div class="rewrite-text">{{ r.improved }}</div>
+                    </div>
 
-            {% if report.experience_bullets.rewrites %}
-              {% for rw in report.experience_bullets.rewrites %}
-                <div class="bullet-grid" style="margin-bottom:0.9rem;">
-                  <article class="bullet-card">
-                    <div class="bullet-label">Original</div>
-                    <p class="bullet-text">{{ rw.original }}</p>
-                  </article>
-                  <article class="bullet-card">
-                    <div class="bullet-label">Improved</div>
-                    <p class="bullet-text"><strong>{{ rw.improved }}</strong></p>
-                    {% if rw.why_it_is_better %}
-                      <p class="bullet-why">{{ rw.why_it_is_better }}</p>
+                    {% if r.why_it_is_better %}
+                      <div class="rewrite-why">
+                        <strong>Why:</strong> {{ r.why_it_is_better }}
+                      </div>
                     {% endif %}
-                  </article>
-                </div>
-              {% endfor %}
-            {% endif %}
-
-            {% if report.experience_bullets.title_suggestions %}
-              <h4 class="report-subheading" style="margin-top:0.6rem;">Title suggestions</h4>
-              <div class="title-pill-row">
-                {% for t in report.experience_bullets.title_suggestions %}
-                  <div class="title-pill">
-                    {{ t.original_title }} → {{ t.suggested_title }}
                   </div>
                 {% endfor %}
-              </div>
-            {% endif %}
+              {% else %}
+                <p class="report-paragraph muted">No rewrites returned.</p>
+              {% endif %}
 
-            {% if report.experience_bullets.missing_information %}
-              <h4 class="report-subheading" style="margin-top:0.7rem;">Missing information</h4>
-              <ul>
-                {% for item in report.experience_bullets.missing_information %}
-                  <li>{{ item }}</li>
-                {% endfor %}
-              </ul>
-            {% endif %}
-          </section>
-
-          {# 4. STRUCTURE RECOMMENDATIONS #}
-          <section class="resume-section">
-            <div class="resume-section-header">
-              <span class="section-index">4</span>
-              <div>
-                <h2>Structure recommendations</h2>
-                <p>How to order sections so your best story appears first.</p>
-              </div>
-            </div>
-
-            {% if report.structure.ordering %}
-              <h4 class="report-subheading">Recommended ordering</h4>
-              <ul>
-                {% for line in report.structure.ordering %}
-                  <li>{{ line }}</li>
-                {% endfor %}
-              </ul>
-            {% endif %}
-
-            {% set s_add = report.structure.sections_to_add_or_remove.add or [] %}
-            {% set s_remove = report.structure.sections_to_add_or_remove.remove or [] %}
-
-            {% if s_add or s_remove %}
-              <div class="resume-two-col" style="margin-top:0.8rem;">
-                <div>
-                  <p class="resume-col-title">Add</p>
-                  <div class="badge-row">
-                    {% for item in s_add %}
-                      <div class="badge recommendation">+ {{ item }}</div>
+              {% if titles %}
+                <div class="subcard">
+                  <h4 class="report-subheading">Title suggestions</h4>
+                  <div class="title-grid">
+                    {% for t in titles %}
+                      <div class="title-card">
+                        <div class="title-line"><span class="title-k">Current</span> <span class="title-v">{{ t.original_title }}</span></div>
+                        <div class="title-line"><span class="title-k">Suggested</span> <span class="title-v strong">{{ t.suggested_title }}</span></div>
+                        {% if t.reason %}
+                          <div class="title-reason">{{ t.reason }}</div>
+                        {% endif %}
+                      </div>
                     {% endfor %}
                   </div>
                 </div>
-                <div>
-                  <p class="resume-col-title">Remove</p>
-                  <div class="badge-row">
-                    {% for item in s_remove %}
-                      <div class="badge issue">- {{ item }}</div>
+              {% endif %}
+
+              {% if missing_info %}
+                <div class="subcard">
+                  <h4 class="report-subheading">Missing information to add to bullets</h4>
+                  <ul class="clean-list">
+                    {% for s in missing_info %}
+                      <li>{{ s }}</li>
                     {% endfor %}
+                  </ul>
+                </div>
+              {% endif %}
+            </section>
+
+            <!-- STRUCTURE -->
+            <section class="report-section section-structure" id="sec-structure">
+              <div class="section-head">
+                <h3 class="report-heading">🧱 Structure and ordering</h3>
+                <div class="section-chip">{{ structure_count }} items</div>
+              </div>
+
+              <div class="two-col">
+                <div class="subcard">
+                  <h4 class="report-subheading">Recommended ordering</h4>
+                  {% if ordering %}
+                    <ol class="clean-ol">
+                      {% for s in ordering %}
+                        <li>{{ s }}</li>
+                      {% endfor %}
+                    </ol>
+                  {% else %}
+                    <p class="report-paragraph muted">No ordering guidance returned.</p>
+                  {% endif %}
+                </div>
+
+                <div class="subcard">
+                  <h4 class="report-subheading">Sections to add or remove</h4>
+
+                  <div class="addremove">
+                    <div class="addremove-col">
+                      <div class="addremove-title add">Add</div>
+                      {% if add_sections %}
+                        <ul class="clean-list">
+                          {% for s in add_sections %}
+                            <li>{{ s }}</li>
+                          {% endfor %}
+                        </ul>
+                      {% else %}
+                        <div class="tri-empty">No add suggestions.</div>
+                      {% endif %}
+                    </div>
+
+                    <div class="addremove-col">
+                      <div class="addremove-title remove">Remove</div>
+                      {% if remove_sections %}
+                        <ul class="clean-list">
+                          {% for s in remove_sections %}
+                            <li>{{ s }}</li>
+                          {% endfor %}
+                        </ul>
+                      {% else %}
+                        <div class="tri-empty">No remove suggestions.</div>
+                      {% endif %}
+                    </div>
                   </div>
                 </div>
               </div>
-            {% endif %}
-          </section>
+            </section>
 
-          {# 5. KEYWORDS AND FINAL TWEAKS #}
-          <section class="resume-section">
-            <div class="resume-section-header">
-              <span class="section-index">5</span>
-              <div>
-                <h2>Keywords and final polish</h2>
-                <p>Make sure applicant tracking systems and recruiters see the right words.</p>
-              </div>
-            </div>
-
-            <p class="resume-col-title">Target role</p>
-            <p class="report-paragraph">
-              {{ report.keywords.target_role or resume_report.target_role or "Not specified" }}
-            </p>
-
-            <div class="keywords-layout" style="margin-top:0.7rem;">
-              <div>
-                <h4>Missing keywords</h4>
-                {% for kw in report.keywords.missing_keywords or [] %}
-                  <div class="badge keyword-missing">⚠ {{ kw }}</div>
-                {% endfor %}
-
-                <h4 style="margin-top:0.7rem;">How to add them</h4>
-                {% for how in report.keywords.how_to_add_them or [] %}
-                  <div class="badge recommendation">→ {{ how }}</div>
-                {% endfor %}
+            <!-- READABILITY -->
+            <section class="report-section section-readability" id="sec-readability">
+              <div class="section-head">
+                <h3 class="report-heading">👀 Spacing and readability</h3>
+                <div class="section-chip">{% if sc is not none %}{{ sc }}/10{% else %}Score not provided{% endif %}</div>
               </div>
 
-              <div>
-                <h4>Strong keywords already present</h4>
-                {% for kw in report.keywords.present_keywords_to_keep or [] %}
-                  <div class="badge keyword-present">✔ {{ kw }}</div>
-                {% endfor %}
+              <div class="score-row">
+                <div class="score-card">
+                  <div class="score-top">
+                    <div class="score-label">Scannability score</div>
+                    <div class="score-num">{% if sc is not none %}{{ sc }}{% else %}N/A{% endif %}</div>
+                  </div>
+                  {% if sc is not none %}
+                  <div class="score-bar"
+                       role="progressbar"
+                       aria-valuenow="{{ sc }}"
+                       aria-valuemin="0"
+                       aria-valuemax="10"
+                       style="--score-pct: {{ (sc|int * 10) }}%;">
+                    <div class="score-fill"></div>
+                  </div>
+                    <div class="score-hint">Goal: 8 to 10 for fast recruiter skim.</div>
+                  {% endif %}
+                </div>
               </div>
-            </div>
-          </section>
+
+              <div class="subcard">
+                <h4 class="report-subheading">Tips to improve scannability</h4>
+                {% if tips %}
+                  <ul class="clean-list">
+                    {% for s in tips %}
+                      <li>{{ s }}</li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <p class="report-paragraph muted">No readability tips returned.</p>
+                {% endif %}
+              </div>
+            </section>
+
+          </div>
         </div>
-      </section>
+
+      </div>
     </section>
+
   </main>
 
   <footer class="landing-footer">

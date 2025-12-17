@@ -36,9 +36,12 @@
 
   --prep-footer-text: #94a3b8;
   --prep-shadow-soft: 0 10px 24px rgba(15, 23, 42, 0.08);
+
+  /* Magic accents */
+  --magic-ring: 0 0 0 1px rgba(37, 99, 235, 0.20), 0 10px 30px rgba(37, 99, 235, 0.08);
+  --magic-glow: 0 18px 55px rgba(59, 130, 246, 0.12);
 }
 
-/* Dark theme override - uses same mechanism as rest of site */
 html[data-theme="dark"] {
   --prep-bg: #020617;
   --prep-text: #e5e7eb;
@@ -48,12 +51,12 @@ html[data-theme="dark"] {
   --prep-card-bg: #020617;
   --prep-card-border: #1e293b;
 
-  --prep-section-bg: #020617;
-  --prep-section-border: #1f2937;
+  --prep-section-bg: rgba(2, 6, 23, 0.72);
+  --prep-section-border: rgba(148, 163, 184, 0.16);
 
   --prep-chip-bg: rgba(59, 130, 246, 0.2);
   --prep-chip-text: #bfdbfe;
-  --prep-chip-warning-bg: rgba(250, 204, 21, 0.08);
+  --prep-chip-warning-bg: rgba(250, 204, 21, 0.10);
   --prep-chip-warning-text: #facc15;
 
   --prep-header-gradient: radial-gradient(circle at top left, #0f172a, #020617 55%, #020617 100%);
@@ -72,6 +75,9 @@ html[data-theme="dark"] {
 
   --prep-footer-text: #64748b;
   --prep-shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.6);
+
+  --magic-ring: 0 0 0 1px rgba(96, 165, 250, 0.22), 0 18px 50px rgba(96, 165, 250, 0.10);
+  --magic-glow: 0 24px 70px rgba(14, 165, 233, 0.10);
 }
 
 /* =========================================================
@@ -86,12 +92,10 @@ html[data-theme="dark"] {
   padding: 0;
 }
 
-/* Outer container that wraps header controls and report */
 .prep-view-main {
   padding: 2.5rem 6% 3.5rem;
 }
 
-/* Header row: back link + download button */
 .prep-view-header-row {
   display: flex;
   justify-content: space-between;
@@ -126,7 +130,6 @@ html[data-theme="dark"] {
   gap: 0.6rem;
 }
 
-/* Simple button styles in case global styles are not applied */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -134,7 +137,7 @@ html[data-theme="dark"] {
   padding: 0.55rem 1rem;
   border-radius: 999px;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   border: 1px solid transparent;
   cursor: pointer;
   text-decoration: none;
@@ -145,6 +148,7 @@ html[data-theme="dark"] {
   background: var(--prep-button-bg);
   color: var(--prep-button-text);
   border-color: transparent;
+  box-shadow: var(--magic-ring);
 }
 
 .btn-primary:hover {
@@ -152,7 +156,6 @@ html[data-theme="dark"] {
   transform: translateY(-1px);
 }
 
-/* Back link */
 .prep-back-link {
   display: inline-flex;
   align-items: center;
@@ -175,188 +178,16 @@ html[data-theme="dark"] {
 }
 
 /* =========================================================
-   RESUME REPORT LAYOUT
+   MAIN REPORT CARD
    ========================================================= */
 
-/* Prevent report stretching too wide */
-.report-page {
-  max-width: 1120px;
-  margin: 0 auto 3rem;
-}
-
-/* Top bar with brand and meta */
-.report-topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1.25rem;
-  padding: 1.3rem 1.7rem 1.15rem;
-  border-radius: 1.1rem 1.1rem 0.6rem 0.6rem;
-  background: var(--prep-header-gradient);
-  color: var(--prep-header-brand);
-  border: 1px solid rgba(148, 163, 184, 0.4);
-  box-shadow: var(--prep-shadow-soft);
-  margin-bottom: 1.2rem;
-}
-
-.brand {
-  font-size: 1.3rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-}
-
-.brand span {
-  color: var(--prep-header-brand-accent);
-}
-
-.topbar-subtitle {
-  margin: 0.25rem 0 0;
-  font-size: 0.9rem;
-  color: var(--prep-header-meta);
-}
-
-.meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.3rem;
-}
-
-.meta .title {
-  font-size: 0.98rem;
-  font-weight: 600;
-}
-
-.meta .title strong {
-  font-weight: 700;
-}
-
-.meta .stamp {
-  font-size: 0.82rem;
-  color: var(--prep-header-meta);
-}
-
-/* Main report card that contains everything */
 .report-card {
   background: var(--prep-card-bg);
-  border-radius: 1rem;
+  border-radius: 1.05rem;
   border: 1px solid var(--prep-card-border);
   box-shadow: var(--prep-shadow-soft);
-  padding: 1.25rem 1.6rem 1.6rem;
+  overflow: hidden;
 }
-
-/* Small tags row under header */
-.report-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-bottom: 0.9rem;
-}
-
-.tag {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 999px;
-  padding: 0.18rem 0.7rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  background: var(--prep-chip-bg);
-  color: var(--prep-chip-text);
-}
-
-.tag.warning {
-  background: var(--prep-chip-warning-bg);
-  color: var(--prep-chip-warning-text);
-}
-
-/* Report content wrapper */
-.report-content {
-  font-size: 0.95rem;
-  line-height: 1.55;
-  color: var(--prep-text);
-}
-
-/* Content blocks for generic numbered sections if used */
-.block {
-  margin-bottom: 1.4rem;
-  padding: 1rem 1.1rem 1.05rem;
-  background: var(--prep-section-bg);
-  border-radius: 0.9rem;
-  border: 1px solid var(--prep-section-border);
-}
-
-/* Headings inside report blocks */
-.block h2 {
-  margin: 0 0 0.6rem;
-  font-size: 1rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--prep-muted);
-}
-
-.block h3 {
-  margin: 0.6rem 0 0.3rem;
-  font-size: 0.98rem;
-  color: var(--prep-link);
-}
-
-.block h4 {
-  margin: 0.45rem 0 0.25rem;
-  font-size: 0.95rem;
-  color: var(--prep-text);
-}
-
-/* Paragraphs and lists */
-.block p {
-  margin: 0.2rem 0;
-  font-size: 0.94rem;
-}
-
-.block ul {
-  margin: 0.2rem 0 0.3rem 1.1rem;
-  padding: 0;
-}
-
-.block li {
-  margin: 0.15rem 0;
-}
-
-/* Example boxes used in experience rewrites */
-.example {
-  margin: 0.6rem 0;
-  padding: 0.85rem 0.9rem;
-  border-radius: 0.75rem;
-  background: rgba(129, 140, 248, 0.08);
-}
-
-.example .q {
-  margin: 0 0 0.3rem;
-  font-weight: 600;
-}
-
-.example .a {
-  margin: 0;
-}
-
-.example .legend {
-  margin-top: 0.4rem;
-  font-size: 0.82rem;
-  color: var(--prep-muted);
-}
-
-/* Footer */
-.report-footer {
-  margin-top: 1.2rem;
-  font-size: 0.8rem;
-  text-align: center;
-  color: var(--prep-footer-text);
-}
-
-/* =========================================================
-   ORIGINAL CUSTOM PREP REPORT STYLES
-   ========================================================= */
 
 .report-header {
   display: flex;
@@ -369,9 +200,10 @@ html[data-theme="dark"] {
 }
 
 .report-logo-text {
-  font-weight: 700;
+  font-weight: 800;
   font-size: 1.15rem;
   color: var(--prep-chip-text);
+  letter-spacing: 0.02em;
 }
 
 .report-logo-text span {
@@ -389,7 +221,7 @@ html[data-theme="dark"] {
 
 .report-job {
   margin: 0 0 0.25rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .report-candidate {
@@ -411,6 +243,7 @@ html[data-theme="dark"] {
   padding: 0.2rem 0.7rem;
   border-radius: 999px;
   font-size: 0.78rem;
+  font-weight: 600;
 }
 
 .report-tag-warning {
@@ -418,31 +251,281 @@ html[data-theme="dark"] {
   color: var(--prep-chip-warning-text);
 }
 
-/* Body wrapper for custom prep report */
 .report-body {
-  padding: 1.3rem 1.6rem 1.5rem;
+  padding: 1.2rem 1.6rem 1.6rem;
   background: var(--prep-section-bg);
 }
 
-/* Sections inside custom prep report */
-.report-section {
-  margin-bottom: 1.1rem;
-  background: var(--prep-section-bg);
+.report-debug-note {
+  margin: 0 0 0.75rem;
+  color: var(--prep-chip-warning-text);
+  font-size: 0.95rem;
+}
+
+/* =========================================================
+   TLDR CARD
+   ========================================================= */
+
+.tldr-card {
+  border-radius: 1rem;
   border: 1px solid var(--prep-section-border);
-  border-radius: 0.9rem;
+  background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.10), transparent 55%),
+              radial-gradient(circle at top right, rgba(34, 197, 94, 0.10), transparent 50%),
+              var(--prep-section-bg);
+  box-shadow: var(--magic-ring);
+  padding: 1.05rem 1.05rem 0.95rem;
+  margin-bottom: 1.1rem;
+}
+
+.tldr-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.tldr-title {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.tldr-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(37, 99, 235, 0.22);
+  color: var(--prep-link);
+}
+
+.tldr-h {
+  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+}
+
+.tldr-meta {
+  display: grid;
+  gap: 0.28rem;
+  min-width: 260px;
+}
+
+.tldr-meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.7rem;
+  font-size: 0.9rem;
+}
+
+.tldr-k {
+  color: var(--prep-muted);
+  font-weight: 600;
+}
+
+.tldr-v {
+  color: var(--prep-text);
+  font-weight: 700;
+  text-align: right;
+}
+
+.tldr-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.tldr-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: 0.85rem;
+  border: 1px solid var(--prep-section-border);
+  background: rgba(15, 23, 42, 0.02);
+  text-decoration: none;
+  color: var(--prep-text);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+}
+
+html[data-theme="dark"] .tldr-pill {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.tldr-pill:hover {
+  transform: translateY(-1px);
+  border-color: var(--prep-border-soft);
+  box-shadow: var(--magic-ring);
+}
+
+.tldr-emoji {
+  font-size: 1.05rem;
+}
+
+.tldr-label {
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex: 1;
+}
+
+.tldr-count {
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--prep-muted);
+  background: rgba(148, 163, 184, 0.16);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  padding: 0.18rem 0.5rem;
+  border-radius: 999px;
+}
+
+.tldr-tip {
+  font-size: 0.9rem;
+  color: var(--prep-subtle);
+}
+
+/* =========================================================
+   PROGRESS RAIL + CONTENT GRID
+   ========================================================= */
+
+.prep-layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.prep-rail {
+  position: sticky;
+  top: 88px;
+}
+
+.rail-card {
+  border-radius: 1rem;
+  border: 1px solid var(--prep-section-border);
+  background: var(--prep-section-bg);
+  box-shadow: var(--prep-shadow-soft);
+  padding: 0.9rem 0.9rem 0.85rem;
+}
+
+.rail-title {
+  font-weight: 800;
+  margin-bottom: 0.6rem;
+  letter-spacing: 0.01em;
+}
+
+.rail-nav {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 0.8rem;
+}
+
+.rail-link {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: var(--prep-text);
+  padding: 0.45rem 0.55rem;
+  border-radius: 0.75rem;
+  border: 1px solid transparent;
+  background: transparent;
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
+}
+
+.rail-link:hover {
+  background: rgba(37, 99, 235, 0.06);
+  border-color: var(--prep-border-soft);
+  transform: translateY(-1px);
+}
+
+.rail-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.35);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
+  flex: 0 0 auto;
+}
+
+.rail-text {
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.rail-mini {
+  border-top: 1px solid var(--prep-section-border);
+  padding-top: 0.7rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.rail-mini-row {
+  display: flex;
+  justify-content: space-between;
+  color: var(--prep-muted);
+  font-size: 0.9rem;
+}
+
+.rail-mini-row strong {
+  color: var(--prep-text);
+  font-weight: 800;
+}
+
+/* =========================================================
+   SECTIONS: MAGIC DIVISION + GRADIENT IDENTITIES
+   ========================================================= */
+
+.report-section {
+  margin-bottom: 1rem;
+  border-radius: 1rem;
   padding: 1rem 1.05rem 1.05rem;
+  border: 1px solid var(--prep-section-border);
+  background: var(--prep-section-bg);
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03);
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  margin-bottom: 0.3rem;
+}
+
+.section-chip {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--prep-muted);
+  background: rgba(148, 163, 184, 0.14);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+}
+
+.section-intro {
+  margin: 0.2rem 0 0.7rem;
+  color: var(--prep-subtle);
+  font-size: 0.95rem;
 }
 
 .report-heading {
-  margin: 0 0 0.45rem;
-  font-size: 0.95rem;
-  letter-spacing: 0.06em;
+  margin: 0;
+  font-size: 0.92rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--prep-muted);
 }
 
 .report-subheading {
-  margin: 0.45rem 0 0.25rem;
+  margin: 0.65rem 0 0.25rem;
   font-size: 1rem;
   color: var(--prep-link);
 }
@@ -450,19 +533,20 @@ html[data-theme="dark"] {
 .report-paragraph {
   margin: 0.18rem 0;
   font-size: 0.94rem;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .report-example-block {
-  background: rgba(129, 140, 248, 0.08);
-  border-radius: 0.75rem;
-  padding: 0.8rem 0.9rem;
+  border-radius: 0.9rem;
+  padding: 0.85rem 0.9rem;
   margin: 0.6rem 0;
+  border: 1px solid rgba(129, 140, 248, 0.18);
+  background: radial-gradient(circle at top left, rgba(129, 140, 248, 0.14), transparent 60%);
 }
 
 .report-example-question {
   margin: 0 0 0.35rem;
-  font-weight: 600;
+  font-weight: 800;
 }
 
 .report-example-answer {
@@ -472,273 +556,81 @@ html[data-theme="dark"] {
 }
 
 .report-legend {
-  margin-top: 0.4rem;
-  font-size: 0.82rem;
+  margin-top: 0.45rem;
+  font-size: 0.84rem;
   color: var(--prep-muted);
 }
 
-/* Debug note for custom prep report */
-.report-debug-note {
-  margin: 0 0 0.75rem;
-  color: var(--prep-chip-warning-text);
-  font-size: 0.9rem;
+/* Section identity backgrounds */
+.section-know {
+  background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.12), transparent 55%),
+              var(--prep-section-bg);
+  box-shadow: var(--magic-glow);
+}
+
+.section-fit {
+  background: radial-gradient(circle at top left, rgba(236, 72, 153, 0.12), transparent 55%),
+              var(--prep-section-bg);
+}
+
+.section-beh {
+  background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.12), transparent 55%),
+              var(--prep-section-bg);
+}
+
+.section-tech {
+  background: radial-gradient(circle at top left, rgba(245, 158, 11, 0.12), transparent 55%),
+              var(--prep-section-bg);
+}
+
+.section-up {
+  background: radial-gradient(circle at top left, rgba(168, 85, 247, 0.12), transparent 55%),
+              var(--prep-section-bg);
+}
+
+.section-ask {
+  background: radial-gradient(circle at top left, rgba(14, 165, 233, 0.12), transparent 55%),
+              var(--prep-section-bg);
 }
 
 /* =========================================================
-   PREMIUM RESUME REVIEW TAGS AND LAYOUT
+   RESPONSIVE
    ========================================================= */
 
-/* Red / green badges */
-.badge-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  margin-top: 0.4rem;
+@media (max-width: 980px) {
+  .prep-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .prep-rail {
+    position: relative;
+    top: auto;
+    order: 0;
+    margin-bottom: 0.9rem;
+  }
 }
-
-.badge {
-  display: inline-block;
-  padding: 0.35rem 0.65rem;
-  border-radius: 0.45rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.badge.strength {
-  background: rgba(34, 197, 94, 0.12);
-  color: #16a34a;
-  border-left: 4px solid #16a34a;
-}
-
-.badge.issue {
-  background: rgba(239, 68, 68, 0.1);
-  color: #dc2626;
-  border-left: 4px solid #dc2626;
-}
-
-.badge.recommendation {
-  background: rgba(59, 130, 246, 0.12);
-  color: #2563eb;
-  border-left: 4px solid #2563eb;
-}
-
-.badge.keyword-missing {
-  background: rgba(250, 204, 21, 0.14);
-  color: #b45309;
-  border-left: 4px solid #facc15;
-}
-
-.badge.keyword-present {
-  background: rgba(34, 197, 94, 0.15);
-  color: #16a34a;
-  border-left: 4px solid #16a34a;
-}
-
-/* Resume section shells */
-
-.resume-section {
-  margin-bottom: 1.4rem;
-  padding: 1.05rem 1.05rem 1.1rem;
-  border-radius: 0.9rem;
-  border: 1px solid var(--prep-section-border);
-  background: var(--prep-section-bg);
-}
-
-.resume-section-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  margin-bottom: 0.7rem;
-}
-
-.section-index {
-  width: 1.9rem;
-  height: 1.9rem;
-  border-radius: 0.8rem;
-  background: radial-gradient(circle at top left, #2563eb, #1d4ed8);
-  color: #f9fafb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.95rem;
-}
-
-.resume-section-header h2 {
-  margin: 0;
-  font-size: 1rem;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--prep-muted);
-}
-
-.resume-section-header p {
-  margin: 0.25rem 0 0;
-  font-size: 0.9rem;
-  color: var(--prep-subtle);
-}
-
-/* Summary layout */
-
-.resume-summary-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 2.3fr) minmax(0, 1.3fr);
-  gap: 1.2rem;
-}
-
-.resume-summary-main p {
-  margin: 0;
-  font-size: 0.95rem;
-}
-
-.resume-score-card {
-  border-radius: 0.85rem;
-  border: 1px dashed rgba(148, 163, 184, 0.7);
-  padding: 0.85rem 0.9rem;
-  background: radial-gradient(circle at top, rgba(37, 99, 235, 0.04), transparent);
-}
-
-.score-circle {
-  width: 3.4rem;
-  height: 3.4rem;
-  border-radius: 999px;
-  margin-bottom: 0.6rem;
-  background: conic-gradient(#22c55e calc(var(--score, 7) * 10%), #e2e8f0 0);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  color: #0f172a;
-  font-weight: 700;
-  font-size: 1.1rem;
-}
-
-.score-circle span.score-label {
-  font-size: 0.7rem;
-  font-weight: 500;
-}
-
-.score-tips {
-  margin: 0;
-  padding-left: 1.1rem;
-  font-size: 0.85rem;
-  color: var(--prep-muted);
-}
-
-.score-tips li {
-  margin: 0.1rem 0;
-}
-
-/* Two column layout for structure section */
-
-.resume-two-col {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 1.1rem;
-}
-
-.resume-col-title {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--prep-subtle);
-  margin-bottom: 0.25rem;
-}
-
-/* Experience bullet cards */
-
-.bullet-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 0.9rem;
-}
-
-.bullet-card {
-  border-radius: 0.85rem;
-  border: 1px solid var(--prep-section-border);
-  padding: 0.8rem 0.9rem;
-  background: rgba(15, 23, 42, 0.02);
-}
-
-.bullet-label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  margin-bottom: 0.25rem;
-  color: var(--prep-muted);
-}
-
-.bullet-text {
-  font-size: 0.93rem;
-  margin: 0 0 0.35rem;
-}
-
-.bullet-why {
-  font-size: 0.82rem;
-  color: var(--prep-muted);
-  margin: 0;
-}
-
-/* Title suggestion pills */
-
-.title-pill-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.4rem;
-}
-
-.title-pill {
-  padding: 0.35rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  background: rgba(59, 130, 246, 0.08);
-  border: 1px solid rgba(59, 130, 246, 0.35);
-  color: var(--prep-link);
-}
-
-/* Small list styling inside resume sections */
-
-.resume-section ul {
-  margin: 0.2rem 0 0.3rem 1.2rem;
-  padding: 0;
-  font-size: 0.9rem;
-}
-
-.resume-section li {
-  margin: 0.12rem 0;
-}
-
-/* Keywords layout */
-
-.keywords-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
-  gap: 1rem;
-}
-
-.keywords-layout h4 {
-  margin: 0 0 0.3rem;
-  font-size: 0.92rem;
-  color: var(--prep-subtle);
-}
-
-/* Smaller on mobile */
 
 @media (max-width: 880px) {
   .prep-view-main {
     padding: 1.6rem 4% 2.6rem;
   }
-
-  .report-topbar {
+  .report-header {
     flex-direction: column;
     align-items: flex-start;
   }
-
-  .resume-summary-grid,
-  .resume-two-col,
-  .bullet-grid,
-  .keywords-layout {
-    grid-template-columns: minmax(0, 1fr);
+  .report-meta {
+    text-align: left;
+  }
+  .report-tags {
+    justify-content: flex-start;
+  }
+  .tldr-top {
+    flex-direction: column;
+  }
+  .tldr-meta {
+    min-width: auto;
+    width: 100%;
+  }
+  .tldr-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

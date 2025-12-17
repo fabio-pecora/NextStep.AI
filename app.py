@@ -1116,6 +1116,8 @@ def job_detail(job_id: int):
 # Custom prep reports
 # ---------------------------------------------------------------------------
 
+from flask import redirect, render_template, request, url_for
+
 @app.route("/custom_prep", methods=["GET", "POST"])
 def custom_prep():
     report = None
@@ -1142,6 +1144,7 @@ def custom_prep():
                 error = report["error"]
             else:
                 current_user = get_current_user()
+
                 try:
                     prep = PrepReport(
                         user_id=current_user.id if current_user else None,
@@ -1156,9 +1159,11 @@ def custom_prep():
 
                     if current_user:
                         prune_user_records(PrepReport, current_user.id, keep=20)
+                        return redirect(url_for("view_saved_prep_report", report_id=prep.id))
 
                 except Exception:
                     db.session.rollback()
+                    error = "Could not save your prep report. Please try again."
 
     return render_template(
         "custom_prep.html",
@@ -1187,6 +1192,7 @@ def view_saved_prep_report(report_id: int):
         prep_report=prep_report,
         report=prep_report.report_json,
     )
+
 
 def render_pdf_from_html(html: str, css_files: list[str] | None = None) -> bytes:
     full_html = html
@@ -1348,6 +1354,7 @@ def resume_check():
                 error = report["error"]
 
             current_user = get_current_user()
+
             try:
                 row = ResumeReport(
                     user_id=current_user.id if current_user else None,
@@ -1357,10 +1364,10 @@ def resume_check():
                 )
                 db.session.add(row)
                 db.session.commit()
-                report["saved_id"] = row.id
 
                 if current_user:
                     prune_user_records(ResumeReport, current_user.id, keep=20)
+                    return redirect(url_for("view_saved_resume_report", report_id=row.id))
 
             except Exception:
                 db.session.rollback()
@@ -1370,6 +1377,71 @@ def resume_check():
         report=report,
         error=error,
     )
+
+def normalize_resume_report_for_ui(raw):
+    r = raw or {}
+    sections = r.get("sections") or {}
+
+    def collect_list(section_key, field):
+        block = sections.get(section_key) or {}
+        val = block.get(field) or []
+        return val if isinstance(val, list) else []
+
+    # Flatten strengths and issues from all sections
+    flat_strengths = (
+        collect_list("overall_structure", "strengths")
+        + collect_list("experience", "strengths")
+        + collect_list("education", "strengths")
+        + collect_list("skills", "strengths")
+    )
+
+    flat_issues = (
+        collect_list("overall_structure", "issues")
+        + collect_list("experience", "issues")
+        + collect_list("education", "issues")
+        + collect_list("skills", "issues")
+    )
+
+    kw = r.get("keywords") or {}
+    present = kw.get("present_keywords_to_keep") or kw.get("present") or []
+    missing = kw.get("missing_keywords") or kw.get("missing") or []
+
+    if not isinstance(present, list):
+        present = []
+    if not isinstance(missing, list):
+        missing = []
+
+    exp_bullets = r.get("experience_bullets") or {}
+    rewrites = exp_bullets.get("rewrites") or []
+    if not isinstance(rewrites, list):
+        rewrites = []
+
+    bullet_rewrites = []
+    for x in rewrites:
+        if not isinstance(x, dict):
+            continue
+        bullet_rewrites.append(
+            {
+                "original": x.get("original", ""),
+                "rewrite": x.get("improved", ""),
+                "why": x.get("why_it_is_better", ""),
+            }
+        )
+
+    # Optional scores mapping
+    spacing = r.get("spacing_readability") or {}
+    out = dict(r)
+    out["strengths"] = flat_strengths
+    out["issues"] = flat_issues
+    out["keywords"] = {"present": present, "missing": missing}
+    out["bullet_rewrites"] = bullet_rewrites
+
+    # If your template expects these
+    out["fit_score"] = r.get("fit_score")
+    out["clarity_score"] = spacing.get("scannability_score") or r.get("clarity_score")
+    out["impact_score"] = r.get("impact_score")
+
+    return out
 
 
 @app.route("/resume_check/report/<int:report_id>", methods=["GET"])
@@ -1390,7 +1462,7 @@ def view_saved_resume_report(report_id: int):
     return render_template(
         "saved_resume_report.html",
         resume_report=resume_report,
-        report=resume_report.report_json,
+        report=normalize_resume_report_for_ui(resume_report.report_json),
     )
 
 
@@ -1412,7 +1484,7 @@ def download_saved_resume_report_pdf(report_id: int):
     html = render_template(
         "saved_resume_report.html",
         resume_report=resume_report,
-        report=resume_report.report_json,
+        report=normalize_resume_report_for_ui(resume_report.report_json),
         for_pdf=True,
     )
 
