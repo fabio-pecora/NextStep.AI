@@ -110,13 +110,6 @@ html[data-theme="dark"] {
   box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: var(--bg);
-  color: var(--text-main);
-}
-
 .landing-body {
   margin: 0;
   background: var(--landing-bg, #f9fbfd);

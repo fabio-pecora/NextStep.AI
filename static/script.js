@@ -31,9 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Update hidden field for text answer
-        const textQuestionInput = document.querySelector(
-          'input[name="question_id"]'
-        );
+        const textQuestionInput = document.querySelector('input[name="question_id"]');
         if (textQuestionInput) {
           textQuestionInput.value = data.id;
         }
@@ -126,6 +124,73 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function injectThemeBootstrap(html) {
+    const bootstrap = `
+<script>
+(function () {
+  try {
+    var root = document.documentElement;
+    var THEME_KEY = "theme";
+    var saved = localStorage.getItem(THEME_KEY);
+    if (saved === "dark") {
+      root.setAttribute("data-theme", "dark");
+    } else {
+      root.removeAttribute("data-theme");
+    }
+
+    function getToggleBtn() {
+      return document.getElementById("theme-toggle") || document.querySelector("[data-theme-toggle]");
+    }
+
+    function syncIcon(btn) {
+      if (!btn) return;
+      var isDark = root.getAttribute("data-theme") === "dark";
+      btn.textContent = isDark ? "☀️" : "🌙";
+    }
+
+    function bind() {
+      var btn = getToggleBtn();
+      if (!btn) return;
+
+      // Avoid double binding
+      if (btn.__themeBound) {
+        syncIcon(btn);
+        return;
+      }
+      btn.__themeBound = true;
+
+      syncIcon(btn);
+
+      btn.addEventListener("click", function () {
+        var isDark = root.getAttribute("data-theme") === "dark";
+        var next = isDark ? "light" : "dark";
+        if (next === "dark") root.setAttribute("data-theme", "dark");
+        else root.removeAttribute("data-theme");
+        localStorage.setItem(THEME_KEY, next);
+        syncIcon(btn);
+      });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", bind);
+    } else {
+      bind();
+    }
+  } catch (e) {}
+})();
+<\/script>
+`;
+
+    // Insert bootstrap before </head> if possible, else before </body>, else append
+    if (/<\/head>/i.test(html)) {
+      return html.replace(/<\/head>/i, bootstrap + "\n</head>");
+    }
+    if (/<\/body>/i.test(html)) {
+      return html.replace(/<\/body>/i, bootstrap + "\n</body>");
+    }
+    return html + bootstrap;
+  }
+
   async function sendAudio(blob, context) {
     try {
       const formData = new FormData();
@@ -146,13 +211,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await response.json();
 
       // For job voice answers we expect HTML for the full feedback page
+      // Fix: inject theme bootstrap so dark mode toggle keeps working on the replaced page
       if (context.expectHtmlResult && data.html) {
         if (context.statusEl) {
           context.statusEl.textContent = "Opening feedback...";
         }
-        // Replace the current page with the server-rendered feedback HTML
+
+        const htmlWithTheme = injectThemeBootstrap(data.html);
+
         document.open();
-        document.write(data.html);
+        document.write(htmlWithTheme);
         document.close();
         return;
       }
@@ -171,12 +239,10 @@ document.addEventListener("DOMContentLoaded", () => {
         context.transcriptEl.textContent = data.transcript || "";
       }
       if (context.relScoreEl) {
-        context.relScoreEl.textContent =
-          data.relevance_score ?? data.rel_score ?? "";
+        context.relScoreEl.textContent = data.relevance_score ?? data.rel_score ?? "";
       }
       if (context.confScoreEl) {
-        context.confScoreEl.textContent =
-          data.confidence_score ?? data.conf_score ?? "";
+        context.confScoreEl.textContent = data.confidence_score ?? data.conf_score ?? "";
       }
       if (context.finalScoreEl) {
         context.finalScoreEl.textContent = data.final_score ?? "";
@@ -240,8 +306,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const stopBtn = block.querySelector(".job-stop-recording");
     const statusEl = block.querySelector(".job-audio-status");
 
-    // We no longer need the inline feedback elements here,
-    // because we will open the full result page.
     const transcriptEl = block.querySelector(".job-transcript");
     const relScoreEl = block.querySelector(".job-rel-score");
     const confScoreEl = block.querySelector(".job-conf-score");
@@ -267,7 +331,6 @@ document.addEventListener("DOMContentLoaded", () => {
         confScoreEl,
         finalScoreEl,
         feedbackTextEl,
-        // Important: tell sendAudio we expect a full feedback HTML page
         expectHtmlResult: true,
       };
 
@@ -279,7 +342,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
-
 
 (function () {
   const root = document.documentElement;
@@ -302,7 +364,10 @@ document.addEventListener("DOMContentLoaded", () => {
       applyTheme("light");
     }
 
-    const toggleBtn = document.getElementById("theme-toggle");
+    const toggleBtn =
+      document.getElementById("theme-toggle") ||
+      document.querySelector("[data-theme-toggle]");
+
     if (!toggleBtn) {
       console.warn("Theme toggle button not found");
       return;
@@ -314,6 +379,12 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       toggleBtn.textContent = "🌙";
     }
+
+    // Avoid double binding
+    if (toggleBtn.__themeBound) {
+      return;
+    }
+    toggleBtn.__themeBound = true;
 
     toggleBtn.addEventListener("click", () => {
       const isDark = root.getAttribute("data-theme") === "dark";

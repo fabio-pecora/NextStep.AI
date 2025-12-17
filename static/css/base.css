@@ -41,6 +41,20 @@
   );
 }
 
+html[data-theme="dark"] {
+  /* Remap LIGHT TOKENS so every page that uses them switches automatically */
+  --bg: var(--ns-bg-deep);
+  --card-bg: var(--ns-surface);
+  --text-main: var(--ns-text-main);
+  --text-muted: var(--ns-text-sub);
+  --border-soft: var(--ns-border-subtle);
+
+  /* Optional but recommended so buttons and pills also match */
+  --primary: var(--ns-cyan);
+  --primary-soft: rgba(22, 242, 255, 0.14);
+}
+
+
 /* ===========================
    DARK MODE - NEON STYLING
    (does not change light tokens)
@@ -219,12 +233,11 @@ h2 {
    Shared landing header/footer
    =========================== */
 
-.landing-body {
-  margin: 0;
-  background: #f9fbfd;  /* LIGHT BACKGROUND */
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #1e293b;
+   .landing-body {
+  background: var(--bg);
+  color: var(--text-main);
 }
+
 
 .landing-header {
   display: flex;
