@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>NextStep.AI - Feedback</title>
 
-  <!-- Shared styles + page styles -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/result.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
@@ -13,91 +12,136 @@
 <body class="landing-body">
   {% include "navbar.html" %}
 
+  {% macro score_label(score) %}
+    {% if score < 50 %}
+      <span class="score-label bad">Below hiring bar</span>
+    {% elif score < 70 %}
+      <span class="score-label ok">Needs improvement</span>
+    {% elif score < 85 %}
+      <span class="score-label good">Meets hiring bar</span>
+    {% else %}
+      <span class="score-label strong">Strong</span>
+    {% endif %}
+  {% endmacro %}
+
   <main>
     <section class="result-section">
       <div class="app-shell">
         <div class="card result-card">
+
           {% if result.error %}
             <h1 class="result-title">Feedback</h1>
             <p class="error">{{ result.error }}</p>
           {% else %}
-            <header class="result-header">
-              <div>
-                <h1 class="result-title">Interview feedback</h1>
-                <p class="subtitle">Automatic evaluation from NextStep.AI.</p>
-              </div>
-            </header>
 
-            <div class="result-body">
-
-              <section class="result-block">
-                <h2 class="section-title">Question</h2>
-                <p class="result-text result-question">{{ result.question }}</p>
-              </section>
-
-              <section class="result-block">
-                <h2 class="section-title">Your answer</h2>
-                <p class="result-text result-answer">{{ result.user_answer }}</p>
-              </section>
-
-              <section class="result-block">
-                <h2 class="section-title">Scores</h2>
-                <div class="scores">
-                  <div>Relevance: <span class="score-pill">{{ result.relevance_score }}</span></div>
-                  <div>Confidence: <span class="score-pill">{{ result.confidence_score }}</span></div>
-                  <div>Final: <span class="score-pill">{{ result.final_score }}</span></div>
-                </div>
-              </section>
-
-              <section class="result-block">
-                <h2 class="section-title">Feedback</h2>
-
-                {# Parse strengths and improvements from the feedback_text string #}
-                {% set raw = result.feedback_text or "" %}
-                {% set parts = raw.split("Improvements:") %}
-                {% set strengths_part = parts[0] %}
-                {% set improvements_part = parts[1] if parts|length > 1 else "" %}
-
-                {% set strengths_clean = strengths_part.replace("Strengths:", "").strip() %}
-                {% set improvements_clean = improvements_part.strip() %}
-
-                {% set strengths_items = strengths_clean.split(";") if strengths_clean else [] %}
-                {% set improvements_items = improvements_clean.split(";") if improvements_clean else [] %}
-
-                <div class="feedback-grid">
-                  {% if strengths_items %}
-                    <div class="feedback-section feedback-strengths">
-                      <h3>Strengths</h3>
-                      <ul>
-                        {% for item in strengths_items %}
-                          {% if item.strip() %}
-                            <li>{{ item.strip() }}</li>
-                          {% endif %}
-                        {% endfor %}
-                      </ul>
-                    </div>
-                  {% endif %}
-
-                  {% if improvements_items %}
-                    <div class="feedback-section feedback-improvements">
-                      <h3>Improvements</h3>
-                      <ul>
-                        {% for item in improvements_items %}
-                          {% if item.strip() %}
-                            <li>{{ item.strip() }}</li>
-                          {% endif %}
-                        {% endfor %}
-                      </ul>
-                    </div>
-                  {% endif %}
-                </div>
-
-                {# Fallback: if parsing failed and everything was empty, show the raw text #}
-                {% if not strengths_items and not improvements_items and result.feedback_text %}
-                  <p class="result-text">{{ result.feedback_text }}</p>
-                {% endif %}
-              </section>
+          <header class="result-header">
+            <div>
+              <h1 class="result-title">Interview feedback</h1>
+              <p class="subtitle">
+                AI evaluation based on real interview hiring standards.
+              </p>
             </div>
+          </header>
+
+          <div class="result-body">
+
+            <section class="result-block">
+              <h2 class="section-title">Question</h2>
+              <p class="result-text">{{ result.question }}</p>
+            </section>
+
+            <section class="result-block">
+              <h2 class="section-title">Your answer</h2>
+              <p class="result-text result-answer">{{ result.user_answer }}</p>
+            </section>
+
+            <!-- SCORES -->
+            <section class="result-block">
+              <h2 class="section-title">Scores</h2>
+              <p class="score-scale">Scores are on a 0–100 scale.</p>
+
+              <div class="scores">
+                <div>
+                  Relevance
+                  <span class="score-pill">{{ result.relevance_score }}</span>
+                  {{ score_label(result.relevance_score) }}
+                </div>
+
+                <div>
+                  Confidence
+                  <span class="score-pill">{{ result.confidence_score }}</span>
+                  {{ score_label(result.confidence_score) }}
+                </div>
+
+                <div class="final-score">
+                  Final
+                  <span class="score-pill">{{ result.final_score }}</span>
+                  {{ score_label(result.final_score) }}
+                </div>
+              </div>
+
+              <p class="score-explainer">
+                The hiring bar reflects how this answer would typically be evaluated in a real interview.
+              </p>
+            </section>
+
+            <!-- FEEDBACK -->
+            <section class="result-block">
+              <h2 class="section-title">Feedback</h2>
+
+              <div class="feedback-grid">
+                {% if result.strengths %}
+                <div class="feedback-section feedback-strengths">
+                  <h3>Strengths</h3>
+                  <ul>
+                    {% for s in result.strengths %}
+                      <li>{{ s }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                {% endif %}
+
+                {% if result.improvements %}
+                <div class="feedback-section feedback-improvements">
+                  <h3>Improvements</h3>
+                  <ul>
+                    {% for i in result.improvements %}
+                      <li>{{ i }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                {% endif %}
+              </div>
+            </section>
+
+            <!-- AI REWRITES -->
+            {% if result.rewritten_answer %}
+            <section class="result-block rewrite-block">
+              <h2 class="section-title">✨ AI Rewrite Suggestions</h2>
+              <p class="rewrite-subtitle">
+                Here’s how your answer could sound in a real interview.
+              </p>
+
+              <div class="rewrite-tabs">
+                <button class="tab active" data-tab="star">STAR version</button>
+                <button class="tab" data-tab="concise">Concise version</button>
+              </div>
+
+              <div class="rewrite-content">
+                <div class="rewrite-panel active" id="star">
+                  <pre>{{ result.rewritten_answer.star }}</pre>
+                  <button class="copy-btn" onclick="copyText('star')">Copy</button>
+                </div>
+
+                <div class="rewrite-panel" id="concise">
+                  <pre>{{ result.rewritten_answer.concise }}</pre>
+                  <button class="copy-btn" onclick="copyText('concise')">Copy</button>
+                </div>
+              </div>
+            </section>
+            {% endif %}
+
+          </div>
           {% endif %}
 
           <a href="{{ url_for('index') }}" class="back-link">Back to question</a>
@@ -109,5 +153,25 @@
   <footer class="landing-footer">
     <p>© {{ current_year or "2025" }} NextStep.AI. All rights reserved.</p>
   </footer>
+
+  <script>
+    const tabs = document.querySelectorAll(".tab");
+    const panels = document.querySelectorAll(".rewrite-panel");
+
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        tabs.forEach(t => t.classList.remove("active"));
+        panels.forEach(p => p.classList.remove("active"));
+
+        tab.classList.add("active");
+        document.getElementById(tab.dataset.tab).classList.add("active");
+      });
+    });
+
+    function copyText(id) {
+      const text = document.querySelector(`#${id} pre`).innerText;
+      navigator.clipboard.writeText(text);
+    }
+  </script>
 </body>
 </html>

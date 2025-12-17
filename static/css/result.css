@@ -236,3 +236,104 @@ body.landing-body {
     font-size: 1.5rem;
   }
 }
+.score-scale {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+
+.score-label {
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.score-label.bad {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.score-label.ok {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.score-label.good {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.score-label.strong {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.score-explainer {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.rewrite-block {
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
+}
+
+.rewrite-subtitle {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.rewrite-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.rewrite-tabs .tab {
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.rewrite-tabs .tab.active {
+  background: var(--primary);
+  color: white;
+}
+
+.rewrite-panel {
+  display: none;
+  position: relative;
+}
+
+.rewrite-panel.active {
+  display: block;
+}
+
+.rewrite-panel pre {
+  background: #0f172a;
+  color: #e5e7eb;
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.75rem;
+}
