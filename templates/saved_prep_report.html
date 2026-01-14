@@ -43,14 +43,20 @@
           <div class="report-logo-tagline">Interview preparation report</div>
         </div>
 
+        {# IMPORTANT: define report safely so template never crashes #}
+        {% set report = report or prep_report.report_json or {} %}
+
         <div class="report-meta">
           <p class="report-job">
             {{ prep_report.job_title }}
             {% if prep_report.company_name %} · {{ prep_report.company_name }}{% endif %}
           </p>
-          {% if report.candidate_name %}
-            <p class="report-candidate">Prepared for {{ report.candidate_name }}</p>
+
+          {% set candidate = report.candidate_name or prep_report.candidate_name %}
+          {% if candidate %}
+            <p class="report-candidate">Prepared for {{ candidate }}</p>
           {% endif %}
+
           <div class="report-tags">
             <span class="report-tag">AI generated</span>
             {% if prep_report.company_name %}
@@ -109,7 +115,6 @@
           <p class="report-debug-note">{{ report.debug_note }}</p>
         {% endif %}
 
-        <!-- TLDR SUMMARY CARD -->
         <section class="tldr-card">
           <div class="tldr-top">
             <div class="tldr-title">
@@ -179,7 +184,6 @@
           </div>
         </section>
 
-        <!-- LAYOUT WITH PROGRESS RAIL -->
         <div class="prep-layout">
 
           <aside class="prep-rail">
@@ -221,7 +225,6 @@
 
           <div class="prep-content">
 
-            <!-- SECTION 1 -->
             {% if know.mission_values or know.culture_snapshot or know.recent_projects_news or know.competitors_industry_trends %}
               <section class="report-section section-know" id="sec-know">
                 <div class="section-head">
@@ -262,7 +265,6 @@
               </section>
             {% endif %}
 
-            <!-- SECTION 2 -->
             {% if fit.top_strengths or fit.best_projects %}
               <section class="report-section section-fit" id="sec-fit">
                 <div class="section-head">
@@ -291,7 +293,6 @@
               </section>
             {% endif %}
 
-            <!-- SECTION 3 -->
             {% if beh.questions or beh.example_answers %}
               <section class="report-section section-beh" id="sec-beh">
                 <div class="section-head">
@@ -314,7 +315,19 @@
                   {% for ex in beh.example_answers %}
                     <div class="report-example-block">
                       <p class="report-example-question">{{ ex.question }}</p>
+
+                      {% if ex.experience_name %}
+                        <p class="report-example-meta">
+                          Experience: <strong>{{ ex.experience_name }}</strong>
+                          {% if ex.confidence %}<span class="muted"> ({{ ex.confidence }})</span>{% endif %}
+                        </p>
+                      {% endif %}
+                      {% if ex.experience_source_quote %}
+                        <p class="report-example-meta muted">From resume: "{{ ex.experience_source_quote }}"</p>
+                      {% endif %}
+
                       <p class="report-example-answer">{{ ex.answer }}</p>
+
                       {% if ex.legend %}
                         <p class="report-legend">
                           Legend:
@@ -329,7 +342,6 @@
               </section>
             {% endif %}
 
-            <!-- SECTION 4 -->
             {% if tech.questions or tech.example_answers or tech.key_concepts or tech.red_flags %}
               <section class="report-section section-tech" id="sec-tech">
                 <div class="section-head">
@@ -348,11 +360,31 @@
                 {% endif %}
 
                 {% if tech.example_answers %}
-                  <h4 class="report-subheading">Example responses</h4>
+                  <h4 class="report-subheading">Sample technical answers</h4>
                   {% for ex in tech.example_answers %}
                     <div class="report-example-block">
                       <p class="report-example-question">{{ ex.question }}</p>
+
+                      {% if ex.experience_name %}
+                        <p class="report-example-meta">
+                          Experience: <strong>{{ ex.experience_name }}</strong>
+                          {% if ex.confidence %}<span class="muted"> ({{ ex.confidence }})</span>{% endif %}
+                        </p>
+                      {% endif %}
+                      {% if ex.experience_source_quote %}
+                        <p class="report-example-meta muted">From resume: "{{ ex.experience_source_quote }}"</p>
+                      {% endif %}
+
                       <p class="report-example-answer">{{ ex.answer }}</p>
+
+                      {% if ex.legend %}
+                        <p class="report-legend">
+                          Legend:
+                          {% for key, val in ex.legend.items() %}
+                            <span>{{ key }} {{ val }}</span>
+                          {% endfor %}
+                        </p>
+                      {% endif %}
                     </div>
                   {% endfor %}
                 {% endif %}
@@ -373,7 +405,6 @@
               </section>
             {% endif %}
 
-            <!-- SECTION 5 -->
             {% if imp.skill_gaps or imp.soft_skills or imp.learning_focus %}
               <section class="report-section section-up" id="sec-up">
                 <div class="section-head">
@@ -407,7 +438,6 @@
               </section>
             {% endif %}
 
-            <!-- SECTION 6 -->
             {% if itm.team_culture or itm.impact_growth or itm.technical_depth or itm.company_direction or itm.next_steps %}
               <section class="report-section section-ask" id="sec-ask">
                 <div class="section-head">

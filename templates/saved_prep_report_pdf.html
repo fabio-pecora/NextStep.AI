@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Prep report – {{ prep_report.job_title }}</title>
+  <title>Prep report - {{ prep_report.job_title }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/saved_prep_report_pdf.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
 </head>
 
@@ -13,7 +14,9 @@
   <div class="prep-view-main no-print">
     <div class="prep-view-header-row">
       <a class="prep-back-link" href="{{ url_for('profile') }}">← Back to profile</a>
-      <a class="btn btn-primary" href="{{ url_for('download_saved_prep_report_pdf', report_id=prep_report.id) }}">Download as PDF</a>
+      <a class="btn btn-primary" href="{{ url_for('download_saved_prep_report_pdf', report_id=prep_report.id) }}">
+        Download as PDF
+      </a>
     </div>
   </div>
 
@@ -22,21 +25,46 @@
     <header class="report-topbar">
       <div class="brand">NextStep.<span>AI</span></div>
       <div class="meta">
-        <div class="title">Prep report for <strong>{{ prep_report.job_title }}</strong>{% if prep_report.company_name %} · {{ prep_report.company_name }}{% endif %}</div>
-        <div class="stamp">Generated on {{ prep_report.created_at.date() }}</div>
+        <div class="title">
+          Prep report for <strong>{{ prep_report.job_title }}</strong>
+          {% if prep_report.company_name %} · {{ prep_report.company_name }}{% endif %}
+        </div>
+        {% if prep_report.created_at %}
+          <div class="stamp">Generated on {{ prep_report.created_at.date() }}</div>
+        {% endif %}
       </div>
     </header>
 
     <section class="report-card">
+      {# Always define report safely #}
+      {% set report = report or prep_report.report_json or {} %}
+
       <div class="report-badges">
         <span class="tag">AI generated</span>
         {% if prep_report.company_name %}<span class="tag">Company specific</span>{% endif %}
-        <span class="tag">Role and company insights</span>
+        <span class="tag">
+          {% if report.mode == "role_and_company" %}
+            Role and company insights
+          {% else %}
+            Role focused prep
+          {% endif %}
+        </span>
+        {% if report.debug_note %}
+          <span class="tag warning">Fallback mode</span>
+        {% endif %}
       </div>
 
+      {% set candidate = report.candidate_name or prep_report.candidate_name %}
+      {% if candidate %}
+        <p class="debug-note" style="margin-top: 8px;">Prepared for {{ candidate }}</p>
+      {% endif %}
+
       <div class="report-content" id="report-content">
-        {# Reuse the same section rendering you already had in the modal #}
-        {% set report = report or prep_report.report_json %}
+
+        {% if report.debug_note %}
+          <p class="debug-note">{{ report.debug_note }}</p>
+        {% endif %}
+
         {# --- SECTION 1 --- #}
         {% set know = report.know_all_about_them or {} %}
         {% if know.mission_values or know.culture_snapshot or know.recent_projects_news or know.competitors_industry_trends %}
@@ -81,7 +109,8 @@
               <ul>
                 {% for p in fit.best_projects %}
                   <li>
-                    <strong>{{ p.title }}</strong>{% if p.summary %} — {{ p.summary }}{% endif %}
+                    <strong>{{ p.title }}</strong>
+                    {% if p.summary %} - {{ p.summary }}{% endif %}
                   </li>
                 {% endfor %}
               </ul>
@@ -105,10 +134,26 @@
               {% for ex in beh.example_answers %}
                 <div class="example">
                   <p class="q">{{ ex.question }}</p>
+
+                  {% if ex.experience_name %}
+                    <p class="legend" style="margin-bottom: 6px;">
+                      <span>Experience: <strong>{{ ex.experience_name }}</strong>{% if ex.confidence %} ({{ ex.confidence }}){% endif %}</span>
+                    </p>
+                  {% endif %}
+
+                  {% if ex.experience_source_quote %}
+                    <p class="legend" style="margin-bottom: 8px;">
+                      <span>From resume: "{{ ex.experience_source_quote }}"</span>
+                    </p>
+                  {% endif %}
+
                   <p class="a">{{ ex.answer }}</p>
+
                   {% if ex.legend %}
                     <p class="legend">
-                      {% for k, v in ex.legend.items() %}<span>{{ k }} {{ v }}</span>{% endfor %}
+                      {% for k, v in ex.legend.items() %}
+                        <span>{{ k }} {{ v }}</span>
+                      {% endfor %}
                     </p>
                   {% endif %}
                 </div>
@@ -129,11 +174,33 @@
             {% endif %}
 
             {% if tech.example_answers %}
-              <h3>Example responses</h3>
+              <h3>Sample technical answers</h3>
               {% for ex in tech.example_answers %}
                 <div class="example">
                   <p class="q">{{ ex.question }}</p>
+
+                  {% if ex.experience_name %}
+                    <p class="legend" style="margin-bottom: 6px;">
+                      <span>Experience: <strong>{{ ex.experience_name }}</strong>{% if ex.confidence %} ({{ ex.confidence }}){% endif %}</span>
+                    </p>
+                  {% endif %}
+
+                  {% if ex.experience_source_quote %}
+                    <p class="legend" style="margin-bottom: 8px;">
+                      <span>From resume: "{{ ex.experience_source_quote }}"</span>
+                    </p>
+                  {% endif %}
+
                   <p class="a">{{ ex.answer }}</p>
+
+                  {# Render technical using the same STAR legend keys and styling #}
+                  {% if ex.legend %}
+                    <p class="legend">
+                      {% for k, v in ex.legend.items() %}
+                        <span>{{ k }} {{ v }}</span>
+                      {% endfor %}
+                    </p>
+                  {% endif %}
                 </div>
               {% endfor %}
             {% endif %}
@@ -179,13 +246,33 @@
           <section class="block">
             <h2>6. Smart questions to ask them</h2>
 
-            {% if itm.team_culture %}<h3>Team and culture</h3><ul>{% for q in itm.team_culture %}<li>{{ q }}</li>{% endfor %}</ul>{% endif %}
-            {% if itm.impact_growth %}<h3>Impact and growth</h3><ul>{% for q in itm.impact_growth %}<li>{{ q }}</li>{% endfor %}</ul>{% endif %}
-            {% if itm.technical_depth %}<h3>Technical depth</h3><ul>{% for q in itm.technical_depth %}<li>{{ q }}</li>{% endfor %}</ul>{% endif %}
-            {% if itm.company_direction %}<h3>Company direction</h3><ul>{% for q in itm.company_direction %}<li>{{ q }}</li>{% endfor %}</ul>{% endif %}
-            {% if itm.next_steps %}<h3>Next steps</h3><ul>{% for q in itm.next_steps %}<li>{{ q }}</li>{% endfor %}</ul>{% endif %}
+            {% if itm.team_culture %}
+              <h3>Team and culture</h3>
+              <ul>{% for q in itm.team_culture %}<li>{{ q }}</li>{% endfor %}</ul>
+            {% endif %}
+
+            {% if itm.impact_growth %}
+              <h3>Impact and growth</h3>
+              <ul>{% for q in itm.impact_growth %}<li>{{ q }}</li>{% endfor %}</ul>
+            {% endif %}
+
+            {% if itm.technical_depth %}
+              <h3>Technical depth</h3>
+              <ul>{% for q in itm.technical_depth %}<li>{{ q }}</li>{% endfor %}</ul>
+            {% endif %}
+
+            {% if itm.company_direction %}
+              <h3>Company direction</h3>
+              <ul>{% for q in itm.company_direction %}<li>{{ q }}</li>{% endfor %}</ul>
+            {% endif %}
+
+            {% if itm.next_steps %}
+              <h3>Next steps</h3>
+              <ul>{% for q in itm.next_steps %}<li>{{ q }}</li>{% endfor %}</ul>
+            {% endif %}
           </section>
         {% endif %}
+
       </div>
     </section>
 
