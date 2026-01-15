@@ -1118,6 +1118,7 @@ def job_detail(job_id: int):
 
 from flask import redirect, render_template, request, url_for
 
+
 @app.route("/custom_prep", methods=["GET", "POST"])
 def custom_prep():
     report = None
@@ -1127,31 +1128,94 @@ def custom_prep():
         job_title = request.form.get("job_title", "").strip()
         company_name = request.form.get("company_name", "").strip() or None
         job_description = request.form.get("job_description", "").strip() or None
-        resume = request.form.get("resume", "").strip() or None
+
+        current_user = get_current_user()
+
+        # 1) Pasted resume text (support multiple possible field names)
+        resume_text = (
+            (request.form.get("resume_text") or "").strip()
+            or (request.form.get("resume") or "").strip()
+            or (request.form.get("resumeContent") or "").strip()
+        )
+
+        # 2) Optional PDF upload on custom prep page (same extraction as resume_check)
+        resume_file = request.files.get("resume_file")
+        if (not resume_text) and resume_file and resume_file.filename:
+            filename = secure_filename(resume_file.filename)
+            if not filename.lower().endswith(".pdf"):
+                error = "Please upload a PDF file."
+            else:
+                temp_path = None
+                try:
+                    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+                        temp_path = tmp.name
+                        resume_file.save(temp_path)
+
+                    try:
+                        from PyPDF2 import PdfReader
+
+                        reader = PdfReader(temp_path)
+                        pages_text = []
+                        for page in reader.pages:
+                            try:
+                                pages_text.append(page.extract_text() or "")
+                            except Exception:
+                                continue
+                        resume_text = "\n".join(pages_text).strip()
+                    except Exception as e:
+                        resume_text = ""
+                        error = (
+                            "Could not read the PDF text. Please paste your resume text instead. "
+                            f"({str(e)})"
+                        )
+                finally:
+                    if temp_path and os.path.exists(temp_path):
+                        try:
+                            os.remove(temp_path)
+                        except Exception:
+                            pass
+
+        # 3) If still empty, use the latest saved resume from resume_reports
+        if (not error) and (not resume_text) and current_user:
+            latest_resume = (
+                ResumeReport.query
+                .filter_by(user_id=current_user.id)
+                .order_by(ResumeReport.created_at.desc())
+                .first()
+            )
+            if latest_resume and (latest_resume.resume_text or "").strip():
+                resume_text = (latest_resume.resume_text or "").strip()
+                logger.info("custom_prep using latest saved resume_report id=%s chars=%s",
+                            latest_resume.id, len(resume_text))
+            else:
+                logger.info("custom_prep no saved resume found for user_id=%s", current_user.id)
+
+        logger.info("custom_prep POST form keys: %s", list(request.form.keys()))
+        logger.info("custom_prep POST file keys: %s", list(request.files.keys()))
+        logger.info("custom_prep resolved resume_text chars: %s", len(resume_text or ""))
 
         if not job_title:
             error = "Please enter at least the job position."
-        else:
+
+        if not error:
             report = generate_prep_report(
                 job_title=job_title,
                 company_name=company_name,
                 job_description=job_description,
-                resume=resume,
+                resume_text=resume_text,
                 use_gpt=True,
             )
 
             if report.get("error"):
                 error = report["error"]
             else:
-                current_user = get_current_user()
-
                 try:
                     prep = PrepReport(
                         user_id=current_user.id if current_user else None,
                         job_title=job_title,
                         company_name=company_name,
                         job_description=job_description,
-                        resume_text=resume,
+                        resume_text=resume_text,
                         report_json=report,
                     )
                     db.session.add(prep)
@@ -1159,7 +1223,8 @@ def custom_prep():
 
                     if current_user:
                         prune_user_records(PrepReport, current_user.id, keep=20)
-                        return redirect(url_for("view_saved_prep_report", report_id=prep.id))
+
+                    return redirect(url_for("view_saved_prep_report", report_id=prep.id))
 
                 except Exception:
                     db.session.rollback()

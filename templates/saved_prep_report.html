@@ -43,7 +43,6 @@
           <div class="report-logo-tagline">Interview preparation report</div>
         </div>
 
-        {# IMPORTANT: define report safely so template never crashes #}
         {% set report = report or prep_report.report_json or {} %}
 
         <div class="report-meta">
@@ -185,35 +184,16 @@
         </section>
 
         <div class="prep-layout">
-
           <aside class="prep-rail">
             <div class="rail-card">
               <div class="rail-title">Progress</div>
               <nav class="rail-nav">
-                <a class="rail-link rail-know" href="#sec-know">
-                  <span class="rail-dot"></span>
-                  <span class="rail-text">🌍 Know their world</span>
-                </a>
-                <a class="rail-link rail-fit" href="#sec-fit">
-                  <span class="rail-dot"></span>
-                  <span class="rail-text">🧩 Perfect fit map</span>
-                </a>
-                <a class="rail-link rail-beh" href="#sec-beh">
-                  <span class="rail-dot"></span>
-                  <span class="rail-text">🎤 Behavioral practice</span>
-                </a>
-                <a class="rail-link rail-tech" href="#sec-tech">
-                  <span class="rail-dot"></span>
-                  <span class="rail-text">🛠 Technical prep</span>
-                </a>
-                <a class="rail-link rail-up" href="#sec-up">
-                  <span class="rail-dot"></span>
-                  <span class="rail-text">🚀 Upgrade zone</span>
-                </a>
-                <a class="rail-link rail-ask" href="#sec-ask">
-                  <span class="rail-dot"></span>
-                  <span class="rail-text">💬 Smart questions</span>
-                </a>
+                <a class="rail-link rail-know" href="#sec-know"><span class="rail-dot"></span><span class="rail-text">🌍 Know their world</span></a>
+                <a class="rail-link rail-fit" href="#sec-fit"><span class="rail-dot"></span><span class="rail-text">🧩 Perfect fit map</span></a>
+                <a class="rail-link rail-beh" href="#sec-beh"><span class="rail-dot"></span><span class="rail-text">🎤 Behavioral practice</span></a>
+                <a class="rail-link rail-tech" href="#sec-tech"><span class="rail-dot"></span><span class="rail-text">🛠 Technical prep</span></a>
+                <a class="rail-link rail-up" href="#sec-up"><span class="rail-dot"></span><span class="rail-text">🚀 Upgrade zone</span></a>
+                <a class="rail-link rail-ask" href="#sec-ask"><span class="rail-dot"></span><span class="rail-text">💬 Smart questions</span></a>
               </nav>
 
               <div class="rail-mini">
@@ -224,43 +204,32 @@
           </aside>
 
           <div class="prep-content">
-
             {% if know.mission_values or know.culture_snapshot or know.recent_projects_news or know.competitors_industry_trends %}
               <section class="report-section section-know" id="sec-know">
                 <div class="section-head">
                   <h3 class="report-heading">🌍 Know their world</h3>
                   <div class="section-chip">{{ know_count }} items</div>
                 </div>
-                <p class="section-intro">
-                  Learn the company language so your answers sound like someone who already belongs there.
-                </p>
+                <p class="section-intro">Learn the company language so your answers sound like someone who already belongs there.</p>
 
                 {% if know.mission_values %}
                   <h4 class="report-subheading">Mission and values</h4>
-                  {% for item in know.mission_values %}
-                    <p class="report-paragraph">• {{ item }}</p>
-                  {% endfor %}
+                  {% for item in know.mission_values %}<p class="report-paragraph">• {{ item }}</p>{% endfor %}
                 {% endif %}
 
                 {% if know.culture_snapshot %}
                   <h4 class="report-subheading">Culture snapshot</h4>
-                  {% for item in know.culture_snapshot %}
-                    <p class="report-paragraph">• {{ item }}</p>
-                  {% endfor %}
+                  {% for item in know.culture_snapshot %}<p class="report-paragraph">• {{ item }}</p>{% endfor %}
                 {% endif %}
 
                 {% if know.recent_projects_news %}
                   <h4 class="report-subheading">Recent projects and news</h4>
-                  {% for item in know.recent_projects_news %}
-                    <p class="report-paragraph">• {{ item }}</p>
-                  {% endfor %}
+                  {% for item in know.recent_projects_news %}<p class="report-paragraph">• {{ item }}</p>{% endfor %}
                 {% endif %}
 
                 {% if know.competitors_industry_trends %}
                   <h4 class="report-subheading">Competitors and industry trends</h4>
-                  {% for item in know.competitors_industry_trends %}
-                    <p class="report-paragraph">• {{ item }}</p>
-                  {% endfor %}
+                  {% for item in know.competitors_industry_trends %}<p class="report-paragraph">• {{ item }}</p>{% endfor %}
                 {% endif %}
               </section>
             {% endif %}
@@ -271,23 +240,17 @@
                   <h3 class="report-heading">🧩 Your perfect fit map</h3>
                   <div class="section-chip">{{ fit_count }} items</div>
                 </div>
-                <p class="section-intro">
-                  Connect your background to what they care about so the interviewer can say yes faster.
-                </p>
+                <p class="section-intro">Connect your background to what they care about so the interviewer can say yes faster.</p>
 
                 {% if fit.top_strengths %}
                   <h4 class="report-subheading">Strengths to lean into</h4>
-                  {% for s in fit.top_strengths %}
-                    <p class="report-paragraph">• {{ s }}</p>
-                  {% endfor %}
+                  {% for s in fit.top_strengths %}<p class="report-paragraph">• {{ s }}</p>{% endfor %}
                 {% endif %}
 
                 {% if fit.best_projects %}
                   <h4 class="report-subheading">Projects to spotlight</h4>
                   {% for proj in fit.best_projects %}
-                    <p class="report-paragraph">
-                      <strong>{{ proj.title }}</strong>{% if proj.summary %} - {{ proj.summary }}{% endif %}
-                    </p>
+                    <p class="report-paragraph"><strong>{{ proj.title }}</strong>{% if proj.summary %} - {{ proj.summary }}{% endif %}</p>
                   {% endfor %}
                 {% endif %}
               </section>
@@ -299,15 +262,11 @@
                   <h3 class="report-heading">🎤 Behavioral interview practice</h3>
                   <div class="section-chip">{{ beh_count }} items</div>
                 </div>
-                <p class="section-intro">
-                  Prepare structured stories that show ownership, impact, and clear decision making.
-                </p>
+                <p class="section-intro">Prepare structured stories that show ownership, impact, and clear decision making.</p>
 
                 {% if beh.questions %}
                   <h4 class="report-subheading">Questions to prepare for</h4>
-                  {% for q in beh.questions %}
-                    <p class="report-paragraph">• {{ q }}</p>
-                  {% endfor %}
+                  {% for q in beh.questions %}<p class="report-paragraph">• {{ q }}</p>{% endfor %}
                 {% endif %}
 
                 {% if beh.example_answers %}
@@ -331,9 +290,7 @@
                       {% if ex.legend %}
                         <p class="report-legend">
                           Legend:
-                          {% for key, val in ex.legend.items() %}
-                            <span>{{ key }} {{ val }}</span>
-                          {% endfor %}
+                          {% for key, val in ex.legend.items() %}<span>{{ key }} {{ val }}</span>{% endfor %}
                         </p>
                       {% endif %}
                     </div>
@@ -348,15 +305,11 @@
                   <h3 class="report-heading">🛠 Technical or role specific preparation</h3>
                   <div class="section-chip">{{ tech_count }} items</div>
                 </div>
-                <p class="section-intro">
-                  Turn prep time into signal. Focus on the concepts and questions that are most likely to appear.
-                </p>
+                <p class="section-intro">Turn prep time into signal. Focus on the concepts and questions that are most likely to appear.</p>
 
                 {% if tech.questions %}
                   <h4 class="report-subheading">Questions they may ask you</h4>
-                  {% for q in tech.questions %}
-                    <p class="report-paragraph">• {{ q }}</p>
-                  {% endfor %}
+                  {% for q in tech.questions %}<p class="report-paragraph">• {{ q }}</p>{% endfor %}
                 {% endif %}
 
                 {% if tech.example_answers %}
@@ -380,9 +333,7 @@
                       {% if ex.legend %}
                         <p class="report-legend">
                           Legend:
-                          {% for key, val in ex.legend.items() %}
-                            <span>{{ key }} {{ val }}</span>
-                          {% endfor %}
+                          {% for key, val in ex.legend.items() %}<span>{{ key }} {{ val }}</span>{% endfor %}
                         </p>
                       {% endif %}
                     </div>
@@ -391,96 +342,12 @@
 
                 {% if tech.key_concepts %}
                   <h4 class="report-subheading">Key concepts to review</h4>
-                  {% for item in tech.key_concepts %}
-                    <p class="report-paragraph">• {{ item }}</p>
-                  {% endfor %}
+                  {% for item in tech.key_concepts %}<p class="report-paragraph">• {{ item }}</p>{% endfor %}
                 {% endif %}
 
                 {% if tech.red_flags %}
                   <h4 class="report-subheading">Common red flags to avoid</h4>
-                  {% for item in tech.red_flags %}
-                    <p class="report-paragraph">• {{ item }}</p>
-                  {% endfor %}
-                {% endif %}
-              </section>
-            {% endif %}
-
-            {% if imp.skill_gaps or imp.soft_skills or imp.learning_focus %}
-              <section class="report-section section-up" id="sec-up">
-                <div class="section-head">
-                  <h3 class="report-heading">🚀 Upgrade yourself before the interview</h3>
-                  <div class="section-chip">{{ imp_count }} items</div>
-                </div>
-                <p class="section-intro">
-                  Quick wins that reduce risk. Make it hard for them to doubt you.
-                </p>
-
-                {% if imp.skill_gaps %}
-                  <h4 class="report-subheading">Skill gaps to work on</h4>
-                  {% for item in imp.skill_gaps %}
-                    <p class="report-paragraph">• {{ item }}</p>
-                  {% endfor %}
-                {% endif %}
-
-                {% if imp.soft_skills %}
-                  <h4 class="report-subheading">Soft skills to sharpen</h4>
-                  {% for item in imp.soft_skills %}
-                    <p class="report-paragraph">• {{ item }}</p>
-                  {% endfor %}
-                {% endif %}
-
-                {% if imp.learning_focus %}
-                  <h4 class="report-subheading">Focus for this week</h4>
-                  {% for item in imp.learning_focus %}
-                    <p class="report-paragraph">• {{ item }}</p>
-                  {% endfor %}
-                {% endif %}
-              </section>
-            {% endif %}
-
-            {% if itm.team_culture or itm.impact_growth or itm.technical_depth or itm.company_direction or itm.next_steps %}
-              <section class="report-section section-ask" id="sec-ask">
-                <div class="section-head">
-                  <h3 class="report-heading">💬 Smart questions to ask them</h3>
-                  <div class="section-chip">{{ ask_count }} items</div>
-                </div>
-                <p class="section-intro">
-                  Ask questions that signal maturity, curiosity, and ownership.
-                </p>
-
-                {% if itm.team_culture %}
-                  <h4 class="report-subheading">Team and culture</h4>
-                  {% for q in itm.team_culture %}
-                    <p class="report-paragraph">• {{ q }}</p>
-                  {% endfor %}
-                {% endif %}
-
-                {% if itm.impact_growth %}
-                  <h4 class="report-subheading">Impact and growth</h4>
-                  {% for q in itm.impact_growth %}
-                    <p class="report-paragraph">• {{ q }}</p>
-                  {% endfor %}
-                {% endif %}
-
-                {% if itm.technical_depth %}
-                  <h4 class="report-subheading">Technical depth</h4>
-                  {% for q in itm.technical_depth %}
-                    <p class="report-paragraph">• {{ q }}</p>
-                  {% endfor %}
-                {% endif %}
-
-                {% if itm.company_direction %}
-                  <h4 class="report-subheading">Company direction</h4>
-                  {% for q in itm.company_direction %}
-                    <p class="report-paragraph">• {{ q }}</p>
-                  {% endfor %}
-                {% endif %}
-
-                {% if itm.next_steps %}
-                  <h4 class="report-subheading">Next steps</h4>
-                  {% for q in itm.next_steps %}
-                    <p class="report-paragraph">• {{ q }}</p>
-                  {% endfor %}
+                  {% for item in tech.red_flags %}<p class="report-paragraph">• {{ item }}</p>{% endfor %}
                 {% endif %}
               </section>
             {% endif %}
