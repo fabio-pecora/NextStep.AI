@@ -352,6 +352,66 @@
               </section>
             {% endif %}
 
+            {% if imp.skill_gaps or imp.soft_skills or imp.learning_focus %}
+              <section class="report-section section-up" id="sec-up">
+                <div class="section-head">
+                  <h3 class="report-heading">🚀 Upgrade zone</h3>
+                  <div class="section-chip">{{ imp_count }} items</div>
+                </div>
+                <p class="section-intro">Close the gaps that matter most for this role and turn them into strengths.</p>
+
+                {% if imp.skill_gaps %}
+                  <h4 class="report-subheading">Skill gaps</h4>
+                  {% for item in imp.skill_gaps %}<p class="report-paragraph">• {{ item }}</p>{% endfor %}
+                {% endif %}
+
+                {% if imp.soft_skills %}
+                  <h4 class="report-subheading">Soft skills</h4>
+                  {% for item in imp.soft_skills %}<p class="report-paragraph">• {{ item }}</p>{% endfor %}
+                {% endif %}
+
+                {% if imp.learning_focus %}
+                  <h4 class="report-subheading">Learning focus</h4>
+                  {% for item in imp.learning_focus %}<p class="report-paragraph">• {{ item }}</p>{% endfor %}
+                {% endif %}
+              </section>
+            {% endif %}
+
+            {% if itm.team_culture or itm.impact_growth or itm.technical_depth or itm.company_direction or itm.next_steps %}
+              <section class="report-section section-ask" id="sec-ask">
+                <div class="section-head">
+                  <h3 class="report-heading">💬 Questions to ask</h3>
+                  <div class="section-chip">{{ ask_count }} items</div>
+                </div>
+                <p class="section-intro">Ask sharp questions that signal maturity and help you evaluate the team.</p>
+
+                {% if itm.team_culture %}
+                  <h4 class="report-subheading">Team and culture</h4>
+                  {% for q in itm.team_culture %}<p class="report-paragraph">• {{ q }}</p>{% endfor %}
+                {% endif %}
+
+                {% if itm.impact_growth %}
+                  <h4 class="report-subheading">Impact and growth</h4>
+                  {% for q in itm.impact_growth %}<p class="report-paragraph">• {{ q }}</p>{% endfor %}
+                {% endif %}
+
+                {% if itm.technical_depth %}
+                  <h4 class="report-subheading">Technical depth</h4>
+                  {% for q in itm.technical_depth %}<p class="report-paragraph">• {{ q }}</p>{% endfor %}
+                {% endif %}
+
+                {% if itm.company_direction %}
+                  <h4 class="report-subheading">Company direction</h4>
+                  {% for q in itm.company_direction %}<p class="report-paragraph">• {{ q }}</p>{% endfor %}
+                {% endif %}
+
+                {% if itm.next_steps %}
+                  <h4 class="report-subheading">Next steps</h4>
+                  {% for q in itm.next_steps %}<p class="report-paragraph">• {{ q }}</p>{% endfor %}
+                {% endif %}
+              </section>
+            {% endif %}
+
           </div>
         </div>
       </div>
