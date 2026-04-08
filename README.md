@@ -1,3 +1,7 @@
+# Check the demo
+
+https://drive.google.com/file/d/12bdAscdUhJ1zmwydl4ZHzXm_U-c9hgPz/view
+
 # 🚀 NextStep.AI
 
 > Practice smarter. Get your dream job.
